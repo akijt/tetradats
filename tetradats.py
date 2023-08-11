@@ -140,7 +140,7 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                             if acct_info:
                                 user_info, bindings, handling = acct_info
                                 state[0] = 'menu'
-                            else:
+                            elif state[0] == 'login':
                                 error_code = 4
                     elif signup_button.collidepoint(pos):
                         error_code = 0
@@ -281,7 +281,12 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         quit_rect.midbottom = quit_button.midbottom
         screen.blit(quit_text, quit_rect)
 
-        if error_code & (1 << 0):
+        if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
+            error_text = font_small.render('username taken', False, 'White')
+            error_rect = error_text.get_rect()
+            error_rect.topright = user_box.bottomright
+            screen.blit(error_text, error_rect)
+        elif error_code & (1 << 0):
             error_text = font_small.render('enter username', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = user_box.bottomright
@@ -295,11 +300,6 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             error_text = font_small.render('incorrect password', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = pass_box.bottomright
-            screen.blit(error_text, error_rect)
-        elif state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
-            error_text = font_small.render('username taken', False, 'White')
-            error_rect = error_text.get_rect()
-            error_rect.topright = user_box.bottomright
             screen.blit(error_text, error_rect)
 
     ### MENU STATE
