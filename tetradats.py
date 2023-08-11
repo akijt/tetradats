@@ -189,14 +189,11 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             # pygame.draw.rect(screen, 'White', [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW TEXTBOXES
-        rect_width  = 12 * dim
-        rect_height = 2 * dim
-
-        user_box = pygame.Rect(0, 0, rect_width, rect_height)
+        user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         user_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
         pygame.draw.rect(screen, 'White', user_box, border_width + 1)
 
-        pass_box = pygame.Rect(0, 0, rect_width, rect_height)
+        pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         pass_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 3 * dim)
         pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
 
@@ -225,19 +222,19 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'White', area_rect, border_width + 1)
 
         ### DRAW BUTTONS
-        login_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        login_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         login_button.bottomleft = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 7 * dim)
         pygame.draw.rect(screen, 'White', login_button, border_width + 1)
 
-        signup_button = pygame.Rect(0, 0, 5 * dim, rect_height)
+        signup_button = pygame.Rect(0, 0, 5 * dim, 2 * dim)
         signup_button.bottomright = (screen.get_width() / 2 - 2 * dim, screen.get_height() / 2 + 7 * dim)
         pygame.draw.rect(screen, 'Black', signup_button)
 
-        guest_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        guest_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         guest_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'Black', guest_button)
 
-        quit_button = pygame.Rect(0, 0, 6 * dim, rect_height)
+        quit_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
         quit_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', quit_button, border_width + 1)
 
@@ -348,30 +345,27 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
-        rect_width  = 14 * dim
-        rect_height = 2 * dim
-
-        marathon_button = pygame.Rect(0, 0, rect_width, rect_height)
+        marathon_button = pygame.Rect(0, 0, 14 * dim, 2 * dim)
         marathon_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 4 * dim)
         pygame.draw.rect(screen, 'White', marathon_button, border_width + 1)
 
-        sprint_button = pygame.Rect(0, 0, rect_width, rect_height)
+        sprint_button = pygame.Rect(0, 0, 14 * dim, 2 * dim)
         sprint_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 1 * dim)
         pygame.draw.rect(screen, 'White', sprint_button, border_width + 1)
 
-        blitz_button = pygame.Rect(0, 0, rect_width, rect_height)
+        blitz_button = pygame.Rect(0, 0, 14 * dim, 2 * dim)
         blitz_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
         pygame.draw.rect(screen, 'White', blitz_button, border_width + 1)
 
-        records_button = pygame.Rect(0, 0, rect_width, rect_height)
+        records_button = pygame.Rect(0, 0, 14 * dim, 2 * dim)
         records_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 5 * dim)
         pygame.draw.rect(screen, 'White', records_button, border_width + 1)
 
-        settings_button = pygame.Rect(0, 0, rect_width, rect_height)
+        settings_button = pygame.Rect(0, 0, 14 * dim, 2 * dim)
         settings_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 8 * dim)
         pygame.draw.rect(screen, 'White', settings_button, border_width + 1)
 
-        logout_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        logout_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         logout_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', logout_button, border_width + 1)
 
@@ -868,18 +862,15 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         screen.blit(mode_text, mode_rect)
 
         ### DRAW BUTTONS
-        rect_width  = 8 * dim
-        rect_height = 2 * dim
-
-        resume_button = pygame.Rect(0, 0, rect_width, rect_height)
+        resume_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         resume_button.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', resume_button, border_width + 1)
 
-        retry_button = pygame.Rect(0, 0, rect_width, rect_height)
+        retry_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         retry_button.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 - 4 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
-        menu_button = pygame.Rect(0, 0, rect_width, rect_height)
+        menu_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         menu_button.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
@@ -952,14 +943,11 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
-        rect_width  = 8 * dim
-        rect_height = 2 * dim
-
-        retry_button = pygame.Rect(0, 0, rect_width, rect_height)
+        retry_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         retry_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
-        menu_button = pygame.Rect(0, 0, rect_width, rect_height)
+        menu_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         menu_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
@@ -1006,14 +994,11 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
-        rect_width  = 8 * dim
-        rect_height = 2 * dim
-
-        retry_button = pygame.Rect(0, 0, rect_width, rect_height)
+        retry_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         retry_button.midleft = (screen.get_width() / 2 + 1 * dim, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
-        menu_button = pygame.Rect(0, 0, rect_width, rect_height)
+        menu_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         menu_button.midright = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
@@ -1116,26 +1101,23 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
-        rect_width  = 12 * dim
-        rect_height = 2 * dim
-
-        marathon_button = pygame.Rect(0, 0, rect_width, rect_height)
+        marathon_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         marathon_button.bottomright = (screen.get_width() / 2 - 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', marathon_button, border_width + 1 if state[1] != 'marathon' else 0)
 
-        sprint_button = pygame.Rect(0, 0, rect_width, rect_height)
+        sprint_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         sprint_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', sprint_button, border_width + 1 if state[1] != 'sprint' else 0)
 
-        blitz_button = pygame.Rect(0, 0, rect_width, rect_height)
+        blitz_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         blitz_button.bottomleft = (screen.get_width() / 2 + 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', blitz_button, border_width + 1 if state[1] != 'blitz' else 0)
 
-        back_button = pygame.Rect(0, 0, 6 * dim, rect_height)
+        back_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
         back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', back_button, border_width + 1)
 
-        global_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        global_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         global_button.bottomright = (screen.get_width() - 1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', global_button, border_width + 1 if state[2] == '' else 0)
 
@@ -1467,30 +1449,27 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         interactables['new_pass2'] = None
 
         ### DRAW BUTTONS
-        rect_width  = 12 * dim
-        rect_height = 2 * dim
-
-        account_button = pygame.Rect(0, 0, rect_width, rect_height)
+        account_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         account_button.bottomright = (screen.get_width() / 2 - 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', account_button, border_width + 1 if state[1] != 'account' else 0)
 
-        bindings_button = pygame.Rect(0, 0, rect_width, rect_height)
+        bindings_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         bindings_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', bindings_button, border_width + 1 if state[1] != 'bindings' else 0)
 
-        handling_button = pygame.Rect(0, 0, rect_width, rect_height)
+        handling_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         handling_button.bottomleft = (screen.get_width() / 2 + 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', handling_button, border_width + 1 if state[1] != 'handling' else 0)
 
-        cancel_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        cancel_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         cancel_button.bottomright = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 11 * dim)
         pygame.draw.rect(screen, 'White', cancel_button, border_width + 1)
 
-        apply_button = pygame.Rect(0, 0, 8 * dim, rect_height)
+        apply_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         apply_button.bottomleft = (screen.get_width() / 2 + 1 * dim, screen.get_height() / 2 + 11 * dim)
         pygame.draw.rect(screen, 'White', apply_button, border_width + 1)
 
-        back_button = pygame.Rect(0, 0, 6 * dim, rect_height)
+        back_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
         back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', back_button, border_width + 1)
 
@@ -1532,25 +1511,22 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
 
         if state[1] == 'account':
             ### DRAW TEXTBOXES
-            rect_width  = 12 * dim
-            rect_height = 2 * dim
-
-            user_box = pygame.Rect(0, 0, rect_width, rect_height)
+            user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
             user_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 - 3 * dim)
             pygame.draw.rect(screen, 'White', user_box, border_width + 1)
             interactables['username'] = user_box
 
-            new1_box = pygame.Rect(0, 0, rect_width, rect_height)
+            new1_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
             new1_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 1 * dim)
             pygame.draw.rect(screen, 'White', new1_box, border_width + 1)
             interactables['new_pass1'] = new1_box
 
-            new2_box = pygame.Rect(0, 0, rect_width, rect_height)
+            new2_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
             new2_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 4 * dim)
             pygame.draw.rect(screen, 'White', new2_box, border_width + 1)
             interactables['new_pass2'] = new2_box
 
-            pass_box = pygame.Rect(0, 0, rect_width, rect_height)
+            pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
             pass_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 7 * dim)
             pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
             interactables['password'] = pass_box
