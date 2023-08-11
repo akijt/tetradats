@@ -51,16 +51,12 @@ state = ['login', '', '']
 
 while True: # TODO: individual classes/files for each page (merge countdown, play, pause into play)
 
-    ### ADJUST SIZE
-    screen_width, screen_height = screen.get_size() # TODO: remove left_margin and top_margin. work off of width/2 and height/2
-    dim = min(screen_width / 40, screen_height / 30) # To fit in a 4:3 aspect ratio
-    screen_width  = screen_width / dim
-    screen_height = screen_height / dim
-    left_margin   = (screen_width - 40) / 2
-    top_margin    = (screen_height - 30) / 2
-    font_large    = pygame.font.Font(None, round(.75 * 4 * dim))
-    font_small    = pygame.font.Font(None, round(.75 * 2 * dim))
-    border_width  = 1
+    ### ADJUST DIM
+    dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+    fonts = []
+    fonts.append(pygame.font.Font(None, round(.75 * 2 * dim)))
+    fonts.append(pygame.font.Font(None, round(.75 * 4 * dim)))
+    border_width = 1
 
     ### LOGIN/SIGNUP STATE
     if state[0] == 'login' or state[0] == 'signup':
@@ -184,28 +180,28 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                 cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW ANIMATION
         blocks, shade = animation.get(time.time())
         for i in blocks:
-            pygame.draw.rect(screen, shade, [(screen_width / 2 + i[0] - 2) * dim, (top_margin + 4 - i[1]) * dim, dim + border_width, dim + border_width])
-            # pygame.draw.rect(screen, 'White', [(screen_width / 2 + i[0] - 2) * dim, (top_margin + 4 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
+            pygame.draw.rect(screen, shade, [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width])
+            # pygame.draw.rect(screen, 'White', [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW TEXTBOXES
         rect_width  = 12 * dim
         rect_height = 2 * dim
 
         user_box = pygame.Rect(0, 0, rect_width, rect_height)
-        user_box.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+        user_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
         pygame.draw.rect(screen, 'White', user_box, border_width + 1)
 
         pass_box = pygame.Rect(0, 0, rect_width, rect_height)
-        pass_box.midbottom = ((screen_width / 2) * dim, (top_margin + 18) * dim)
+        pass_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 3 * dim)
         pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
 
         ### WRITE INPUT TEXT
-        user_input_text = font_small.render(input_fields['user'][:cursor_pos] + '|' * (state[1] == 'user') + input_fields['user'][cursor_pos:], False, 'White')
+        user_input_text = fonts[0].render(input_fields['user'][:cursor_pos] + '|' * (state[1] == 'user') + input_fields['user'][cursor_pos:], False, 'White')
         user_input_rect = user_input_text.get_rect()
         if user_input_rect.width < user_box.width - dim or cursor_pos < 8:
             user_input_rect.bottomleft = (user_box.left + .5 * dim, user_box.bottom - .4 * dim)
@@ -218,86 +214,86 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         clear_rect.bottomleft = user_box.bottomright
         pygame.draw.rect(screen, 'Black', clear_rect)
 
-        pass_input_text = font_small.render('*' * len(input_fields['pass'][:cursor_pos]) + '|' * (state[1] == 'pass') + '*' * len(input_fields['pass'][cursor_pos:]), False, 'White')
+        pass_input_text = fonts[0].render('*' * len(input_fields['pass'][:cursor_pos]) + '|' * (state[1] == 'pass') + '*' * len(input_fields['pass'][cursor_pos:]), False, 'White')
         pass_input_rect = pass_input_text.get_rect()
         pass_input_rect.bottomleft = (pass_box.left + .5 * dim, pass_box.bottom - .4 * dim)
         screen.blit(pass_input_text, pass_input_rect)
 
         ### DRAW RECT
         area_rect = pygame.Rect(0, 0, 16 * dim, 14 * dim)
-        area_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 23) * dim)
+        area_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 8 * dim)
         pygame.draw.rect(screen, 'White', area_rect, border_width + 1)
 
         ### DRAW BUTTONS
         login_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        login_button.bottomleft = ((screen_width / 2 - 1) * dim, (top_margin + 22) * dim)
+        login_button.bottomleft = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 7 * dim)
         pygame.draw.rect(screen, 'White', login_button, border_width + 1)
 
         signup_button = pygame.Rect(0, 0, 5 * dim, rect_height)
-        signup_button.bottomright = ((screen_width / 2 - 2) * dim, (top_margin + 22) * dim)
+        signup_button.bottomright = (screen.get_width() / 2 - 2 * dim, screen.get_height() / 2 + 7 * dim)
         pygame.draw.rect(screen, 'Black', signup_button)
 
         guest_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        guest_button.midbottom = ((screen_width / 2) * dim, (top_margin + 25) * dim)
+        guest_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'Black', guest_button)
 
         quit_button = pygame.Rect(0, 0, 6 * dim, rect_height)
-        quit_button.bottomleft = (1 * dim, (screen_height - 1) * dim)
+        quit_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', quit_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('LOGIN' if state[0] == 'login' else 'SIGN UP', False, 'White')
+        state_text = fonts[1].render('LOGIN' if state[0] == 'login' else 'SIGN UP', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 9) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 6 * dim)
         screen.blit(state_text, state_rect)
 
-        user_text = font_small.render('username', False, 'White')
+        user_text = fonts[0].render('username', False, 'White')
         user_rect = user_text.get_rect()
-        user_rect.bottomleft = ((screen_width / 2 - 6) * dim, (top_margin + 11) * dim)
+        user_rect.bottomleft = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim)
         screen.blit(user_text, user_rect)
 
-        pass_text = font_small.render('password', False, 'White')
+        pass_text = fonts[0].render('password', False, 'White')
         pass_rect = pass_text.get_rect()
-        pass_rect.bottomleft = ((screen_width / 2 - 6) * dim, (top_margin + 16) * dim)
+        pass_rect.bottomleft = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 1 * dim)
         screen.blit(pass_text, pass_rect)
 
-        login_text = font_large.render('login' if state[0] == 'login' else 'sign up', False, 'White')
+        login_text = fonts[1].render('login' if state[0] == 'login' else 'sign up', False, 'White')
         login_rect = login_text.get_rect()
         login_rect.midbottom = login_button.midbottom
         screen.blit(login_text, login_rect)
 
-        signup_text = font_small.render('sign up' if state[0] == 'login' else 'login', False, 'White')
+        signup_text = fonts[0].render('sign up' if state[0] == 'login' else 'login', False, 'White')
         signup_rect = signup_text.get_rect()
         signup_rect.center = signup_button.center
         screen.blit(signup_text, signup_rect)
 
-        guest_text = font_small.render('play as guest', False, 'White')
+        guest_text = fonts[0].render('play as guest', False, 'White')
         guest_rect = guest_text.get_rect()
         guest_rect.center = guest_button.center
         screen.blit(guest_text, guest_rect)
 
-        quit_text = font_large.render('quit', False, 'White')
+        quit_text = fonts[1].render('quit', False, 'White')
         quit_rect = quit_text.get_rect()
         quit_rect.midbottom = quit_button.midbottom
         screen.blit(quit_text, quit_rect)
 
         if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
-            error_text = font_small.render('username taken', False, 'White')
+            error_text = fonts[0].render('username taken', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = user_box.bottomright
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 0):
-            error_text = font_small.render('enter username', False, 'White')
+            error_text = fonts[0].render('enter username', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = user_box.bottomright
             screen.blit(error_text, error_rect)
         if error_code & (1 << 1):
-            error_text = font_small.render('enter password', False, 'White')
+            error_text = fonts[0].render('enter password', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = pass_box.bottomright
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 2):
-            error_text = font_small.render('incorrect password', False, 'White')
+            error_text = fonts[0].render('incorrect password', False, 'White')
             error_rect = error_text.get_rect()
             error_rect.topright = pass_box.bottomright
             screen.blit(error_text, error_rect)
@@ -349,78 +345,78 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                         state = ['settings', 'account', '']
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
         rect_width  = 14 * dim
         rect_height = 2 * dim
 
         marathon_button = pygame.Rect(0, 0, rect_width, rect_height)
-        marathon_button.midbottom = ((screen_width / 2) * dim, (top_margin + 11) * dim)
+        marathon_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 4 * dim)
         pygame.draw.rect(screen, 'White', marathon_button, border_width + 1)
 
         sprint_button = pygame.Rect(0, 0, rect_width, rect_height)
-        sprint_button.midbottom = ((screen_width / 2) * dim, (top_margin + 14) * dim)
+        sprint_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 1 * dim)
         pygame.draw.rect(screen, 'White', sprint_button, border_width + 1)
 
         blitz_button = pygame.Rect(0, 0, rect_width, rect_height)
-        blitz_button.midbottom = ((screen_width / 2) * dim, (top_margin + 17) * dim)
+        blitz_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
         pygame.draw.rect(screen, 'White', blitz_button, border_width + 1)
 
         records_button = pygame.Rect(0, 0, rect_width, rect_height)
-        records_button.midbottom = ((screen_width / 2) * dim, (top_margin + 20) * dim)
+        records_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 5 * dim)
         pygame.draw.rect(screen, 'White', records_button, border_width + 1)
 
         settings_button = pygame.Rect(0, 0, rect_width, rect_height)
-        settings_button.midbottom = ((screen_width / 2) * dim, (top_margin + 23) * dim)
+        settings_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 8 * dim)
         pygame.draw.rect(screen, 'White', settings_button, border_width + 1)
 
         logout_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        logout_button.bottomleft = (1 * dim, (screen_height - 1) * dim)
+        logout_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', logout_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('TETRADATS', False, 'White')
+        state_text = fonts[1].render('TETRADATS', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        marathon_text = font_large.render('marathon', False, 'White')
+        marathon_text = fonts[1].render('marathon', False, 'White')
         marathon_rect = marathon_text.get_rect()
         marathon_rect.midbottom = marathon_button.midbottom
         screen.blit(marathon_text, marathon_rect)
 
-        sprint_text = font_large.render('sprint', False, 'White')
+        sprint_text = fonts[1].render('sprint', False, 'White')
         sprint_rect = sprint_text.get_rect()
         sprint_rect.midbottom = sprint_button.midbottom
         screen.blit(sprint_text, sprint_rect)
 
-        blitz_text = font_large.render('blitz', False, 'White')
+        blitz_text = fonts[1].render('blitz', False, 'White')
         blitz_rect = blitz_text.get_rect()
         blitz_rect.midbottom = blitz_button.midbottom
         screen.blit(blitz_text, blitz_rect)
 
-        records_text = font_large.render('records', False, 'White')
+        records_text = fonts[1].render('records', False, 'White')
         records_rect = records_text.get_rect()
         records_rect.midbottom = records_button.midbottom
         screen.blit(records_text, records_rect)
 
-        settings_text = font_large.render('settings', False, 'White')
+        settings_text = fonts[1].render('settings', False, 'White')
         settings_rect = settings_text.get_rect()
         settings_rect.midbottom = settings_button.midbottom
         screen.blit(settings_text, settings_rect)
 
-        logout_text = font_large.render('logout', False, 'White')
+        logout_text = fonts[1].render('logout', False, 'White')
         logout_rect = logout_text.get_rect()
         logout_rect.midbottom = logout_button.midbottom
         screen.blit(logout_text, logout_rect)
 
         ### ACCOUNT TAB
         account_tab = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        account_tab.topright = ((screen_width - 1) * dim, 1 * dim)
+        account_tab.topright = (screen.get_width() - 1 * dim, 1 * dim)
         pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
 
-        account_text = font_small.render(user_info['username'], False, 'White')
+        account_text = fonts[0].render(user_info['username'], False, 'White')
         account_rect = account_text.get_rect()
         account_rect.bottomright = (account_tab.right - .5 * dim, account_tab.bottom - .4 * dim)
         screen.blit(account_text, account_rect)
@@ -465,86 +461,86 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             state[0] = 'play'
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW EMPTY BOARD
         for r in range(20):
             for c in range(10):
-                left = (left_margin + 15 + c) * dim
-                top = (top_margin + 24 - r) * dim
+                left = screen.get_width() / 2 + (-5 + c) * dim
+                top = screen.get_height() / 2 + (9 - r) * dim
                 pygame.draw.rect(screen, 'Gray', [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW NEXT PIECES
         next_num = 3
         for p in range(next_num):
             for dr, dc in game.minos[game.queue[p]][0]:
-                left = (left_margin + 26 + dc) * dim
-                top = (top_margin + 8 - dr + p * 4) * dim
+                left = screen.get_width() / 2 + (6 + dc) * dim
+                top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### WRITE TEXT
-        time_label_text = font_small.render('time', False, 'White')
+        time_label_text = fonts[0].render('time', False, 'White')
         time_label_rect = time_label_text.get_rect()
-        time_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 20) * dim)
+        time_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(time_label_text, time_label_rect)
 
-        time_value_text = font_large.render(f'0:00.000', False, 'White')
+        time_value_text = fonts[1].render(f'0:00.000', False, 'White')
         time_value_rect = time_value_text.get_rect()
-        time_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 22) * dim)
+        time_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(time_value_text, time_value_rect)
 
-        score_label_text = font_small.render('score', False, 'White')
+        score_label_text = fonts[0].render('score', False, 'White')
         score_label_rect = time_label_text.get_rect()
-        score_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 23) * dim)
+        score_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(score_label_text, score_label_rect)
 
-        score_value_text = font_large.render(f'{game.stats["score"]}', False, 'White')
+        score_value_text = fonts[1].render(f'{game.stats["score"]}', False, 'White')
         score_value_rect = score_value_text.get_rect()
-        score_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 25) * dim)
+        score_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(score_value_text, score_value_rect)
 
-        pieces_label_text = font_small.render('pieces', False, 'White')
+        pieces_label_text = fonts[0].render('pieces', False, 'White')
         pieces_label_rect = pieces_label_text.get_rect()
-        pieces_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 17) * dim)
+        pieces_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 2 * dim)
         screen.blit(pieces_label_text, pieces_label_rect)
 
-        pieces_value_text = font_large.render(f'{game.stats["pieces"]}', False, 'White')
+        pieces_value_text = fonts[1].render(f'{game.stats["pieces"]}', False, 'White')
         pieces_value_rect = pieces_value_text.get_rect()
-        pieces_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 19) * dim)
+        pieces_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim)
         screen.blit(pieces_value_text, pieces_value_rect)
 
-        lines_label_text = font_small.render('lines', False, 'White')
+        lines_label_text = fonts[0].render('lines', False, 'White')
         lines_label_rect = lines_label_text.get_rect()
-        lines_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 20) * dim)
+        lines_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(lines_label_text, lines_label_rect)
 
-        lines_value_text = font_large.render(f'{game.stats["lines"]}', False, 'White')
+        lines_value_text = fonts[1].render(f'{game.stats["lines"]}', False, 'White')
         lines_value_rect = lines_value_text.get_rect()
-        lines_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 22) * dim)
+        lines_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(lines_value_text, lines_value_rect)
 
-        level_label_text = font_small.render('level', False, 'White')
+        level_label_text = fonts[0].render('level', False, 'White')
         level_label_rect = level_label_text.get_rect()
-        level_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 23) * dim)
+        level_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(level_label_text, level_label_rect)
 
-        level_value_text = font_large.render(f'{game.stats["level"]}', False, 'White')
+        level_value_text = fonts[1].render(f'{game.stats["level"]}', False, 'White')
         level_value_rect = level_value_text.get_rect()
-        level_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 25) * dim)
+        level_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(level_value_text, level_value_rect)
 
-        mode_text = font_large.render(f'{game.stats["mode"]}', False, 'White')
+        mode_text = fonts[1].render(f'{game.stats["mode"]}', False, 'White')
         mode_rect = mode_text.get_rect()
-        mode_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 27) * dim)
+        mode_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 12 * dim)
         screen.blit(mode_text, mode_rect)
 
         ### DRAW RECT
         int_panel = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        int_panel.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+        int_panel.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
         pygame.draw.rect(screen, 'White', int_panel)
 
         ### WRITE TEXT
-        int_text = font_large.render(f'{3 - int(time.time() - countdown)}', False, 'Black')
+        int_text = fonts[1].render(f'{3 - int(time.time() - countdown)}', False, 'Black')
         int_rect = int_text.get_rect()
         int_rect.midbottom = int_panel.midbottom
         screen.blit(int_text, int_rect)
@@ -555,17 +551,17 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
         ### WRITE TEXT
-        menu_text = font_large.render('menu', False, 'White')
+        menu_text = fonts[1].render('menu', False, 'White')
         menu_rect = menu_text.get_rect()
         menu_rect.midbottom = menu_button.midbottom
         screen.blit(menu_text, menu_rect)
 
         ### ACCOUNT TAB
         account_tab = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        account_tab.topright = ((screen_width - 1) * dim, 1 * dim)
+        account_tab.topright = (screen.get_width() - 1 * dim, 1 * dim)
         pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
 
-        account_text = font_small.render(user_info['username'], False, 'White')
+        account_text = fonts[0].render(user_info['username'], False, 'White')
         account_rect = account_text.get_rect()
         account_rect.bottomright = (account_tab.right - .5 * dim, account_tab.bottom - .4 * dim)
         screen.blit(account_text, account_rect)
@@ -621,13 +617,13 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         game.frame_update(time.time())
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BOARD
         for r in range(20):
             for c in range(10):
-                left = (left_margin + 15 + c) * dim
-                top = (top_margin + 24 - r) * dim
+                left = screen.get_width() / 2 + (-5 + c) * dim
+                top = screen.get_height() / 2 + (9 - r) * dim
                 if game.board[r][c] != None:
                     pygame.draw.rect(screen, colors[game.board[r][c]], [left, top, dim + border_width, dim + border_width])
                 else:
@@ -635,29 +631,29 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
 
         ### DRAW CURRENT PIECE
         for dr, dc in game.minos[game.piece][game.rotation]:
-            left = (left_margin + 15 + game.position[1] + dc) * dim
-            top = (top_margin + 24 - game.position[0] - dr) * dim
+            left = screen.get_width() / 2 + (-5 + game.position[1] + dc) * dim
+            top = screen.get_height() / 2 + (9 - game.position[0] - dr) * dim
             pygame.draw.rect(screen, colors[game.piece], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW GHOST PIECE
         for dr, dc in game.minos[game.piece][game.rotation]:
-            left = (left_margin + 15 + game.position[1] + dc) * dim
-            top = (top_margin + 24 - game.position[0] - dr + game.height) * dim
+            left = screen.get_width() / 2 + (-5 + game.position[1] + dc) * dim
+            top = screen.get_height() / 2 + (9 - game.position[0] - dr + game.height) * dim
             pygame.draw.rect(screen, colors[game.piece], [left, top, dim + border_width, dim + border_width], border_width + 1)
 
         ### DRAW HELD PIECE
         if game.held != None:
             for dr, dc in game.minos[game.held][0]:
-                left = (left_margin + 10 + dc) * dim
-                top = (top_margin + 8 - dr) * dim
+                left = screen.get_width() / 2 + (-10 + dc) * dim
+                top = screen.get_height() / 2 + (-7 - dr) * dim
                 pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW NEXT PIECES
         next_num = 3
         for p in range(next_num):
             for dr, dc in game.minos[game.queue[p]][0]:
-                left = (left_margin + 26 + dc) * dim
-                top = (top_margin + 8 - dr + p * 4) * dim
+                left = screen.get_width() / 2 + (6 + dc) * dim
+                top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### WRITE TEXT
@@ -666,74 +662,74 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         seconds      = int(time_elapsed % 60)
         milliseconds = int(time_elapsed % 1 * 1000)
 
-        time_label_text = font_small.render('time', False, 'White')
+        time_label_text = fonts[0].render('time', False, 'White')
         time_label_rect = time_label_text.get_rect()
-        time_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 20) * dim)
+        time_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(time_label_text, time_label_rect)
 
-        time_value_text = font_large.render(f'{minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
+        time_value_text = fonts[1].render(f'{minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
         time_value_rect = time_value_text.get_rect()
-        time_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 22) * dim)
+        time_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(time_value_text, time_value_rect)
 
-        score_label_text = font_small.render('score', False, 'White')
+        score_label_text = fonts[0].render('score', False, 'White')
         score_label_rect = time_label_text.get_rect()
-        score_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 23) * dim)
+        score_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(score_label_text, score_label_rect)
 
-        score_value_text = font_large.render(f'{game.stats["score"]}', False, 'White')
+        score_value_text = fonts[1].render(f'{game.stats["score"]}', False, 'White')
         score_value_rect = score_value_text.get_rect()
-        score_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 25) * dim)
+        score_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(score_value_text, score_value_rect)
 
-        pieces_label_text = font_small.render('pieces', False, 'White')
+        pieces_label_text = fonts[0].render('pieces', False, 'White')
         pieces_label_rect = pieces_label_text.get_rect()
-        pieces_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 17) * dim)
+        pieces_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 2 * dim)
         screen.blit(pieces_label_text, pieces_label_rect)
 
-        pieces_value_text = font_large.render(f'{game.stats["pieces"]}', False, 'White')
+        pieces_value_text = fonts[1].render(f'{game.stats["pieces"]}', False, 'White')
         pieces_value_rect = pieces_value_text.get_rect()
-        pieces_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 19) * dim)
+        pieces_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim)
         screen.blit(pieces_value_text, pieces_value_rect)
 
-        lines_label_text = font_small.render('lines', False, 'White')
+        lines_label_text = fonts[0].render('lines', False, 'White')
         lines_label_rect = lines_label_text.get_rect()
-        lines_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 20) * dim)
+        lines_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(lines_label_text, lines_label_rect)
 
-        lines_value_text = font_large.render(f'{game.stats["lines"]}', False, 'White')
+        lines_value_text = fonts[1].render(f'{game.stats["lines"]}', False, 'White')
         lines_value_rect = lines_value_text.get_rect()
-        lines_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 22) * dim)
+        lines_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(lines_value_text, lines_value_rect)
 
-        level_label_text = font_small.render('level', False, 'White')
+        level_label_text = fonts[0].render('level', False, 'White')
         level_label_rect = level_label_text.get_rect()
-        level_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 23) * dim)
+        level_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(level_label_text, level_label_rect)
 
-        level_value_text = font_large.render(f'{game.stats["level"]}', False, 'White')
+        level_value_text = fonts[1].render(f'{game.stats["level"]}', False, 'White')
         level_value_rect = level_value_text.get_rect()
-        level_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 25) * dim)
+        level_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(level_value_text, level_value_rect)
 
-        last_text = font_small.render(f'{game.last_clear}', False, 'White')
+        last_text = fonts[0].render(f'{game.last_clear}', False, 'White')
         last_rect = last_text.get_rect()
-        last_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 11) * dim)
+        last_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim)
         screen.blit(last_text, last_rect)
 
-        b2b_text = font_small.render(f'{game.b2b} B2B' if game.b2b > 0 else '', False, 'White')
+        b2b_text = fonts[0].render(f'{game.b2b} B2B' if game.b2b > 0 else '', False, 'White')
         b2b_rect = b2b_text.get_rect()
-        b2b_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 12) * dim)
+        b2b_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 3 * dim)
         screen.blit(b2b_text, b2b_rect)
 
-        combo_text = font_small.render(f'{game.combo} combo' if game.combo > 0 else '', False, 'White')
+        combo_text = fonts[0].render(f'{game.combo} combo' if game.combo > 0 else '', False, 'White')
         combo_rect = combo_text.get_rect()
-        combo_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 13) * dim)
+        combo_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 2 * dim)
         screen.blit(combo_text, combo_rect)
 
-        mode_text = font_large.render(f'{game.stats["mode"]}', False, 'White')
+        mode_text = fonts[1].render(f'{game.stats["mode"]}', False, 'White')
         mode_rect = mode_text.get_rect()
-        mode_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 27) * dim)
+        mode_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 12 * dim)
         screen.blit(mode_text, mode_rect)
 
         ### DRAW BUTTON
@@ -742,17 +738,17 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         pygame.draw.rect(screen, 'White', pause_button, border_width + 1)
 
         ### WRITE TEXT
-        pause_text = font_large.render('pause', False, 'White')
+        pause_text = fonts[1].render('pause', False, 'White')
         pause_rect = pause_text.get_rect()
         pause_rect.midbottom = pause_button.midbottom
         screen.blit(pause_text, pause_rect)
 
         ### ACCOUNT TAB
         account_tab = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        account_tab.topright = ((screen_width - 1) * dim, 1 * dim)
+        account_tab.topright = (screen.get_width() - 1 * dim, 1 * dim)
         pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
 
-        account_text = font_small.render(user_info['username'], False, 'White')
+        account_text = fonts[0].render(user_info['username'], False, 'White')
         account_rect = account_text.get_rect()
         account_rect.bottomright = (account_tab.right - .5 * dim, account_tab.bottom - .4 * dim)
         screen.blit(account_text, account_rect)
@@ -801,13 +797,13 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                         state[0] = 'menu'
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BLANK BOARD
         for r in range(20):
             for c in range(10):
-                left = (left_margin + 15 + c) * dim
-                top = (top_margin + 24 - r) * dim
+                left = screen.get_width() / 2 + (-5 + c) * dim
+                top = screen.get_height() / 2 + (9 - r) * dim
                 pygame.draw.rect(screen, 'Gray', [left, top, dim + border_width, dim + border_width], border_width)
 
         ### WRITE TEXT
@@ -816,59 +812,59 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         seconds      = int(time_elapsed % 60)
         milliseconds = int(time_elapsed % 1 * 1000)
 
-        time_label_text = font_small.render('time', False, 'White')
+        time_label_text = fonts[0].render('time', False, 'White')
         time_label_rect = time_label_text.get_rect()
-        time_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 20) * dim)
+        time_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(time_label_text, time_label_rect)
 
-        time_value_text = font_large.render(f'{minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
+        time_value_text = fonts[1].render(f'{minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
         time_value_rect = time_value_text.get_rect()
-        time_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 22) * dim)
+        time_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(time_value_text, time_value_rect)
 
-        score_label_text = font_small.render('score', False, 'White')
+        score_label_text = fonts[0].render('score', False, 'White')
         score_label_rect = time_label_text.get_rect()
-        score_label_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 23) * dim)
+        score_label_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(score_label_text, score_label_rect)
 
-        score_value_text = font_large.render(f'{game.stats["score"]}', False, 'White')
+        score_value_text = fonts[1].render(f'{game.stats["score"]}', False, 'White')
         score_value_rect = score_value_text.get_rect()
-        score_value_rect.bottomleft = ((left_margin + 26) * dim, (top_margin + 25) * dim)
+        score_value_rect.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(score_value_text, score_value_rect)
 
-        pieces_label_text = font_small.render('pieces', False, 'White')
+        pieces_label_text = fonts[0].render('pieces', False, 'White')
         pieces_label_rect = pieces_label_text.get_rect()
-        pieces_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 17) * dim)
+        pieces_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 2 * dim)
         screen.blit(pieces_label_text, pieces_label_rect)
 
-        pieces_value_text = font_large.render(f'{game.stats["pieces"]}', False, 'White')
+        pieces_value_text = fonts[1].render(f'{game.stats["pieces"]}', False, 'White')
         pieces_value_rect = pieces_value_text.get_rect()
-        pieces_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 19) * dim)
+        pieces_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim)
         screen.blit(pieces_value_text, pieces_value_rect)
 
-        lines_label_text = font_small.render('lines', False, 'White')
+        lines_label_text = fonts[0].render('lines', False, 'White')
         lines_label_rect = lines_label_text.get_rect()
-        lines_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 20) * dim)
+        lines_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 5 * dim)
         screen.blit(lines_label_text, lines_label_rect)
 
-        lines_value_text = font_large.render(f'{game.stats["lines"]}', False, 'White')
+        lines_value_text = fonts[1].render(f'{game.stats["lines"]}', False, 'White')
         lines_value_rect = lines_value_text.get_rect()
-        lines_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 22) * dim)
+        lines_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim)
         screen.blit(lines_value_text, lines_value_rect)
 
-        level_label_text = font_small.render('level', False, 'White')
+        level_label_text = fonts[0].render('level', False, 'White')
         level_label_rect = level_label_text.get_rect()
-        level_label_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 23) * dim)
+        level_label_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 8 * dim)
         screen.blit(level_label_text, level_label_rect)
 
-        level_value_text = font_large.render(f'{game.stats["level"]}', False, 'White')
+        level_value_text = fonts[1].render(f'{game.stats["level"]}', False, 'White')
         level_value_rect = level_value_text.get_rect()
-        level_value_rect.bottomright = ((left_margin + 14) * dim, (top_margin + 25) * dim)
+        level_value_rect.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim)
         screen.blit(level_value_text, level_value_rect)
 
-        mode_text = font_large.render(f'{game.stats["mode"]}', False, 'White')
+        mode_text = fonts[1].render(f'{game.stats["mode"]}', False, 'White')
         mode_rect = mode_text.get_rect()
-        mode_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 27) * dim)
+        mode_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 12 * dim)
         screen.blit(mode_text, mode_rect)
 
         ### DRAW BUTTONS
@@ -876,44 +872,44 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         rect_height = 2 * dim
 
         resume_button = pygame.Rect(0, 0, rect_width, rect_height)
-        resume_button.bottomleft = ((left_margin + 26) * dim, (top_margin + 8) * dim)
+        resume_button.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', resume_button, border_width + 1)
 
         retry_button = pygame.Rect(0, 0, rect_width, rect_height)
-        retry_button.bottomleft = ((left_margin + 26) * dim, (top_margin + 11) * dim)
+        retry_button.bottomleft = (screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 - 4 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
         menu_button = pygame.Rect(0, 0, rect_width, rect_height)
-        menu_button.bottomright = ((left_margin + 14) * dim, (top_margin + 8) * dim)
+        menu_button.bottomright = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('PAUSE', False, 'White')
+        state_text = fonts[1].render('PAUSE', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        resume_text = font_large.render('resume', False, 'White')
+        resume_text = fonts[1].render('resume', False, 'White')
         resume_rect = resume_text.get_rect()
         resume_rect.midbottom = resume_button.midbottom
         screen.blit(resume_text, resume_rect)
 
-        retry_text = font_large.render('retry', False, 'White')
+        retry_text = fonts[1].render('retry', False, 'White')
         retry_rect = retry_text.get_rect()
         retry_rect.midbottom = retry_button.midbottom
         screen.blit(retry_text, retry_rect)
 
-        menu_text = font_large.render('menu', False, 'White')
+        menu_text = fonts[1].render('menu', False, 'White')
         menu_rect = menu_text.get_rect()
         menu_rect.midbottom = menu_button.midbottom
         screen.blit(menu_text, menu_rect)
 
         ### ACCOUNT TAB
         account_tab = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        account_tab.topright = ((screen_width - 1) * dim, 1 * dim)
+        account_tab.topright = (screen.get_width() - 1 * dim, 1 * dim)
         pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
 
-        account_text = font_small.render(user_info['username'], False, 'White')
+        account_text = fonts[0].render(user_info['username'], False, 'White')
         account_rect = account_text.get_rect()
         account_rect.bottomright = (account_tab.right - .5 * dim, account_tab.bottom - .4 * dim)
         screen.blit(account_text, account_rect)
@@ -953,32 +949,32 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                         state[0] = 'menu'
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
         rect_width  = 8 * dim
         rect_height = 2 * dim
 
         retry_button = pygame.Rect(0, 0, rect_width, rect_height)
-        retry_button.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+        retry_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
         menu_button = pygame.Rect(0, 0, rect_width, rect_height)
-        menu_button.midbottom = ((screen_width / 2) * dim, (top_margin + 17) * dim)
+        menu_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('LOSE', False, 'White')
+        state_text = fonts[1].render('LOSE', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        retry_text = font_large.render('retry', False, 'White')
+        retry_text = fonts[1].render('retry', False, 'White')
         retry_rect = retry_text.get_rect()
         retry_rect.midbottom = retry_button.midbottom
         screen.blit(retry_text, retry_rect)
 
-        menu_text = font_large.render('menu', False, 'White')
+        menu_text = fonts[1].render('menu', False, 'White')
         menu_rect = menu_text.get_rect()
         menu_rect.midbottom = menu_button.midbottom
         screen.blit(menu_text, menu_rect)
@@ -1007,53 +1003,53 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                         state[0] = 'menu'
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
         rect_width  = 8 * dim
         rect_height = 2 * dim
 
         retry_button = pygame.Rect(0, 0, rect_width, rect_height)
-        retry_button.midleft = ((screen_width / 2) * dim + dim, (top_margin + 25) * dim)
+        retry_button.midleft = (screen.get_width() / 2 + 1 * dim, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'White', retry_button, border_width + 1)
 
         menu_button = pygame.Rect(0, 0, rect_width, rect_height)
-        menu_button.midright = ((screen_width / 2) * dim - dim, (top_margin + 25) * dim)
+        menu_button.midright = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 10 * dim)
         pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('FINISH', False, 'White')
+        state_text = fonts[1].render('FINISH', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        retry_text = font_large.render('retry', False, 'White')
+        retry_text = fonts[1].render('retry', False, 'White')
         retry_rect = retry_text.get_rect()
         retry_rect.midbottom = retry_button.midbottom
         screen.blit(retry_text, retry_rect)
 
-        menu_text = font_large.render('menu', False, 'White')
+        menu_text = fonts[1].render('menu', False, 'White')
         menu_rect = menu_text.get_rect()
         menu_rect.midbottom = menu_button.midbottom
         screen.blit(menu_text, menu_rect)
 
         if state[1] == 'marathon':
-            score_text = font_large.render(f'score: {game.stats["score"]}', False, 'White')
+            score_text = fonts[1].render(f'score: {game.stats["score"]}', False, 'White')
             score_rect = score_text.get_rect()
-            score_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+            score_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
             screen.blit(score_text, score_rect)
         elif state[1] == 'sprint':
             minutes      = int(game.stats['time'] // 60)
             seconds      = int(game.stats['time'] % 60)
             milliseconds = int(game.stats['time'] % 1 * 1000)
-            time_text = font_large.render(f'time: {minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
+            time_text = fonts[1].render(f'time: {minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
             time_rect = time_text.get_rect()
-            time_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+            time_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
             screen.blit(time_text, time_rect)
         elif state[1] == 'blitz':
-            score_text = font_large.render(f'score: {game.stats["score"]}', False, 'White')
+            score_text = fonts[1].render(f'score: {game.stats["score"]}', False, 'White')
             score_rect = score_text.get_rect()
-            score_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 13) * dim)
+            score_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
             screen.blit(score_text, score_rect)
 
         if position[0] == 0:
@@ -1068,9 +1064,9 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             pos_str = f'{position[0]}rd best'
         else:
             pos_str = f'{position[0]}th best'
-        pos_text = font_small.render(pos_str, False, 'White')
+        pos_text = fonts[0].render(pos_str, False, 'White')
         pos_rect = pos_text.get_rect()
-        pos_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 15) * dim)
+        pos_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2)
         screen.blit(pos_text, pos_rect)
 
         if position[1] == 0:
@@ -1085,9 +1081,9 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             pos_str = f'global {position[1]}rd best'
         else:
             pos_str = f'global {position[1]}th best'
-        pos_text = font_small.render(pos_str, False, 'White')
+        pos_text = fonts[0].render(pos_str, False, 'White')
         pos_rect = pos_text.get_rect()
-        pos_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 17) * dim)
+        pos_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
         screen.blit(pos_text, pos_rect)
 
     ### RECORDS STATE
@@ -1117,59 +1113,59 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                             state[2] = ''
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
         rect_width  = 12 * dim
         rect_height = 2 * dim
 
         marathon_button = pygame.Rect(0, 0, rect_width, rect_height)
-        marathon_button.bottomright = ((screen_width / 2 - 7) * dim, (top_margin + 8) * dim)
+        marathon_button.bottomright = (screen.get_width() / 2 - 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', marathon_button, border_width + 1 if state[1] != 'marathon' else 0)
 
         sprint_button = pygame.Rect(0, 0, rect_width, rect_height)
-        sprint_button.midbottom = ((screen_width / 2) * dim, (top_margin + 8) * dim)
+        sprint_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', sprint_button, border_width + 1 if state[1] != 'sprint' else 0)
 
         blitz_button = pygame.Rect(0, 0, rect_width, rect_height)
-        blitz_button.bottomleft = ((screen_width / 2 + 7) * dim, (top_margin + 8) * dim)
+        blitz_button.bottomleft = (screen.get_width() / 2 + 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', blitz_button, border_width + 1 if state[1] != 'blitz' else 0)
 
         back_button = pygame.Rect(0, 0, 6 * dim, rect_height)
-        back_button.bottomleft = (1 * dim, (screen_height - 1) * dim)
+        back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', back_button, border_width + 1)
 
         global_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        global_button.bottomright = ((screen_width - 1) * dim, (screen_height - 1) * dim)
+        global_button.bottomright = (screen.get_width() - 1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', global_button, border_width + 1 if state[2] == '' else 0)
 
         ### WRITE TEXT
-        state_text = font_large.render('RECORDS', False, 'White')
+        state_text = fonts[1].render('RECORDS', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        marathon_text = font_large.render('marathon', False, 'White' if state[1] != 'marathon' else 'Black')
+        marathon_text = fonts[1].render('marathon', False, 'White' if state[1] != 'marathon' else 'Black')
         marathon_rect = marathon_text.get_rect()
         marathon_rect.midbottom = marathon_button.midbottom
         screen.blit(marathon_text, marathon_rect)
 
-        sprint_text = font_large.render('sprint', False, 'White' if state[1] != 'sprint' else 'Black')
+        sprint_text = fonts[1].render('sprint', False, 'White' if state[1] != 'sprint' else 'Black')
         sprint_rect = sprint_text.get_rect()
         sprint_rect.midbottom = sprint_button.midbottom
         screen.blit(sprint_text, sprint_rect)
 
-        blitz_text = font_large.render('blitz', False, 'White' if state[1] != 'blitz' else 'Black')
+        blitz_text = fonts[1].render('blitz', False, 'White' if state[1] != 'blitz' else 'Black')
         blitz_rect = blitz_text.get_rect()
         blitz_rect.midbottom = blitz_button.midbottom
         screen.blit(blitz_text, blitz_rect)
 
-        back_text = font_large.render('back', False, 'White')
+        back_text = fonts[1].render('back', False, 'White')
         back_rect = back_text.get_rect()
         back_rect.midbottom = back_button.midbottom
         screen.blit(back_text, back_rect)
 
-        global_text = font_large.render('global', False, 'White' if state[2] == '' else 'Black')
+        global_text = fonts[1].render('global', False, 'White' if state[2] == '' else 'Black')
         global_rect = global_text.get_rect()
         global_rect.midbottom = global_button.midbottom
         screen.blit(global_text, global_rect)
@@ -1207,14 +1203,14 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                 top_n[r][-1] = top_n[r][-1].strftime('%m/%d/%Y, %H:%M:%S')
             
         for r in range(len(top_n)):
-            int_text = font_small.render(top_n[r][0], False, 'White')
+            int_text = fonts[0].render(top_n[r][0], False, 'White')
             int_rect = int_text.get_rect()
-            int_rect.midbottom = ((left_margin + 7) * dim, (top_margin + 10.5 + r * 1.5) * dim)
+            int_rect.midbottom = (screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim)
             screen.blit(int_text, int_rect)
             for c in range(1, len(top_n[r])):
-                stat_text = font_small.render(top_n[r][c], False, 'White')
+                stat_text = fonts[0].render(top_n[r][c], False, 'White')
                 stat_rect = stat_text.get_rect()
-                stat_rect.bottomleft = ((left_margin + 5 + c * 5) * dim, (top_margin + 10.5 + r * 1.5) * dim)
+                stat_rect.bottomleft = (screen.get_width() / 2 + (-15 + c * 5) * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim)
                 screen.blit(stat_text, stat_rect)
 
     ### SETTINGS STATE
@@ -1463,7 +1459,7 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             input_fields[state[2]] = round(slider_range[state[2]][0] + (slider_range[state[2]][1] - slider_range[state[2]][0]) * percentage)
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', [0, 0, screen_width * dim, screen_height * dim])
+        pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### COLLECT INTERACTABLES
         interactables = {k: None for k, v in bindings.items()}
@@ -1475,61 +1471,61 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
         rect_height = 2 * dim
 
         account_button = pygame.Rect(0, 0, rect_width, rect_height)
-        account_button.bottomright = ((screen_width / 2 - 7) * dim, (top_margin + 8) * dim)
+        account_button.bottomright = (screen.get_width() / 2 - 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', account_button, border_width + 1 if state[1] != 'account' else 0)
 
         bindings_button = pygame.Rect(0, 0, rect_width, rect_height)
-        bindings_button.midbottom = ((screen_width / 2) * dim, (top_margin + 8) * dim)
+        bindings_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', bindings_button, border_width + 1 if state[1] != 'bindings' else 0)
 
         handling_button = pygame.Rect(0, 0, rect_width, rect_height)
-        handling_button.bottomleft = ((screen_width / 2 + 7) * dim, (top_margin + 8) * dim)
+        handling_button.bottomleft = (screen.get_width() / 2 + 7 * dim, screen.get_height() / 2 - 7 * dim)
         pygame.draw.rect(screen, 'White', handling_button, border_width + 1 if state[1] != 'handling' else 0)
 
         cancel_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        cancel_button.bottomright = ((screen_width / 2 - 1) * dim, (top_margin + 26) * dim)
+        cancel_button.bottomright = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 11 * dim)
         pygame.draw.rect(screen, 'White', cancel_button, border_width + 1)
 
         apply_button = pygame.Rect(0, 0, 8 * dim, rect_height)
-        apply_button.bottomleft = ((screen_width / 2 + 1) * dim, (top_margin + 26) * dim)
+        apply_button.bottomleft = (screen.get_width() / 2 + 1 * dim, screen.get_height() / 2 + 11 * dim)
         pygame.draw.rect(screen, 'White', apply_button, border_width + 1)
 
         back_button = pygame.Rect(0, 0, 6 * dim, rect_height)
-        back_button.bottomleft = (1 * dim, (screen_height - 1) * dim)
+        back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
         pygame.draw.rect(screen, 'White', back_button, border_width + 1)
 
         ### WRITE TEXT
-        state_text = font_large.render('SETTINGS', False, 'White')
+        state_text = fonts[1].render('SETTINGS', False, 'White')
         state_rect = state_text.get_rect()
-        state_rect.midbottom = ((screen_width / 2) * dim, (top_margin + 5) * dim)
+        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
         screen.blit(state_text, state_rect)
 
-        account_text = font_large.render('account', False, 'White' if state[1] != 'account' else 'Black')
+        account_text = fonts[1].render('account', False, 'White' if state[1] != 'account' else 'Black')
         account_rect = account_text.get_rect()
         account_rect.midbottom = account_button.midbottom
         screen.blit(account_text, account_rect)
 
-        bindings_text = font_large.render('bindings', False, 'White' if state[1] != 'bindings' else 'Black')
+        bindings_text = fonts[1].render('bindings', False, 'White' if state[1] != 'bindings' else 'Black')
         bindings_rect = bindings_text.get_rect()
         bindings_rect.midbottom = bindings_button.midbottom
         screen.blit(bindings_text, bindings_rect)
 
-        handling_text = font_large.render('handling', False, 'White' if state[1] != 'handling' else 'Black')
+        handling_text = fonts[1].render('handling', False, 'White' if state[1] != 'handling' else 'Black')
         handling_rect = handling_text.get_rect()
         handling_rect.midbottom = handling_button.midbottom
         screen.blit(handling_text, handling_rect)
 
-        cancel_text = font_large.render('cancel', False, 'White')
+        cancel_text = fonts[1].render('cancel', False, 'White')
         cancel_rect = cancel_text.get_rect()
         cancel_rect.midbottom = cancel_button.midbottom
         screen.blit(cancel_text, cancel_rect)
 
-        apply_text = font_large.render('apply', False, 'White')
+        apply_text = fonts[1].render('apply', False, 'White')
         apply_rect = apply_text.get_rect()
         apply_rect.midbottom = apply_button.midbottom
         screen.blit(apply_text, apply_rect)
 
-        back_text = font_large.render('back', False, 'White')
+        back_text = fonts[1].render('back', False, 'White')
         back_rect = back_text.get_rect()
         back_rect.midbottom = back_button.midbottom
         screen.blit(back_text, back_rect)
@@ -1540,27 +1536,27 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             rect_height = 2 * dim
 
             user_box = pygame.Rect(0, 0, rect_width, rect_height)
-            user_box.midbottom = ((screen_width / 2 + 2) * dim, (top_margin + 12) * dim)
+            user_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 - 3 * dim)
             pygame.draw.rect(screen, 'White', user_box, border_width + 1)
             interactables['username'] = user_box
 
             new1_box = pygame.Rect(0, 0, rect_width, rect_height)
-            new1_box.midbottom = ((screen_width / 2 + 2) * dim, (top_margin + 16) * dim)
+            new1_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 1 * dim)
             pygame.draw.rect(screen, 'White', new1_box, border_width + 1)
             interactables['new_pass1'] = new1_box
 
             new2_box = pygame.Rect(0, 0, rect_width, rect_height)
-            new2_box.midbottom = ((screen_width / 2 + 2) * dim, (top_margin + 19) * dim)
+            new2_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 4 * dim)
             pygame.draw.rect(screen, 'White', new2_box, border_width + 1)
             interactables['new_pass2'] = new2_box
 
             pass_box = pygame.Rect(0, 0, rect_width, rect_height)
-            pass_box.midbottom = ((screen_width / 2 + 2) * dim, (top_margin + 22) * dim)
+            pass_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 7 * dim)
             pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
             interactables['password'] = pass_box
 
             ### WRITE INPUT TEXT
-            user_input_text = font_small.render(input_fields['username'][:cursor_pos] + '|' * (state[2] == 'username') + input_fields['username'][cursor_pos:], False, 'White')
+            user_input_text = fonts[0].render(input_fields['username'][:cursor_pos] + '|' * (state[2] == 'username') + input_fields['username'][cursor_pos:], False, 'White')
             user_input_rect = user_input_text.get_rect()
             if user_input_rect.width < user_box.width - dim or cursor_pos < 8:
                 user_input_rect.bottomleft = (user_box.left + .5 * dim, user_box.bottom - .4 * dim)
@@ -1573,45 +1569,45 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
             clear_rect.bottomleft = user_box.bottomright
             pygame.draw.rect(screen, 'Black', clear_rect)
 
-            new1_input_text = font_small.render('*' * len(input_fields['new_pass1'][:cursor_pos]) + '|' * (state[2] == 'new_pass1') + '*' * len(input_fields['new_pass1'][cursor_pos:]), False, 'White')
+            new1_input_text = fonts[0].render('*' * len(input_fields['new_pass1'][:cursor_pos]) + '|' * (state[2] == 'new_pass1') + '*' * len(input_fields['new_pass1'][cursor_pos:]), False, 'White')
             new1_input_rect = new1_input_text.get_rect()
             new1_input_rect.bottomleft = (new1_box.left + .5 * dim, new1_box.bottom - .4 * dim)
             screen.blit(new1_input_text, new1_input_rect)
 
-            new2_input_text = font_small.render('*' * len(input_fields['new_pass2'][:cursor_pos]) + '|' * (state[2] == 'new_pass2') + '*' * len(input_fields['new_pass2'][cursor_pos:]), False, 'White')
+            new2_input_text = fonts[0].render('*' * len(input_fields['new_pass2'][:cursor_pos]) + '|' * (state[2] == 'new_pass2') + '*' * len(input_fields['new_pass2'][cursor_pos:]), False, 'White')
             new2_input_rect = new2_input_text.get_rect()
             new2_input_rect.bottomleft = (new2_box.left + .5 * dim, new2_box.bottom - .4 * dim)
             screen.blit(new2_input_text, new2_input_rect)
 
-            pass_input_text = font_small.render('*' * len(input_fields['password'][:cursor_pos]) + '|' * (state[2] == 'password') + '*' * len(input_fields['password'][cursor_pos:]), False, 'White')
+            pass_input_text = fonts[0].render('*' * len(input_fields['password'][:cursor_pos]) + '|' * (state[2] == 'password') + '*' * len(input_fields['password'][cursor_pos:]), False, 'White')
             pass_input_rect = pass_input_text.get_rect()
             pass_input_rect.bottomleft = (pass_box.left + .5 * dim, pass_box.bottom - .4 * dim)
             screen.blit(pass_input_text, pass_input_rect)
 
             ### WRITE TEXT
-            user_text = font_small.render('username', False, 'White')
+            user_text = fonts[0].render('username', False, 'White')
             user_rect = user_text.get_rect()
             user_rect.bottomright = (user_box.left - 1 * dim, user_box.bottom - .4 * dim)
             screen.blit(user_text, user_rect)
 
-            new1_text = font_small.render('new password', False, 'White')
+            new1_text = fonts[0].render('new password', False, 'White')
             new1_rect = new1_text.get_rect()
             new1_rect.bottomright = (new1_box.left - 1 * dim, new1_box.bottom - .4 * dim)
             screen.blit(new1_text, new1_rect)
 
-            new2_text = font_small.render('confirm password', False, 'White')
+            new2_text = fonts[0].render('confirm password', False, 'White')
             new2_rect = new2_text.get_rect()
             new2_rect.bottomright = (new2_box.left - 1 * dim, new2_box.bottom - .4 * dim)
             screen.blit(new2_text, new2_rect)
 
-            pass_text = font_small.render('current password', False, 'White')
+            pass_text = fonts[0].render('current password', False, 'White')
             pass_rect = pass_text.get_rect()
             pass_rect.bottomright = (pass_box.left - 1 * dim, pass_box.bottom - .4 * dim)
             screen.blit(pass_text, pass_rect)
 
             if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
                 error_code |= (1 << 0)
-                error_text = font_small.render('taken', False, 'White')
+                error_text = fonts[0].render('taken', False, 'White')
                 error_rect = error_text.get_rect()
                 error_rect.bottomleft = (user_box.right + 1 * dim, user_box.bottom - .4 * dim)
                 screen.blit(error_text, error_rect)
@@ -1619,14 +1615,14 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                 error_code &= ~(1 << 0)
             if input_fields['new_pass1'] != input_fields['new_pass2']:
                 error_code |= (1 << 1)
-                error_text = font_small.render('doesn\'t match', False, 'White')
+                error_text = fonts[0].render('doesn\'t match', False, 'White')
                 error_rect = error_text.get_rect()
                 error_rect.bottomleft = (new2_box.right + 1 * dim, new2_box.bottom - .4 * dim)
                 screen.blit(error_text, error_rect)
             else:
                 error_code &= ~(1 << 1)
             if error_code & (1 << 2):
-                error_text = font_small.render('incorrect password', False, 'White')
+                error_text = fonts[0].render('incorrect password', False, 'White')
                 error_rect = error_text.get_rect()
                 error_rect.bottomleft = (pass_box.right + 1 * dim, pass_box.bottom - .4 * dim)
                 screen.blit(error_text, error_rect)
@@ -1636,32 +1632,32 @@ while True: # TODO: individual classes/files for each page (merge countdown, pla
                          ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
             for c, column in enumerate(key_order):
                 for r, action in enumerate(column):
-                    action_text = font_small.render(action.replace('_', ' '), False, 'White')
+                    action_text = fonts[0].render(action.replace('_', ' '), False, 'White')
                     action_rect = action_text.get_rect()
-                    action_rect.bottomleft = ((left_margin + 7 + c * 15) * dim, (top_margin + 12 + r * 2) * dim)
+                    action_rect.bottomleft = (screen.get_width() / 2 + (-13 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim)
                     screen.blit(action_text, action_rect)
 
-                    key_text = font_small.render(pygame.key.name(input_fields[action]), False, 'White')
+                    key_text = fonts[0].render(pygame.key.name(input_fields[action]), False, 'White')
                     key_rect = key_text.get_rect()
-                    key_rect.bottomleft = ((left_margin + 14 + c * 15) * dim, (top_margin + 12 + r * 2) * dim)
+                    key_rect.bottomleft = (screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim)
                     screen.blit(key_text, key_rect)
                     interactables[action] = key_rect
 
         elif state[1] == 'handling':
             slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
             for i, control in enumerate(handling.keys()):
-                handling_text = font_small.render(control, False, 'White')
+                handling_text = fonts[0].render(control, False, 'White')
                 handling_rect = handling_text.get_rect()
-                handling_rect.bottomleft = ((left_margin + 7) * dim, (top_margin + 12 + i * 4) * dim)
+                handling_rect.bottomleft = (screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim)
                 screen.blit(handling_text, handling_rect)
 
                 value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
-                value_text = font_small.render(value_text, False, 'White')
+                value_text = fonts[0].render(value_text, False, 'White')
                 value_rect = value_text.get_rect()
-                value_rect.bottomleft = ((left_margin + 31) * dim, (top_margin + 12 + i * 4) * dim)
+                value_rect.bottomleft = (screen.get_width() / 2 + 11 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim)
                 screen.blit(value_text, value_rect)
 
-                start_pos = ((screen_width / 2 - 10) * dim, (top_margin + 11.5 + i * 4) * dim)
+                start_pos = (screen.get_width() / 2 - 10 * dim, screen.get_height() / 2 + (-3.5 + i * 4) * dim)
                 end_pos   = (start_pos[0] + 20 * dim, start_pos[1])
                 pygame.draw.line(screen, 'White', start_pos, end_pos, border_width + 1)
 
