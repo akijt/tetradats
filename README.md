@@ -22,3 +22,14 @@ block stacking game
 
 ## state_{}.py
 - Holds specific PyGame functions for a specific state
+- Code in the order of:
+  1. INIT STATE
+  1. ADJUST DIM
+  1. INIT INTERACTABLES
+  1. EVENT LOOP
+  1. functions (if applicable)
+  1. CLEAR SCREEN
+  1. print stuff on screen (can be a variety of things)
+  1. ERROR HANDLING
+  1. ACCOUNT TAB (if applicable)
+  1. CLOCK
