@@ -8,7 +8,6 @@ from state_menu      import state_menu
 from state_countdown import state_countdown
 from state_play      import state_play
 from state_pause     import state_pause
-from state_lose      import state_lose
 from state_finish    import state_finish
 from state_records   import state_records
 from state_settings  import state_settings
@@ -75,10 +74,6 @@ while True:
     ### PAUSE STATE
     elif state[0] == 'pause':
         state_pause(screen, clock, game, state, user_info, bindings)
-
-    ### LOSE STATE
-    elif state[0] == 'lose':
-        state_lose(screen, clock, state, bindings)
 
     ### FINISH STATE
     elif state[0] == 'finish':

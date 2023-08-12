@@ -68,10 +68,7 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
         ### FRAME UPDATE
         game.frame_update(time.time())
         game.finished(time.time())
-        if game.lose: # TODO: remove lose state
-            state[0] = 'lose'
-            return
-        elif game.finish:
+        if game.finish:
             state[0] = 'finish'
             return
 
