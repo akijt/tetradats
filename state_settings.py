@@ -46,9 +46,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
         back_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
         back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
 
-        interactables = {k: None for k, v in bindings.items()}
-        interactables['new_pass1'] = None
-        interactables['new_pass2'] = None
+        interactables = dict()
 
         if state[1] == 'account':
             user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
@@ -384,9 +382,20 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
 
         if state[1] == 'account':
             ### DRAW TEXTBOXES
+            user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
+            user_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 - 3 * dim)
             pygame.draw.rect(screen, 'White', user_box, border_width + 1)
+
+            new1_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
+            new1_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 1 * dim)
             pygame.draw.rect(screen, 'White', new1_box, border_width + 1)
+
+            new2_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
+            new2_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 4 * dim)
             pygame.draw.rect(screen, 'White', new2_box, border_width + 1)
+
+            pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
+            pass_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 7 * dim)
             pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
 
             ### WRITE INPUT TEXT

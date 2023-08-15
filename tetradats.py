@@ -49,7 +49,7 @@ order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC
 ### INIT STATE
 state = ['login', '', '']
 
-while True:
+while True: # TODO: maybe convert state_{}.py files to classes
 
     # required parameters in the order defined:
     # screen, clock, game, colors, sql_directory, csv_registrar, sql_registrar, order_by, state, user_info, bindings, handling
