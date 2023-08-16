@@ -174,10 +174,8 @@ def state_login(screen, clock, sql_directory, state):
 
         ### WRITE INPUT TEXT
         user_input_text = fonts[0].render(input_fields['user'][:cursor_pos] + '|' * (state[1] == 'user') + input_fields['user'][cursor_pos:], False, 'White')
-        user_input_rect = user_input_text.get_rect()
-        if user_input_rect.width < user_box.width - dim or cursor_pos < 8:
-            user_input_rect.bottomleft = (user_box.left + .5 * dim, user_box.bottom - .4 * dim)
-        else:
+        user_input_rect = user_input_text.get_rect(bottomleft=(user_box.left + .5 * dim, user_box.bottom - .4 * dim))
+        if user_input_rect.width > user_box.width - dim and cursor_pos > 8:
             user_input_rect.bottomright = (user_box.right - .5 * dim, user_box.bottom - .4 * dim)
         screen.blit(user_input_text, user_input_rect)
         clear_rect = pygame.Rect(0, 0, 4 * dim, 2 * dim)
@@ -187,8 +185,7 @@ def state_login(screen, clock, sql_directory, state):
         pygame.draw.rect(screen, 'Black', clear_rect)
 
         pass_input_text = fonts[0].render('*' * len(input_fields['pass'][:cursor_pos]) + '|' * (state[1] == 'pass') + '*' * len(input_fields['pass'][cursor_pos:]), False, 'White')
-        pass_input_rect = pass_input_text.get_rect()
-        pass_input_rect.bottomleft = (pass_box.left + .5 * dim, pass_box.bottom - .4 * dim)
+        pass_input_rect = pass_input_text.get_rect(bottomleft=(pass_box.left + .5 * dim, pass_box.bottom - .4 * dim))
         screen.blit(pass_input_text, pass_input_rect)
 
         ### DRAW RECT
@@ -204,60 +201,49 @@ def state_login(screen, clock, sql_directory, state):
 
         ### WRITE TEXT
         state_text = fonts[1].render('LOGIN' if state[0] == 'login' else 'SIGN UP', False, 'White')
-        state_rect = state_text.get_rect()
-        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 6 * dim)
+        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 6 * dim))
         screen.blit(state_text, state_rect)
 
         user_text = fonts[0].render('username', False, 'White')
-        user_rect = user_text.get_rect()
-        user_rect.bottomleft = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim)
+        user_rect = user_text.get_rect(bottomleft=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim))
         screen.blit(user_text, user_rect)
 
         pass_text = fonts[0].render('password', False, 'White')
-        pass_rect = pass_text.get_rect()
-        pass_rect.bottomleft = (screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 1 * dim)
+        pass_rect = pass_text.get_rect(bottomleft=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 1 * dim))
         screen.blit(pass_text, pass_rect)
 
         login_text = fonts[1].render('login' if state[0] == 'login' else 'sign up', False, 'White')
-        login_rect = login_text.get_rect()
-        login_rect.midbottom = login_button.midbottom
+        login_rect = login_text.get_rect(midbottom=login_button.midbottom)
         screen.blit(login_text, login_rect)
 
         signup_text = fonts[0].render('sign up' if state[0] == 'login' else 'login', False, 'White')
-        signup_rect = signup_text.get_rect()
-        signup_rect.center = signup_button.center
+        signup_rect = signup_text.get_rect(center=signup_button.center)
         screen.blit(signup_text, signup_rect)
 
         guest_text = fonts[0].render('play as guest', False, 'White')
-        guest_rect = guest_text.get_rect()
-        guest_rect.center = guest_button.center
+        guest_rect = guest_text.get_rect(center=guest_button.center)
         screen.blit(guest_text, guest_rect)
 
         quit_text = fonts[1].render('quit', False, 'White')
-        quit_rect = quit_text.get_rect()
-        quit_rect.midbottom = quit_button.midbottom
+        quit_rect = quit_text.get_rect(midbottom=quit_button.midbottom)
         screen.blit(quit_text, quit_rect)
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
             error_text = fonts[0].render('username taken', False, 'White')
-            error_rect = error_text.get_rect()
-            error_rect.topright = user_box.bottomright
+            error_rect = error_text.get_rect(topright=user_box.bottomright)
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 0):
             error_text = fonts[0].render('enter username', False, 'White')
-            error_rect = error_text.get_rect()
-            error_rect.topright = user_box.bottomright
+            error_rect = error_text.get_rect(topright=user_box.bottomright)
             screen.blit(error_text, error_rect)
         if error_code & (1 << 1):
             error_text = fonts[0].render('enter password', False, 'White')
-            error_rect = error_text.get_rect()
-            error_rect.topright = pass_box.bottomright
+            error_rect = error_text.get_rect(topright=pass_box.bottomright)
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 2):
             error_text = fonts[0].render('incorrect password', False, 'White')
-            error_rect = error_text.get_rect()
-            error_rect.topright = pass_box.bottomright
+            error_rect = error_text.get_rect(topright=pass_box.bottomright)
             screen.blit(error_text, error_rect)
 
         ### CLOCK

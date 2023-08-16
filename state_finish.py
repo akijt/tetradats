@@ -56,39 +56,30 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, st
 
         ### WRITE TEXT
         state_text = fonts[1].render('FINISH' if not game.lose else 'LOSE', False, 'White')
-        state_rect = state_text.get_rect()
-        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
+        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 10 * dim))
         screen.blit(state_text, state_rect)
 
         retry_text = fonts[1].render('retry', False, 'White')
-        retry_rect = retry_text.get_rect()
-        retry_rect.midbottom = retry_button.midbottom
+        retry_rect = retry_text.get_rect(midbottom=retry_button.midbottom)
         screen.blit(retry_text, retry_rect)
 
         menu_text = fonts[1].render('menu', False, 'White')
-        menu_rect = menu_text.get_rect()
-        menu_rect.midbottom = menu_button.midbottom
+        menu_rect = menu_text.get_rect(midbottom=menu_button.midbottom)
         screen.blit(menu_text, menu_rect)
 
         if not game.lose:
             if state[1] == 'marathon':
-                score_text = fonts[1].render(f'score: {game.stats["score"]}', False, 'White')
-                score_rect = score_text.get_rect()
-                score_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
-                screen.blit(score_text, score_rect)
+                result_str = f'score: {game.stats["score"]}'
             elif state[1] == 'sprint':
                 minutes      = int(game.stats['time'] // 60)
                 seconds      = int(game.stats['time'] % 60)
                 milliseconds = int(game.stats['time'] % 1 * 1000)
-                time_text = fonts[1].render(f'time: {minutes}:{seconds:02}.{milliseconds:03}', False, 'White')
-                time_rect = time_text.get_rect()
-                time_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
-                screen.blit(time_text, time_rect)
+                result_str = f'time: {minutes}:{seconds:02}.{milliseconds:03}'
             elif state[1] == 'blitz':
-                score_text = fonts[1].render(f'score: {game.stats["score"]}', False, 'White')
-                score_rect = score_text.get_rect()
-                score_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
-                screen.blit(score_text, score_rect)
+                result_str = f'score: {game.stats["score"]}'
+            result_text = fonts[1].render(result_str, False, 'White')
+            result_rect = result_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 2 * dim))
+            screen.blit(result_text, result_rect)
 
             if position[0] == 1:
                 pos_str = 'new best!'
@@ -101,8 +92,7 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, st
             else:
                 pos_str = f'{position[0]}th best'
             pos_text = fonts[0].render(pos_str, False, 'White')
-            pos_rect = pos_text.get_rect()
-            pos_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2)
+            pos_rect = pos_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2))
             screen.blit(pos_text, pos_rect)
 
             if position[1] == 1:
@@ -116,8 +106,7 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, st
             else:
                 pos_str = f'global {position[1]}th best'
             pos_text = fonts[0].render(pos_str, False, 'White')
-            pos_rect = pos_text.get_rect()
-            pos_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 2 * dim)
+            pos_rect = pos_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 + 2 * dim))
             screen.blit(pos_text, pos_rect)
 
         ### CLOCK

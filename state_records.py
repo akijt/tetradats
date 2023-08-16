@@ -70,33 +70,27 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
 
         ### WRITE TEXT
         state_text = fonts[1].render('RECORDS', False, 'White')
-        state_rect = state_text.get_rect()
-        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
+        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 10 * dim))
         screen.blit(state_text, state_rect)
 
         marathon_text = fonts[1].render('marathon', False, 'White' if state[1] != 'marathon' else 'Black')
-        marathon_rect = marathon_text.get_rect()
-        marathon_rect.midbottom = marathon_button.midbottom
+        marathon_rect = marathon_text.get_rect(midbottom=marathon_button.midbottom)
         screen.blit(marathon_text, marathon_rect)
 
         sprint_text = fonts[1].render('sprint', False, 'White' if state[1] != 'sprint' else 'Black')
-        sprint_rect = sprint_text.get_rect()
-        sprint_rect.midbottom = sprint_button.midbottom
+        sprint_rect = sprint_text.get_rect(midbottom=sprint_button.midbottom)
         screen.blit(sprint_text, sprint_rect)
 
         blitz_text = fonts[1].render('blitz', False, 'White' if state[1] != 'blitz' else 'Black')
-        blitz_rect = blitz_text.get_rect()
-        blitz_rect.midbottom = blitz_button.midbottom
+        blitz_rect = blitz_text.get_rect(midbottom=blitz_button.midbottom)
         screen.blit(blitz_text, blitz_rect)
 
         back_text = fonts[1].render('back', False, 'White')
-        back_rect = back_text.get_rect()
-        back_rect.midbottom = back_button.midbottom
+        back_rect = back_text.get_rect(midbottom=back_button.midbottom)
         screen.blit(back_text, back_rect)
 
         global_text = fonts[1].render('global', False, 'White' if state[2] == '' else 'Black')
-        global_rect = global_text.get_rect()
-        global_rect.midbottom = global_button.midbottom
+        global_rect = global_text.get_rect(midbottom=global_button.midbottom)
         screen.blit(global_text, global_rect)
 
         # records_query = csv_registrar.load('' if state[2] == 'global' else user_info['username'], state[1], 10)
@@ -133,13 +127,11 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
             
         for r in range(len(top_n)):
             int_text = fonts[0].render(top_n[r][0], False, 'White')
-            int_rect = int_text.get_rect()
-            int_rect.midbottom = (screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim)
+            int_rect = int_text.get_rect(midbottom=(screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim))
             screen.blit(int_text, int_rect)
             for c in range(1, len(top_n[r])):
                 stat_text = fonts[0].render(top_n[r][c], False, 'White')
-                stat_rect = stat_text.get_rect()
-                stat_rect.bottomleft = (screen.get_width() / 2 + (-15 + c * 5) * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim)
+                stat_rect = stat_text.get_rect(bottomleft=(screen.get_width() / 2 + (-15 + c * 5) * dim, screen.get_height() / 2 + (-4.5 + r * 1.5) * dim))
                 screen.blit(stat_text, stat_rect)
 
         ### CLOCK

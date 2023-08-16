@@ -80,38 +80,31 @@ def state_menu(screen, clock, state, user_info):
 
         ### WRITE TEXT
         state_text = fonts[1].render('TETRADATS', False, 'White')
-        state_rect = state_text.get_rect()
-        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
+        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 10 * dim))
         screen.blit(state_text, state_rect)
 
         marathon_text = fonts[1].render('marathon', False, 'White')
-        marathon_rect = marathon_text.get_rect()
-        marathon_rect.midbottom = marathon_button.midbottom
+        marathon_rect = marathon_text.get_rect(midbottom=marathon_button.midbottom)
         screen.blit(marathon_text, marathon_rect)
 
         sprint_text = fonts[1].render('sprint', False, 'White')
-        sprint_rect = sprint_text.get_rect()
-        sprint_rect.midbottom = sprint_button.midbottom
+        sprint_rect = sprint_text.get_rect(midbottom=sprint_button.midbottom)
         screen.blit(sprint_text, sprint_rect)
 
         blitz_text = fonts[1].render('blitz', False, 'White')
-        blitz_rect = blitz_text.get_rect()
-        blitz_rect.midbottom = blitz_button.midbottom
+        blitz_rect = blitz_text.get_rect(midbottom=blitz_button.midbottom)
         screen.blit(blitz_text, blitz_rect)
 
         records_text = fonts[1].render('records', False, 'White')
-        records_rect = records_text.get_rect()
-        records_rect.midbottom = records_button.midbottom
+        records_rect = records_text.get_rect(midbottom=records_button.midbottom)
         screen.blit(records_text, records_rect)
 
         settings_text = fonts[1].render('settings', False, 'White')
-        settings_rect = settings_text.get_rect()
-        settings_rect.midbottom = settings_button.midbottom
+        settings_rect = settings_text.get_rect(midbottom=settings_button.midbottom)
         screen.blit(settings_text, settings_rect)
 
         logout_text = fonts[1].render('logout', False, 'White')
-        logout_rect = logout_text.get_rect()
-        logout_rect.midbottom = logout_button.midbottom
+        logout_rect = logout_text.get_rect(midbottom=logout_button.midbottom)
         screen.blit(logout_text, logout_rect)
 
         ### ACCOUNT TAB
@@ -120,8 +113,7 @@ def state_menu(screen, clock, state, user_info):
         pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
 
         account_text = fonts[0].render(user_info['username'], False, 'White')
-        account_rect = account_text.get_rect()
-        account_rect.bottomright = (account_tab.right - .5 * dim, account_tab.bottom - .4 * dim)
+        account_rect = account_text.get_rect(bottomright=(account_tab.right - .5 * dim, account_tab.bottom - .4 * dim))
         screen.blit(account_text, account_rect)
 
         pfp_tab = pygame.Rect(0, 0, 1.5 * dim, 1.5 * dim)

@@ -71,8 +71,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             for c, column in enumerate(key_order):
                 for r, action in enumerate(column):
                     key_text = fonts[0].render(pygame.key.name(input_fields[action]), False, 'White')
-                    key_rect = key_text.get_rect()
-                    key_rect.bottomleft = (screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim)
+                    key_rect = key_text.get_rect(bottomleft=(screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
                     interactables[action] = key_rect
 
         elif state[1] == 'handling':
@@ -346,38 +345,31 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
 
         ### WRITE TEXT
         state_text = fonts[1].render('SETTINGS', False, 'White')
-        state_rect = state_text.get_rect()
-        state_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 10 * dim)
+        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 10 * dim))
         screen.blit(state_text, state_rect)
 
         account_text = fonts[1].render('account', False, 'White' if state[1] != 'account' else 'Black')
-        account_rect = account_text.get_rect()
-        account_rect.midbottom = account_button.midbottom
+        account_rect = account_text.get_rect(midbottom=account_button.midbottom)
         screen.blit(account_text, account_rect)
 
         bindings_text = fonts[1].render('bindings', False, 'White' if state[1] != 'bindings' else 'Black')
-        bindings_rect = bindings_text.get_rect()
-        bindings_rect.midbottom = bindings_button.midbottom
+        bindings_rect = bindings_text.get_rect(midbottom=bindings_button.midbottom)
         screen.blit(bindings_text, bindings_rect)
 
         handling_text = fonts[1].render('handling', False, 'White' if state[1] != 'handling' else 'Black')
-        handling_rect = handling_text.get_rect()
-        handling_rect.midbottom = handling_button.midbottom
+        handling_rect = handling_text.get_rect(midbottom=handling_button.midbottom)
         screen.blit(handling_text, handling_rect)
 
         cancel_text = fonts[1].render('cancel', False, 'White')
-        cancel_rect = cancel_text.get_rect()
-        cancel_rect.midbottom = cancel_button.midbottom
+        cancel_rect = cancel_text.get_rect(midbottom=cancel_button.midbottom)
         screen.blit(cancel_text, cancel_rect)
 
         apply_text = fonts[1].render('apply', False, 'White')
-        apply_rect = apply_text.get_rect()
-        apply_rect.midbottom = apply_button.midbottom
+        apply_rect = apply_text.get_rect(midbottom=apply_button.midbottom)
         screen.blit(apply_text, apply_rect)
 
         back_text = fonts[1].render('back', False, 'White')
-        back_rect = back_text.get_rect()
-        back_rect.midbottom = back_button.midbottom
+        back_rect = back_text.get_rect(midbottom=back_button.midbottom)
         screen.blit(back_text, back_rect)
 
         if state[1] == 'account':
@@ -400,10 +392,8 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
 
             ### WRITE INPUT TEXT
             user_input_text = fonts[0].render(input_fields['username'][:cursor_pos] + '|' * (state[2] == 'username') + input_fields['username'][cursor_pos:], False, 'White')
-            user_input_rect = user_input_text.get_rect()
-            if user_input_rect.width < user_box.width - dim or cursor_pos < 8:
-                user_input_rect.bottomleft = (user_box.left + .5 * dim, user_box.bottom - .4 * dim)
-            else:
+            user_input_rect = user_input_text.get_rect(bottomleft=(user_box.left + .5 * dim, user_box.bottom - .4 * dim))
+            if user_input_rect.width > user_box.width - dim and cursor_pos > 8:
                 user_input_rect.bottomright = (user_box.right - .5 * dim, user_box.bottom - .4 * dim)
             screen.blit(user_input_text, user_input_rect)
             clear_rect = pygame.Rect(0, 0, 4 * dim, 2 * dim)
@@ -413,62 +403,52 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             pygame.draw.rect(screen, 'Black', clear_rect)
 
             new1_input_text = fonts[0].render('*' * len(input_fields['new_pass1'][:cursor_pos]) + '|' * (state[2] == 'new_pass1') + '*' * len(input_fields['new_pass1'][cursor_pos:]), False, 'White')
-            new1_input_rect = new1_input_text.get_rect()
-            new1_input_rect.bottomleft = (new1_box.left + .5 * dim, new1_box.bottom - .4 * dim)
+            new1_input_rect = new1_input_text.get_rect(bottomleft=(new1_box.left + .5 * dim, new1_box.bottom - .4 * dim))
             screen.blit(new1_input_text, new1_input_rect)
 
             new2_input_text = fonts[0].render('*' * len(input_fields['new_pass2'][:cursor_pos]) + '|' * (state[2] == 'new_pass2') + '*' * len(input_fields['new_pass2'][cursor_pos:]), False, 'White')
-            new2_input_rect = new2_input_text.get_rect()
-            new2_input_rect.bottomleft = (new2_box.left + .5 * dim, new2_box.bottom - .4 * dim)
+            new2_input_rect = new2_input_text.get_rect(bottomleft=(new2_box.left + .5 * dim, new2_box.bottom - .4 * dim))
             screen.blit(new2_input_text, new2_input_rect)
 
             pass_input_text = fonts[0].render('*' * len(input_fields['password'][:cursor_pos]) + '|' * (state[2] == 'password') + '*' * len(input_fields['password'][cursor_pos:]), False, 'White')
-            pass_input_rect = pass_input_text.get_rect()
-            pass_input_rect.bottomleft = (pass_box.left + .5 * dim, pass_box.bottom - .4 * dim)
+            pass_input_rect = pass_input_text.get_rect(bottomleft=(pass_box.left + .5 * dim, pass_box.bottom - .4 * dim))
             screen.blit(pass_input_text, pass_input_rect)
 
             ### WRITE TEXT
             user_text = fonts[0].render('username', False, 'White')
-            user_rect = user_text.get_rect()
-            user_rect.bottomright = (user_box.left - 1 * dim, user_box.bottom - .4 * dim)
+            user_rect = user_text.get_rect(bottomright=(user_box.left - 1 * dim, user_box.bottom - .4 * dim))
             screen.blit(user_text, user_rect)
 
             new1_text = fonts[0].render('new password', False, 'White')
-            new1_rect = new1_text.get_rect()
-            new1_rect.bottomright = (new1_box.left - 1 * dim, new1_box.bottom - .4 * dim)
+            new1_rect = new1_text.get_rect(bottomright=(new1_box.left - 1 * dim, new1_box.bottom - .4 * dim))
             screen.blit(new1_text, new1_rect)
 
             new2_text = fonts[0].render('confirm password', False, 'White')
-            new2_rect = new2_text.get_rect()
-            new2_rect.bottomright = (new2_box.left - 1 * dim, new2_box.bottom - .4 * dim)
+            new2_rect = new2_text.get_rect(bottomright=(new2_box.left - 1 * dim, new2_box.bottom - .4 * dim))
             screen.blit(new2_text, new2_rect)
 
             pass_text = fonts[0].render('current password', False, 'White')
-            pass_rect = pass_text.get_rect()
-            pass_rect.bottomright = (pass_box.left - 1 * dim, pass_box.bottom - .4 * dim)
+            pass_rect = pass_text.get_rect(bottomright=(pass_box.left - 1 * dim, pass_box.bottom - .4 * dim))
             screen.blit(pass_text, pass_rect)
 
             ### ERROR HANDLING
             if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
                 error_code |= (1 << 0)
                 error_text = fonts[0].render('taken', False, 'White')
-                error_rect = error_text.get_rect()
-                error_rect.bottomleft = (user_box.right + 1 * dim, user_box.bottom - .4 * dim)
+                error_rect = error_text.get_rect(bottomleft=(user_box.right + 1 * dim, user_box.bottom - .4 * dim))
                 screen.blit(error_text, error_rect)
             else:
                 error_code &= ~(1 << 0)
             if input_fields['new_pass1'] != input_fields['new_pass2']:
                 error_code |= (1 << 1)
                 error_text = fonts[0].render('doesn\'t match', False, 'White')
-                error_rect = error_text.get_rect()
-                error_rect.bottomleft = (new2_box.right + 1 * dim, new2_box.bottom - .4 * dim)
+                error_rect = error_text.get_rect(bottomleft=(new2_box.right + 1 * dim, new2_box.bottom - .4 * dim))
                 screen.blit(error_text, error_rect)
             else:
                 error_code &= ~(1 << 1)
             if error_code & (1 << 2):
                 error_text = fonts[0].render('incorrect password', False, 'White')
-                error_rect = error_text.get_rect()
-                error_rect.bottomleft = (pass_box.right + 1 * dim, pass_box.bottom - .4 * dim)
+                error_rect = error_text.get_rect(bottomleft=(pass_box.right + 1 * dim, pass_box.bottom - .4 * dim))
                 screen.blit(error_text, error_rect)
 
         elif state[1] == 'bindings':
@@ -477,27 +457,23 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             for c, column in enumerate(key_order):
                 for r, action in enumerate(column):
                     action_text = fonts[0].render(action.replace('_', ' '), False, 'White')
-                    action_rect = action_text.get_rect()
-                    action_rect.bottomleft = (screen.get_width() / 2 + (-13 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim)
+                    action_rect = action_text.get_rect(bottomleft=(screen.get_width() / 2 + (-13 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
                     screen.blit(action_text, action_rect)
 
                     key_text = fonts[0].render(pygame.key.name(input_fields[action]), False, 'White')
-                    key_rect = key_text.get_rect()
-                    key_rect.bottomleft = (screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim)
+                    key_rect = key_text.get_rect(bottomleft=(screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
                     screen.blit(key_text, key_rect)
 
         elif state[1] == 'handling':
             slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
             for i, control in enumerate(handling.keys()):
                 handling_text = fonts[0].render(control, False, 'White')
-                handling_rect = handling_text.get_rect()
-                handling_rect.bottomleft = (screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim)
+                handling_rect = handling_text.get_rect(bottomleft=(screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim))
                 screen.blit(handling_text, handling_rect)
 
                 value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
                 value_text = fonts[0].render(value_text, False, 'White')
-                value_rect = value_text.get_rect()
-                value_rect.bottomleft = (screen.get_width() / 2 + 11 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim)
+                value_rect = value_text.get_rect(bottomleft=(screen.get_width() / 2 + 11 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim))
                 screen.blit(value_text, value_rect)
 
                 start_pos = (screen.get_width() / 2 - 10 * dim, screen.get_height() / 2 + (-3.5 + i * 4) * dim)
