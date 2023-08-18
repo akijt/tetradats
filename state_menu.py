@@ -1,17 +1,18 @@
 import pygame
-from utils import Sprite_rect, Sprite_text
+from utils import Sprite_rect, Sprite_text, Sprite_button
 
 def state_menu(screen, clock, state, user_info):
 
     ### INIT STATE
-    marathon_button = Sprite_rect((14, 2), 'midbottom', (0, -4), 'center', 'White', 2)
-    sprint_button   = Sprite_rect((14, 2), 'midbottom', (0, -1), 'center', 'White', 2)
-    blitz_button    = Sprite_rect((14, 2), 'midbottom', (0, 2), 'center', 'White', 2)
-    records_button  = Sprite_rect((14, 2), 'midbottom', (0, 5), 'center', 'White', 2)
-    settings_button = Sprite_rect((14, 2), 'midbottom', (0, 8), 'center', 'White', 2)
-    logout_button   = Sprite_rect((8, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2)
+    marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', 'White', 2, 'White', 4, None)
+    sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', 'White', 2, 'White', 4, None)
+    blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', 'White', 2, 'White', 4, None)
+    records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', 'White', 2, 'White', 4, None)
+    settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', 'White', 2, 'White', 4, None)
+    logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
 
     menu_group = pygame.sprite.Group()
+    menu_group.add(Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', 'White', 4, None))
     menu_group.add(marathon_button)
     menu_group.add(sprint_button)
     menu_group.add(blitz_button)
@@ -19,19 +20,10 @@ def state_menu(screen, clock, state, user_info):
     menu_group.add(settings_button)
     menu_group.add(logout_button)
 
-    menu_group.add(Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('marathon', 'midbottom', (0, -4), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('sprint', 'midbottom', (0, -1), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('blitz', 'midbottom', (0, 2), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('records', 'midbottom', (0, 5), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('settings', 'midbottom', (0, 8), 'center', 'White', 4, None))
-    menu_group.add(Sprite_text('logout', 'midbottom', (5, -1), 'bottomleft', 'White', 4, None))
-
     account_group = pygame.sprite.Group()
     account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', 'White', 2))
     account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
     account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
-
 
     while True:
 
