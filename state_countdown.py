@@ -1,5 +1,6 @@
 import pygame
 import time
+from utils import Sprite_rect, Sprite_text, Sprite_button
 
 def state_countdown(screen, clock, game, colors, state, user_info, bindings, handling):
 
@@ -7,18 +8,34 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
     game.reset(state[1], handling)
     countdown = time.time()
 
+    menu_button = Sprite_button('menu', (8, 2), 'topleft', (1, 1), 'topleft', 'White', 2, 'White', 4, None)
+    int_rect    = Sprite_button('3', (8, 2), 'midbottom', (0, -2), 'center', 'White', 0, 'Black', 4, None)
+
+    countdown_group = pygame.sprite.Group()
+    countdown_group.add(menu_button)
+    countdown_group.add(int_rect)
+    countdown_group.add(Sprite_text('time', 'bottomleft', (6, 5), 'center', 'White', 2, None))
+    countdown_group.add(Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', 'White', 4, None))
+    countdown_group.add(Sprite_text('score', 'bottomleft', (6, 8), 'center', 'White', 2, None))
+    countdown_group.add(Sprite_text('0', 'bottomleft', (6, 10), 'center', 'White', 4, None))
+    countdown_group.add(Sprite_text('pieces', 'bottomright', (-6, 2), 'center', 'White', 2, None))
+    countdown_group.add(Sprite_text('0', 'bottomright', (-6, 4), 'center', 'White', 4, None))
+    countdown_group.add(Sprite_text('lines', 'bottomright', (-6, 5), 'center', 'White', 2, None))
+    countdown_group.add(Sprite_text('0', 'bottomright', (-6, 7), 'center', 'White', 4, None))
+    countdown_group.add(Sprite_text('level', 'bottomright', (-6, 8), 'center', 'White', 2, None))
+    countdown_group.add(Sprite_text('1', 'bottomright', (-6, 10), 'center', 'White', 4, None))
+    countdown_group.add(Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', 'White', 4, None))
+
+    account_group = pygame.sprite.Group()
+    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', 'White', 2))
+    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
+    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
+
     while True:
 
-        ### ADJUST DIM
-        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        fonts = []
-        fonts.append(pygame.font.Font(None, round(.75 * 2 * dim)))
-        fonts.append(pygame.font.Font(None, round(.75 * 4 * dim)))
-        border_width = 1
-
-        ### INIT INTERACTABLES
-        menu_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        menu_button.topleft = (1 * dim, 1 * dim)
+        ### UPDATE SPRITES
+        countdown_group.update(screen)
+        account_group.update(screen)
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -61,6 +78,8 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW EMPTY BOARD
+        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+        border_width = 1
         for r in range(20):
             for c in range(10):
                 left = screen.get_width() / 2 + (-5 + c) * dim
@@ -75,81 +94,10 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
                 top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
-        ### WRITE TEXT
-        time_label_text = fonts[0].render('time', False, 'White')
-        time_label_rect = time_label_text.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 5 * dim))
-        screen.blit(time_label_text, time_label_rect)
-
-        time_value_text = fonts[1].render(f'0:00.000', False, 'White')
-        time_value_rect = time_value_text.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim))
-        screen.blit(time_value_text, time_value_rect)
-
-        score_label_text = fonts[0].render('score', False, 'White')
-        score_label_rect = time_label_text.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 8 * dim))
-        screen.blit(score_label_text, score_label_rect)
-
-        score_value_text = fonts[1].render(f'{game.stats["score"]}', False, 'White')
-        score_value_rect = score_value_text.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim))
-        screen.blit(score_value_text, score_value_rect)
-
-        pieces_label_text = fonts[0].render('pieces', False, 'White')
-        pieces_label_rect = pieces_label_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 2 * dim))
-        screen.blit(pieces_label_text, pieces_label_rect)
-
-        pieces_value_text = fonts[1].render(f'{game.stats["pieces"]}', False, 'White')
-        pieces_value_rect = pieces_value_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim))
-        screen.blit(pieces_value_text, pieces_value_rect)
-
-        lines_label_text = fonts[0].render('lines', False, 'White')
-        lines_label_rect = lines_label_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 5 * dim))
-        screen.blit(lines_label_text, lines_label_rect)
-
-        lines_value_text = fonts[1].render(f'{game.stats["lines"]}', False, 'White')
-        lines_value_rect = lines_value_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim))
-        screen.blit(lines_value_text, lines_value_rect)
-
-        level_label_text = fonts[0].render('level', False, 'White')
-        level_label_rect = level_label_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 8 * dim))
-        screen.blit(level_label_text, level_label_rect)
-
-        level_value_text = fonts[1].render(f'{game.stats["level"]}', False, 'White')
-        level_value_rect = level_value_text.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim))
-        screen.blit(level_value_text, level_value_rect)
-
-        mode_text = fonts[1].render(f'{game.stats["mode"]}', False, 'White')
-        mode_rect = mode_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 + 12 * dim))
-        screen.blit(mode_text, mode_rect)
-
-        ### DRAW RECT
-        int_panel = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        int_panel.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
-        pygame.draw.rect(screen, 'White', int_panel)
-
-        ### WRITE TEXT
-        int_text = fonts[1].render(f'{3 - int(time.time() - countdown)}', False, 'Black')
-        int_rect = int_text.get_rect(midbottom=int_panel.midbottom)
-        screen.blit(int_text, int_rect)
-
-        ### DRAW BUTTON
-        pygame.draw.rect(screen, 'White', menu_button, border_width + 1)
-
-        ### WRITE TEXT
-        menu_text = fonts[1].render('menu', False, 'White')
-        menu_rect = menu_text.get_rect(midbottom=menu_button.midbottom)
-        screen.blit(menu_text, menu_rect)
-
-        ### ACCOUNT TAB
-        account_tab = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        account_tab.topright = (screen.get_width() - 1 * dim, 1 * dim)
-        pygame.draw.rect(screen, 'White', account_tab, border_width + 1)
-
-        account_text = fonts[0].render(user_info['username'], False, 'White')
-        account_rect = account_text.get_rect(bottomright=(account_tab.right - .5 * dim, account_tab.bottom - .4 * dim))
-        screen.blit(account_text, account_rect)
-
-        pfp_tab = pygame.Rect(0, 0, 1.5 * dim, 1.5 * dim)
-        pfp_tab.bottomleft = (account_tab.left + .25 * dim, account_tab.bottom - .25 * dim)
-        pygame.draw.rect(screen, 'White', pfp_tab, border_width)
+        ### DRAW SPRITES
+        int_rect.text = f'{3 - int(time.time() - countdown)}'
+        countdown_group.draw(screen)
+        account_group.draw(screen)
 
         ### CLOCK
         pygame.display.update()
