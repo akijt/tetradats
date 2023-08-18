@@ -7,7 +7,7 @@ class Sprite_rect(pygame.sprite.Sprite):
         self.size      = size
         self.origin    = origin
         self.offset    = [x for x in offset]
-        self.alignment = alignment # 'edge' or 'center'
+        self.alignment = alignment
         self.color     = color
         
         if self.origin in ['topright', 'midright', 'bottomright']:
