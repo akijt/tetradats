@@ -32,17 +32,16 @@ def state_login(screen, clock, sql_directory, state):
     login_group.add(guest_button)
     login_group.add(quit_button)
 
+    error1_text = Sprite_text('', 'topright', (6, -2), 'center', 'White', 2, None)
+    error2_text = Sprite_text('', 'topright', (6, 3), 'center', 'White', 2, None)
+    error_group = pygame.sprite.Group()
+    error_group.add(error1_text)
+    error_group.add(error2_text)
+
     while True:
 
         ### UPDATE SPRITES
         login_group.update(screen)
-
-        ### ADJUST DIM
-        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        fonts = []
-        fonts.append(pygame.font.Font(None, round(.75 * 2 * dim)))
-        fonts.append(pygame.font.Font(None, round(.75 * 4 * dim)))
-        border_width = 1
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -167,10 +166,26 @@ def state_login(screen, clock, sql_directory, state):
                 key_state['Right'] += distance * .05
                 cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
+        ### ERROR HANDLING
+        if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
+            error1_text.text = 'username taken'
+        elif error_code & (1 << 0):
+            error1_text.text = 'enter username'
+        else:
+            error1_text.text = ''
+        if error_code & (1 << 1):
+            error2_text.text = 'enter password'
+        elif error_code & (1 << 2):
+            error2_text.text = 'incorrect password'
+        else:
+            error2_text.text = ''
+
         ### CLEAR SCREEN
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW ANIMATION
+        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+        border_width = 1
         blocks, shade = animation.get(time.time())
         for i in blocks:
             pygame.draw.rect(screen, shade, [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width])
@@ -179,25 +194,9 @@ def state_login(screen, clock, sql_directory, state):
         ### DRAW SPRITES
         user_box.update(screen, input_fields['user'], cursor_pos if state[1] == 'user' else -1)
         pass_box.update(screen, '*' * len(input_fields['pass']), cursor_pos if state[1] == 'pass' else -1)
+        error_group.update(screen)
         login_group.draw(screen)
-
-        ### ERROR HANDLING
-        if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
-            error_text = fonts[0].render('username taken', False, 'White')
-            error_rect = error_text.get_rect(topright=user_box.rect.bottomright)
-            screen.blit(error_text, error_rect)
-        elif error_code & (1 << 0):
-            error_text = fonts[0].render('enter username', False, 'White')
-            error_rect = error_text.get_rect(topright=user_box.rect.bottomright)
-            screen.blit(error_text, error_rect)
-        if error_code & (1 << 1):
-            error_text = fonts[0].render('enter password', False, 'White')
-            error_rect = error_text.get_rect(topright=pass_box.rect.bottomright)
-            screen.blit(error_text, error_rect)
-        elif error_code & (1 << 2):
-            error_text = fonts[0].render('incorrect password', False, 'White')
-            error_rect = error_text.get_rect(topright=pass_box.rect.bottomright)
-            screen.blit(error_text, error_rect)
+        error_group.draw(screen)
 
         ### CLOCK
         pygame.display.update()

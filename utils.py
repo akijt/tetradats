@@ -37,7 +37,7 @@ class Sprite_rect(pygame.sprite.Sprite):
         elif self.alignment in ['midleft', 'center', 'midright']:
             self.rect.top += screen.get_height() / 2
 
-class Sprite_text(pygame.sprite.Sprite):
+class Sprite_text(pygame.sprite.Sprite): # TODO: text change in update?
 
     def __init__(self, text, origin, offset, alignment, color, font_size, font_name=None):
         super().__init__()
@@ -75,7 +75,7 @@ class Sprite_text(pygame.sprite.Sprite):
         elif self.alignment in ['midleft', 'center', 'midright']:
             self.rect.top += screen.get_height() / 2
 
-class Sprite_button(pygame.sprite.Sprite):
+class Sprite_button(pygame.sprite.Sprite): # TODO: text change in update?
 
     def __init__(self, text, size, origin, offset, alignment, rect_color, width, font_color, font_size, font_name=None):
         super().__init__()
