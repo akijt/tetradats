@@ -1,6 +1,7 @@
 import pygame
 import time
 from animation import Animation
+from utils import Sprite_rect, Sprite_text, Sprite_button
 
 def state_login(screen, clock, sql_directory, state):
 
@@ -11,7 +12,26 @@ def state_login(screen, clock, sql_directory, state):
     error_code = 0
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
 
+    title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', 'White', 4, None)
+    login_button  = Sprite_button('login', (8, 2), 'bottomleft', (-1, 7), 'center', 'White', 2, 'White', 4, None)
+    signup_button = Sprite_button('sign up', (5, 1), 'bottomright', (-2, 6.5), 'center', 'Black', 0, 'White', 2, None)
+    guest_button  = Sprite_button('play as guest', (8, 1), 'midbottom', (0, 9.5), 'center', 'Black', 0, 'White', 2, None)
+    quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
+
+    login_group = pygame.sprite.Group()
+    login_group.add(title_text)
+    login_group.add(Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', 'White', 2))
+    login_group.add(Sprite_text('username', 'bottomleft', (-6, -4), 'center', 'White', 2, None))
+    login_group.add(Sprite_text('password', 'bottomleft', (-6, 1), 'center', 'White', 2, None))
+    login_group.add(login_button)
+    login_group.add(signup_button)
+    login_group.add(guest_button)
+    login_group.add(quit_button)
+
     while True:
+
+        ### UPDATE SPRITES
+        login_group.update(screen)
 
         ### ADJUST DIM
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -26,18 +46,6 @@ def state_login(screen, clock, sql_directory, state):
 
         pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
         pass_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 3 * dim)
-
-        login_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        login_button.bottomleft = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 7 * dim)
-
-        signup_button = pygame.Rect(0, 0, 5 * dim, 2 * dim)
-        signup_button.bottomright = (screen.get_width() / 2 - 2 * dim, screen.get_height() / 2 + 7 * dim)
-
-        guest_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        guest_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 10 * dim)
-
-        quit_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
-        quit_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -96,7 +104,7 @@ def state_login(screen, clock, sql_directory, state):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if quit_button.collidepoint(pos):
+                    if quit_button.rect.collidepoint(pos):
                         pygame.quit()
                         exit()
                     elif user_box.collidepoint(pos):
@@ -105,7 +113,7 @@ def state_login(screen, clock, sql_directory, state):
                     elif pass_box.collidepoint(pos):
                         state[1] = 'pass'
                         cursor_pos = len(input_fields[state[1]])
-                    elif login_button.collidepoint(pos):
+                    elif login_button.rect.collidepoint(pos):
                         if not (input_fields['user'] and input_fields['pass']):
                             error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                         else:
@@ -118,12 +126,15 @@ def state_login(screen, clock, sql_directory, state):
                                 return acct_info
                             elif state[0] == 'login':
                                 error_code = 4
-                    elif signup_button.collidepoint(pos):
+                    elif signup_button.rect.collidepoint(pos):
                         error_code = 0
                         input_fields = {'': '', 'user': '', 'pass': ''}
                         state_transition = ['signup', 'login']
+                        signup_button.text = state[0]
                         state[0] = state_transition[state_transition.index(state[0]) - 1]
-                    elif guest_button.collidepoint(pos):
+                        title_text.text = state[0].upper()
+                        login_button.text = state[0].upper()
+                    elif guest_button.rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
                         acct_info = sql_directory.login(input_fields['user'], input_fields['pass'])
@@ -168,6 +179,9 @@ def state_login(screen, clock, sql_directory, state):
             pygame.draw.rect(screen, shade, [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width])
             # pygame.draw.rect(screen, 'White', [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
+        ### DRAW SPRITES
+        login_group.draw(screen)
+
         ### DRAW TEXTBOXES
         pygame.draw.rect(screen, 'White', user_box, border_width + 1)
         pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
@@ -187,46 +201,6 @@ def state_login(screen, clock, sql_directory, state):
         pass_input_text = fonts[0].render('*' * len(input_fields['pass'][:cursor_pos]) + '|' * (state[1] == 'pass') + '*' * len(input_fields['pass'][cursor_pos:]), False, 'White')
         pass_input_rect = pass_input_text.get_rect(bottomleft=(pass_box.left + .5 * dim, pass_box.bottom - .4 * dim))
         screen.blit(pass_input_text, pass_input_rect)
-
-        ### DRAW RECT
-        area_rect = pygame.Rect(0, 0, 16 * dim, 14 * dim)
-        area_rect.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 8 * dim)
-        pygame.draw.rect(screen, 'White', area_rect, border_width + 1)
-
-        ### DRAW BUTTONS
-        pygame.draw.rect(screen, 'White', login_button, border_width + 1)
-        pygame.draw.rect(screen, 'Black', signup_button)
-        pygame.draw.rect(screen, 'Black', guest_button)
-        pygame.draw.rect(screen, 'White', quit_button, border_width + 1)
-
-        ### WRITE TEXT
-        state_text = fonts[1].render('LOGIN' if state[0] == 'login' else 'SIGN UP', False, 'White')
-        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 6 * dim))
-        screen.blit(state_text, state_rect)
-
-        user_text = fonts[0].render('username', False, 'White')
-        user_rect = user_text.get_rect(bottomleft=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim))
-        screen.blit(user_text, user_rect)
-
-        pass_text = fonts[0].render('password', False, 'White')
-        pass_rect = pass_text.get_rect(bottomleft=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 1 * dim))
-        screen.blit(pass_text, pass_rect)
-
-        login_text = fonts[1].render('login' if state[0] == 'login' else 'sign up', False, 'White')
-        login_rect = login_text.get_rect(midbottom=login_button.midbottom)
-        screen.blit(login_text, login_rect)
-
-        signup_text = fonts[0].render('sign up' if state[0] == 'login' else 'login', False, 'White')
-        signup_rect = signup_text.get_rect(center=signup_button.center)
-        screen.blit(signup_text, signup_rect)
-
-        guest_text = fonts[0].render('play as guest', False, 'White')
-        guest_rect = guest_text.get_rect(center=guest_button.center)
-        screen.blit(guest_text, guest_rect)
-
-        quit_text = fonts[1].render('quit', False, 'White')
-        quit_rect = quit_text.get_rect(midbottom=quit_button.midbottom)
-        screen.blit(quit_text, quit_rect)
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
