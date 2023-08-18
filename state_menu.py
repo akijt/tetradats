@@ -1,9 +1,16 @@
 import pygame
+from utils import Sprite_rect
 
 def state_menu(screen, clock, state, user_info):
 
     ### INIT STATE
-    pass
+    group = pygame.sprite.Group()
+    group.add(Sprite_rect((14, 2), 'midbottom', (0, -4), 'center', 'White'))
+    group.add(Sprite_rect((14, 2), 'midbottom', (0, -1), 'center', 'White'))
+    group.add(Sprite_rect((14, 2), 'midbottom', (0, 2), 'center', 'White'))
+    group.add(Sprite_rect((14, 2), 'midbottom', (0, 5), 'center', 'White'))
+    group.add(Sprite_rect((14, 2), 'midbottom', (0, 8), 'center', 'White'))
+    group.add(Sprite_rect((8, 2), 'bottomleft', (1, -1), 'bottomleft', 'White'))
 
     while True:
 
@@ -32,6 +39,8 @@ def state_menu(screen, clock, state, user_info):
 
         logout_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
         logout_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
+
+        group.update(screen.get_size(), dim, border_width + 1)
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -71,12 +80,7 @@ def state_menu(screen, clock, state, user_info):
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW BUTTONS
-        pygame.draw.rect(screen, 'White', marathon_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', sprint_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', blitz_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', records_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', settings_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', logout_button, border_width + 1)
+        group.draw(screen)
 
         ### WRITE TEXT
         state_text = fonts[1].render('TETRADATS', False, 'White')
