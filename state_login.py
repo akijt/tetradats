@@ -1,7 +1,7 @@
 import pygame
 import time
 from animation import Animation
-from utils import Sprite_rect, Sprite_text, Sprite_button
+from utils import Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
 
 def state_login(screen, clock, sql_directory, state):
 
@@ -13,6 +13,8 @@ def state_login(screen, clock, sql_directory, state):
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
 
     title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', 'White', 4, None)
+    user_box      = Sprite_textfield((12, 2), 'midbottom', (0, -2), 'center', 'White', 2, 'White', 2, None)
+    pass_box      = Sprite_textfield((12, 2), 'midbottom', (0, 3), 'center', 'White', 2, 'White', 2, None)
     login_button  = Sprite_button('login', (8, 2), 'bottomleft', (-1, 7), 'center', 'White', 2, 'White', 4, None)
     signup_button = Sprite_button('sign up', (5, 1), 'bottomright', (-2, 6.5), 'center', 'Black', 0, 'White', 2, None)
     guest_button  = Sprite_button('play as guest', (8, 1), 'midbottom', (0, 9.5), 'center', 'Black', 0, 'White', 2, None)
@@ -23,6 +25,8 @@ def state_login(screen, clock, sql_directory, state):
     login_group.add(Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', 'White', 2))
     login_group.add(Sprite_text('username', 'bottomleft', (-6, -4), 'center', 'White', 2, None))
     login_group.add(Sprite_text('password', 'bottomleft', (-6, 1), 'center', 'White', 2, None))
+    login_group.add(user_box)
+    login_group.add(pass_box)
     login_group.add(login_button)
     login_group.add(signup_button)
     login_group.add(guest_button)
@@ -39,13 +43,6 @@ def state_login(screen, clock, sql_directory, state):
         fonts.append(pygame.font.Font(None, round(.75 * 2 * dim)))
         fonts.append(pygame.font.Font(None, round(.75 * 4 * dim)))
         border_width = 1
-
-        ### INIT INTERACTABLES
-        user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-        user_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 2 * dim)
-
-        pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-        pass_box.midbottom = (screen.get_width() / 2, screen.get_height() / 2 + 3 * dim)
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -107,10 +104,10 @@ def state_login(screen, clock, sql_directory, state):
                     if quit_button.rect.collidepoint(pos):
                         pygame.quit()
                         exit()
-                    elif user_box.collidepoint(pos):
+                    elif user_box.rect.collidepoint(pos):
                         state[1] = 'user'
                         cursor_pos = len(input_fields[state[1]])
-                    elif pass_box.collidepoint(pos):
+                    elif pass_box.rect.collidepoint(pos):
                         state[1] = 'pass'
                         cursor_pos = len(input_fields[state[1]])
                     elif login_button.rect.collidepoint(pos):
@@ -180,44 +177,26 @@ def state_login(screen, clock, sql_directory, state):
             # pygame.draw.rect(screen, 'White', [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW SPRITES
+        user_box.update(screen, input_fields['user'], cursor_pos if state[1] == 'user' else -1)
+        pass_box.update(screen, '*' * len(input_fields['pass']), cursor_pos if state[1] == 'pass' else -1)
         login_group.draw(screen)
-
-        ### DRAW TEXTBOXES
-        pygame.draw.rect(screen, 'White', user_box, border_width + 1)
-        pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
-
-        ### WRITE INPUT TEXT
-        user_input_text = fonts[0].render(input_fields['user'][:cursor_pos] + '|' * (state[1] == 'user') + input_fields['user'][cursor_pos:], False, 'White')
-        user_input_rect = user_input_text.get_rect(bottomleft=(user_box.left + .5 * dim, user_box.bottom - .4 * dim))
-        if user_input_rect.width > user_box.width - dim and cursor_pos > 8:
-            user_input_rect.bottomright = (user_box.right - .5 * dim, user_box.bottom - .4 * dim)
-        screen.blit(user_input_text, user_input_rect)
-        clear_rect = pygame.Rect(0, 0, 4 * dim, 2 * dim)
-        clear_rect.bottomright = user_box.bottomleft
-        pygame.draw.rect(screen, 'Black', clear_rect)
-        clear_rect.bottomleft = user_box.bottomright
-        pygame.draw.rect(screen, 'Black', clear_rect)
-
-        pass_input_text = fonts[0].render('*' * len(input_fields['pass'][:cursor_pos]) + '|' * (state[1] == 'pass') + '*' * len(input_fields['pass'][cursor_pos:]), False, 'White')
-        pass_input_rect = pass_input_text.get_rect(bottomleft=(pass_box.left + .5 * dim, pass_box.bottom - .4 * dim))
-        screen.blit(pass_input_text, pass_input_rect)
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
             error_text = fonts[0].render('username taken', False, 'White')
-            error_rect = error_text.get_rect(topright=user_box.bottomright)
+            error_rect = error_text.get_rect(topright=user_box.rect.bottomright)
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 0):
             error_text = fonts[0].render('enter username', False, 'White')
-            error_rect = error_text.get_rect(topright=user_box.bottomright)
+            error_rect = error_text.get_rect(topright=user_box.rect.bottomright)
             screen.blit(error_text, error_rect)
         if error_code & (1 << 1):
             error_text = fonts[0].render('enter password', False, 'White')
-            error_rect = error_text.get_rect(topright=pass_box.bottomright)
+            error_rect = error_text.get_rect(topright=pass_box.rect.bottomright)
             screen.blit(error_text, error_rect)
         elif error_code & (1 << 2):
             error_text = fonts[0].render('incorrect password', False, 'White')
-            error_rect = error_text.get_rect(topright=pass_box.bottomright)
+            error_rect = error_text.get_rect(topright=pass_box.rect.bottomright)
             screen.blit(error_text, error_rect)
 
         ### CLOCK
