@@ -65,7 +65,7 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if menu_button.collidepoint(pos):
+                    if menu_button.rect.collidepoint(pos):
                         state[0] = 'menu'
                         return
 
