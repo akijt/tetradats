@@ -135,5 +135,11 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
                 screen.blit(stat_text, stat_rect)
 
         ### CLOCK
+        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+        font = pygame.font.Font(None, round(.75 * 2 * dim))
+        image = font.render(f'{round(clock.get_fps())}', False, 'White')
+        rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
+        screen.blit(image, rect)
+
         pygame.display.update()
         clock.tick(60)
