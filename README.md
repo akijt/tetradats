@@ -3,6 +3,7 @@ block stacking game
 
 ## tetradats.py
 - The main file of the game
+- Calls all state_{}.py
 
 ## tetris.py
 - Holds the Tetris class controlling all functions of the actual gameplay
@@ -19,6 +20,9 @@ block stacking game
 
 ## animation.py
 - Holds class for cool animation on the login screen
+
+## utils.py
+- Holds sprite classes for drawing on the screen
 
 ## state_{}.py
 - Holds specific PyGame functions for a specific state
