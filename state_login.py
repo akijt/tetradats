@@ -194,8 +194,8 @@ def state_login(screen, clock, sql_directory, state):
         ### DRAW SPRITES
         user_box.update(screen, input_fields['user'], cursor_pos if state[1] == 'user' else -1)
         pass_box.update(screen, '*' * len(input_fields['pass']), cursor_pos if state[1] == 'pass' else -1)
-        error_group.update(screen)
         login_group.draw(screen)
+        error_group.update(screen)
         error_group.draw(screen)
 
         ### CLOCK

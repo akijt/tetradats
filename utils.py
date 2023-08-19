@@ -173,3 +173,69 @@ class Sprite_textfield(pygame.sprite.Sprite):
             self.rect.top += screen.get_height()
         elif self.alignment in ['midleft', 'center', 'midright']:
             self.rect.top += screen.get_height() / 2
+
+class Sprite_line(pygame.sprite.Sprite):
+
+    def __init__(self, length, offset, alignment, color, width, orientation):
+        super().__init__()
+        self.length      = length
+        self.offset      = [x for x in offset]
+        self.alignment   = alignment
+        self.color       = color
+        self.width       = width
+        self.orientation = orientation
+    
+    def update(self, screen):
+        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+
+        if self.orientation == 'horizontal':
+            self.image = pygame.Surface((self.length * dim, self.width))
+            self.rect = pygame.Rect(0, 0, self.length * dim, self.width)
+        elif self.orientation == 'vertical':
+            self.image = pygame.Surface((self.width, self.length * dim))
+            self.rect = pygame.Rect(0, 0, self.width, self.length * dim)
+        pygame.draw.rect(self.image, self.color, self.rect, self.width)
+
+        self.rect.topleft = (self.offset[0] * dim, self.offset[1] * dim)
+        if self.orientation == 'horizontal':
+            self.rect.top -= self.width / 2
+        elif self.orientation == 'vertical':
+            self.rect.left -= self.width / 2
+
+        if self.alignment in ['topright', 'midright', 'bottomright']:
+            self.rect.left += screen.get_width()
+        elif self.alignment in ['midtop', 'center', 'midbottom']:
+            self.rect.left += screen.get_width() / 2
+        if self.alignment in ['bottomleft', 'midbottom', 'bottomright']:
+            self.rect.top += screen.get_height()
+        elif self.alignment in ['midleft', 'center', 'midright']:
+            self.rect.top += screen.get_height() / 2
+
+class Sprite_circle(pygame.sprite.Sprite):
+
+    def __init__(self, radius, offset, alignment, color, width, back_color):
+        super().__init__()
+        self.radius      = radius
+        self.offset      = [x for x in offset]
+        self.alignment   = alignment
+        self.color       = color
+        self.width       = width
+        self.back_color  = back_color
+    
+    def update(self, screen):
+        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+
+        self.image = pygame.Surface((self.radius * 2 * dim, self.radius * 2 * dim))
+        self.rect = pygame.Rect(0, 0, self.radius * 2 * dim, self.radius * 2 * dim)
+        pygame.draw.rect(self.image, self.back_color, self.rect, 0)
+        pygame.draw.circle(self.image, self.color, (self.radius * dim, self.radius * dim), self.radius * dim, self.width)
+
+        self.rect.topleft = ((self.offset[0] - self.radius) * dim, (self.offset[1] - self.radius) * dim)
+        if self.alignment in ['topright', 'midright', 'bottomright']:
+            self.rect.left += screen.get_width()
+        elif self.alignment in ['midtop', 'center', 'midbottom']:
+            self.rect.left += screen.get_width() / 2
+        if self.alignment in ['bottomleft', 'midbottom', 'bottomright']:
+            self.rect.top += screen.get_height()
+        elif self.alignment in ['midleft', 'center', 'midright']:
+            self.rect.top += screen.get_height() / 2

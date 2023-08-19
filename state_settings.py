@@ -1,5 +1,6 @@
 import pygame
 import time
+from utils import Sprite_text, Sprite_button, Sprite_textfield, Sprite_line, Sprite_circle
 
 def state_settings(screen, clock, sql_directory, state, user_info, bindings, handling):
 
@@ -17,71 +18,87 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
     cursor_pos = 0
     error_code = 0
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
+    interactables = dict()
+
+    account_button  = Sprite_button('account', (12, 2), 'bottomright', (-7, -7), 'center', 'White', 2 if state[1] != 'account' else 0, 'White' if state[1] != 'account' else 'Black', 4, None)
+    bindings_button = Sprite_button('bindings', (12, 2), 'midbottom', (0, -7), 'center', 'White', 2 if state[1] != 'bindings' else 0, 'White' if state[1] != 'bindings' else 'Black', 4, None)
+    handling_button = Sprite_button('handling', (12, 2), 'bottomleft', (7, -7), 'center', 'White', 2 if state[1] != 'handling' else 0, 'White' if state[1] != 'handling' else 'Black', 4, None)
+    cancel_button   = Sprite_button('cancel', (8, 2), 'bottomright', (-1, 11), 'center', 'White', 2, 'White', 4, None)
+    apply_button    = Sprite_button('apply', (8, 2), 'bottomleft', (1, 11), 'center', 'White', 2, 'White', 4, None)
+    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
+
+    settings_group = pygame.sprite.Group()
+    settings_group.add(Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', 'White', 4, None))
+    settings_group.add(account_button)
+    settings_group.add(bindings_button)
+    settings_group.add(handling_button)
+    settings_group.add(cancel_button)
+    settings_group.add(apply_button)
+    settings_group.add(back_button)
+
+    if state[1] == 'account':
+        user_box = Sprite_textfield((12, 2), 'midbottom', (2, -3), 'center', 'White', 2, 'White', 2, None)
+        new1_box = Sprite_textfield((12, 2), 'midbottom', (2, 1), 'center', 'White', 2, 'White', 2, None)
+        new2_box = Sprite_textfield((12, 2), 'midbottom', (2, 4), 'center', 'White', 2, 'White', 2, None)
+        pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', 'White', 2, 'White', 2, None)
+
+        settings_group.add(Sprite_text('username', 'bottomright', (-5, -3.4), 'center', 'White', 2, None))
+        settings_group.add(Sprite_text('new password', 'bottomright', (-5, 0.6), 'center', 'White', 2, None))
+        settings_group.add(Sprite_text('confirm password', 'bottomright', (-5, 3.6), 'center', 'White', 2, None))
+        settings_group.add(Sprite_text('current password', 'bottomright', (-5, 6.6), 'center', 'White', 2, None))
+        settings_group.add(user_box)
+        settings_group.add(new1_box)
+        settings_group.add(new2_box)
+        settings_group.add(pass_box)
+        
+        interactables['username'] = user_box
+        interactables['new_pass1'] = new1_box
+        interactables['new_pass2'] = new2_box
+        interactables['password'] = pass_box
+
+        error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', 'White', 2, None)
+        error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', 'White', 2, None)
+        error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', 'White', 2, None)
+        error_group = pygame.sprite.Group()
+        error_group.add(error1_text)
+        error_group.add(error2_text)
+        error_group.add(error3_text)
+    
+    elif state[1] == 'bindings':
+        key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
+                        ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
+        for c, column in enumerate(key_order):
+            for r, action in enumerate(column):
+                settings_group.add(Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', 'White', 2, None))
+
+                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', 'White', 2, None)
+                settings_group.add(key_text)
+                interactables[action] = key_text
+
+    elif state[1] == 'handling':
+        slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
+        for i, control in enumerate(handling.keys()):
+            value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
+            value_text = Sprite_text(value_text, 'bottomleft', (11, -3 + i * 4), 'center', 'White', 2, None)
+            slider = Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', 'White', 0, 'Black')
+
+            settings_group.add(Sprite_text(control, 'bottomleft', (-13, -3 + i * 4), 'center', 'White', 2, None))
+            settings_group.add(value_text)
+            settings_group.add(Sprite_line(20, (-10, -3.5 + i * 4), 'center', 'White', 3, 'horizontal'))
+            settings_group.add(slider)
+
+            interactables[control] = (slider, value_text)
 
     while True:
 
-        ### ADJUST DIM
-        dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        fonts = []
-        fonts.append(pygame.font.Font(None, round(.75 * 2 * dim)))
-        fonts.append(pygame.font.Font(None, round(.75 * 4 * dim)))
-        border_width = 1
-
-        ### INIT INTERACTABLES
-        account_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-        account_button.bottomright = (screen.get_width() / 2 - 7 * dim, screen.get_height() / 2 - 7 * dim)
-
-        bindings_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-        bindings_button.midbottom = (screen.get_width() / 2, screen.get_height() / 2 - 7 * dim)
-
-        handling_button = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-        handling_button.bottomleft = (screen.get_width() / 2 + 7 * dim, screen.get_height() / 2 - 7 * dim)
-
-        cancel_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        cancel_button.bottomright = (screen.get_width() / 2 - 1 * dim, screen.get_height() / 2 + 11 * dim)
-
-        apply_button = pygame.Rect(0, 0, 8 * dim, 2 * dim)
-        apply_button.bottomleft = (screen.get_width() / 2 + 1 * dim, screen.get_height() / 2 + 11 * dim)
-
-        back_button = pygame.Rect(0, 0, 6 * dim, 2 * dim)
-        back_button.bottomleft = (1 * dim, screen.get_height() - 1 * dim)
-
-        interactables = dict()
-
-        if state[1] == 'account':
-            user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            user_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 - 3 * dim)
-            interactables['username'] = user_box
-
-            new1_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            new1_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 1 * dim)
-            interactables['new_pass1'] = new1_box
-
-            new2_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            new2_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 4 * dim)
-            interactables['new_pass2'] = new2_box
-
-            pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            pass_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 7 * dim)
-            interactables['password'] = pass_box
-        
-        elif state[1] == 'bindings':
-            key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
-                         ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
-            for c, column in enumerate(key_order):
-                for r, action in enumerate(column):
-                    key_text = fonts[0].render(pygame.key.name(input_fields[action]), False, 'White')
-                    key_rect = key_text.get_rect(bottomleft=(screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
-                    interactables[action] = key_rect
-
-        elif state[1] == 'handling':
+        ### UPDATE SPRITES
+        if state[1] == 'handling':
             slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
             for i, control in enumerate(handling.keys()):
                 value = input_fields[control] if control != 'SDF' or input_fields[control] != 0 else slider_range['SDF'][1]
                 percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
-                start_pos = (screen.get_width() / 2 - 10 * dim, screen.get_height() / 2 + (-3.5 + i * 4) * dim)
-                slider_pos = (start_pos[0] + 20 * dim * percentage, start_pos[1])
-                interactables[control] = pygame.draw.circle(screen, 'White', slider_pos, dim / 3)
+                interactables[control][0].offset[0] = -10 + 20 * percentage
+        settings_group.update(screen)
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -90,18 +107,8 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                 exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
-                    input_fields = {'': ''}
-                    for k, v in user_info.items():
-                        input_fields[k] = v
-                    for k, v in bindings.items():
-                        input_fields[k] = v
-                    for k, v in handling.items():
-                        input_fields[k] = v
-                    input_fields['password'] = ''
-                    input_fields['new_pass1'] = ''
-                    input_fields['new_pass2'] = ''
-                    cursor_pos = 0
-                    error_code = 0
+                    state[2] = ''
+                    return
                 elif event.key == pygame.K_RETURN:
                     if state[1] == 'account':
                         if user_info['username'] != 'guest':
@@ -109,14 +116,13 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                                 sql_directory.settings(user_info['username'], '', {'username': input_fields['username']})
                                 user_info['username'] = input_fields['username']
                             if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0:
-                                if sql_directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
-                                    pass
-                                else:
+                                if not sql_directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
                                     error_code |= (1 << 2)
                         input_fields['username'] = user_info['username']
                         input_fields['password'] = ''
                         input_fields['new_pass1'] = ''
                         input_fields['new_pass2'] = ''
+                        state[2] = ''
                     elif state[1] == 'bindings':
                         changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                         if changes:
@@ -170,67 +176,30 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if back_button.collidepoint(pos):
+                    if back_button.rect.collidepoint(pos):
                         state[0] = 'menu'
+                        state[1] = ''
+                        state[2] = ''
                         return
-                    elif account_button.collidepoint(pos):
+                    elif account_button.rect.collidepoint(pos):
                         if state[1] != 'account':
-                            input_fields = {'': ''}
-                            for k, v in user_info.items():
-                                input_fields[k] = v
-                            for k, v in bindings.items():
-                                input_fields[k] = v
-                            for k, v in handling.items():
-                                input_fields[k] = v
-                            input_fields['password'] = ''
-                            input_fields['new_pass1'] = ''
-                            input_fields['new_pass2'] = ''
-                            cursor_pos = 0
-                            error_code = 0
                             state[1] = 'account'
                             state[2] = ''
-                    elif bindings_button.collidepoint(pos):
+                            return
+                    elif bindings_button.rect.collidepoint(pos):
                         if state[1] != 'bindings':
-                            input_fields = {'': ''}
-                            for k, v in user_info.items():
-                                input_fields[k] = v
-                            for k, v in bindings.items():
-                                input_fields[k] = v
-                            for k, v in handling.items():
-                                input_fields[k] = v
-                            input_fields['password'] = ''
-                            input_fields['new_pass1'] = ''
-                            input_fields['new_pass2'] = ''
                             state[1] = 'bindings'
                             state[2] = ''
-                    elif handling_button.collidepoint(pos):
+                            return
+                    elif handling_button.rect.collidepoint(pos):
                         if state[1] != 'handling':
-                            input_fields = {'': ''}
-                            for k, v in user_info.items():
-                                input_fields[k] = v
-                            for k, v in bindings.items():
-                                input_fields[k] = v
-                            for k, v in handling.items():
-                                input_fields[k] = v
-                            input_fields['password'] = ''
-                            input_fields['new_pass1'] = ''
-                            input_fields['new_pass2'] = ''
                             state[1] = 'handling'
                             state[2] = ''
-                    elif cancel_button.collidepoint(pos):
-                        input_fields = {'': ''}
-                        for k, v in user_info.items():
-                            input_fields[k] = v
-                        for k, v in bindings.items():
-                            input_fields[k] = v
-                        for k, v in handling.items():
-                            input_fields[k] = v
-                        input_fields['password'] = ''
-                        input_fields['new_pass1'] = ''
-                        input_fields['new_pass2'] = ''
-                        cursor_pos = 0
-                        error_code = 0
-                    elif apply_button.collidepoint(pos):
+                            return
+                    elif cancel_button.rect.collidepoint(pos):
+                        state[2] = ''
+                        return
+                    elif apply_button.rect.collidepoint(pos):
                         if state[1] == 'account':
                             if user_info['username'] != 'guest':
                                 if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
@@ -245,6 +214,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                             input_fields['password'] = ''
                             input_fields['new_pass1'] = ''
                             input_fields['new_pass2'] = ''
+                            state[2] = ''
                         elif state[1] == 'bindings':
                             changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                             if changes:
@@ -261,7 +231,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                                     handling[k] = v
                     elif state[1] == 'account':
                         for k in ['username', 'new_pass1', 'new_pass2', 'password']:
-                            if interactables[k].collidepoint(pos):
+                            if interactables[k].rect.collidepoint(pos):
                                 state[2] = k
                                 cursor_pos = len(input_fields[state[2]])
                                 break
@@ -269,9 +239,9 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                             state[2] = ''
                     elif state[1] == 'bindings':
                         for k in bindings.keys():
-                            if interactables[k].collidepoint(pos):
-                                pygame.draw.rect(screen, 'Black', interactables[k])
-                                pygame.draw.rect(screen, 'White', interactables[k], border_width + 1)
+                            if interactables[k].rect.collidepoint(pos):
+                                pygame.draw.rect(screen, 'Black', interactables[k].rect)
+                                pygame.draw.rect(screen, 'White', interactables[k].rect, 2)
                                 pygame.display.update()
                                 while True:
                                     event = pygame.event.wait()
@@ -282,12 +252,16 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                                         for k2 in bindings.keys():
                                             if input_fields[k2] == event.key:
                                                 input_fields[k2] = input_fields[k]
+                                                interactables[k2].text = interactables[k].text
+                                                interactables[k2].update(screen)
                                         input_fields[k] = event.key
+                                        interactables[k].text = pygame.key.name(event.key)
+                                        interactables[k].update(screen)
                                         break
                                 break
                     elif state[1] == 'handling':
                         for k in handling.keys():
-                            if interactables[k].collidepoint(pos):
+                            if interactables[k][0].rect.collidepoint(pos):
                                 state[2] = k
                                 break
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -295,6 +269,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                     if state[1] == 'handling':
                         if state[2] == 'SDF' and input_fields['SDF'] == slider_range['SDF'][1]:
                             input_fields['SDF'] = 0
+                            interactables['SDF'][1].text = 'inf'
                         state[2] = ''
 
         ### AUTOREPEAT FOR KEYBOARD
@@ -327,164 +302,50 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
 
         ### SLIDER MOVEMENT
         elif state[1] == 'handling' and state[2]:
-            pos = pygame.mouse.get_pos()
-            slider_pos = min(max(pos[0], start_pos[0]), end_pos[0])
-            percentage = (slider_pos - start_pos[0]) / (end_pos[0] - start_pos[0])
+            dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
+            pos = pygame.mouse.get_pos()[0]
+            start_pos = screen.get_width() / 2 - 10 * dim
+            end_pos   = start_pos + 20 * dim
+            pos = min(max(pos, start_pos), end_pos)
+            percentage = (pos - start_pos) / (end_pos - start_pos)
             input_fields[state[2]] = round(slider_range[state[2]][0] + (slider_range[state[2]][1] - slider_range[state[2]][0]) * percentage)
+            interactables[state[2]][1].text = str(input_fields[state[2]])
+            if state[2] == 'SDF' and input_fields['SDF'] == slider_range['SDF'][1]:
+                input_fields['SDF'] = 0
+                interactables['SDF'][1].text = 'inf'
+
+        ### ERROR HANDLING
+        if state[1] == 'account':
+            if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
+                error1_text.text = 'taken'
+                error_code |= (1 << 0)
+            else:
+                error1_text.text = ''
+                error_code &= ~(1 << 0)
+            if input_fields['new_pass1'] != input_fields['new_pass2']:
+                error2_text.text = 'doesn\'t match'
+                error_code |= (1 << 1)
+            else:
+                error2_text.text = ''
+                error_code &= ~(1 << 1)
+            if error_code & (1 << 2):
+                error3_text.text = 'incorrect password'
+            else:
+                error3_text.text = ''
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
-        ### DRAW BUTTONS
-        pygame.draw.rect(screen, 'White', account_button, border_width + 1 if state[1] != 'account' else 0)
-        pygame.draw.rect(screen, 'White', bindings_button, border_width + 1 if state[1] != 'bindings' else 0)
-        pygame.draw.rect(screen, 'White', handling_button, border_width + 1 if state[1] != 'handling' else 0)
-        pygame.draw.rect(screen, 'White', cancel_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', apply_button, border_width + 1)
-        pygame.draw.rect(screen, 'White', back_button, border_width + 1)
-
-        ### WRITE TEXT
-        state_text = fonts[1].render('SETTINGS', False, 'White')
-        state_rect = state_text.get_rect(midbottom=(screen.get_width() / 2, screen.get_height() / 2 - 10 * dim))
-        screen.blit(state_text, state_rect)
-
-        account_text = fonts[1].render('account', False, 'White' if state[1] != 'account' else 'Black')
-        account_rect = account_text.get_rect(midbottom=account_button.midbottom)
-        screen.blit(account_text, account_rect)
-
-        bindings_text = fonts[1].render('bindings', False, 'White' if state[1] != 'bindings' else 'Black')
-        bindings_rect = bindings_text.get_rect(midbottom=bindings_button.midbottom)
-        screen.blit(bindings_text, bindings_rect)
-
-        handling_text = fonts[1].render('handling', False, 'White' if state[1] != 'handling' else 'Black')
-        handling_rect = handling_text.get_rect(midbottom=handling_button.midbottom)
-        screen.blit(handling_text, handling_rect)
-
-        cancel_text = fonts[1].render('cancel', False, 'White')
-        cancel_rect = cancel_text.get_rect(midbottom=cancel_button.midbottom)
-        screen.blit(cancel_text, cancel_rect)
-
-        apply_text = fonts[1].render('apply', False, 'White')
-        apply_rect = apply_text.get_rect(midbottom=apply_button.midbottom)
-        screen.blit(apply_text, apply_rect)
-
-        back_text = fonts[1].render('back', False, 'White')
-        back_rect = back_text.get_rect(midbottom=back_button.midbottom)
-        screen.blit(back_text, back_rect)
-
+        ### DRAW SPRITES
         if state[1] == 'account':
-            ### DRAW TEXTBOXES
-            user_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            user_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 - 3 * dim)
-            pygame.draw.rect(screen, 'White', user_box, border_width + 1)
-
-            new1_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            new1_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 1 * dim)
-            pygame.draw.rect(screen, 'White', new1_box, border_width + 1)
-
-            new2_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            new2_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 4 * dim)
-            pygame.draw.rect(screen, 'White', new2_box, border_width + 1)
-
-            pass_box = pygame.Rect(0, 0, 12 * dim, 2 * dim)
-            pass_box.midbottom = (screen.get_width() / 2 + 2 * dim, screen.get_height() / 2 + 7 * dim)
-            pygame.draw.rect(screen, 'White', pass_box, border_width + 1)
-
-            ### WRITE INPUT TEXT
-            user_input_text = fonts[0].render(input_fields['username'][:cursor_pos] + '|' * (state[2] == 'username') + input_fields['username'][cursor_pos:], False, 'White')
-            user_input_rect = user_input_text.get_rect(bottomleft=(user_box.left + .5 * dim, user_box.bottom - .4 * dim))
-            if user_input_rect.width > user_box.width - dim and cursor_pos > 8:
-                user_input_rect.bottomright = (user_box.right - .5 * dim, user_box.bottom - .4 * dim)
-            screen.blit(user_input_text, user_input_rect)
-            clear_rect = pygame.Rect(0, 0, 4 * dim, 2 * dim)
-            clear_rect.bottomright = user_box.bottomleft
-            pygame.draw.rect(screen, 'Black', clear_rect)
-            clear_rect.bottomleft = user_box.bottomright
-            pygame.draw.rect(screen, 'Black', clear_rect)
-
-            new1_input_text = fonts[0].render('*' * len(input_fields['new_pass1'][:cursor_pos]) + '|' * (state[2] == 'new_pass1') + '*' * len(input_fields['new_pass1'][cursor_pos:]), False, 'White')
-            new1_input_rect = new1_input_text.get_rect(bottomleft=(new1_box.left + .5 * dim, new1_box.bottom - .4 * dim))
-            screen.blit(new1_input_text, new1_input_rect)
-
-            new2_input_text = fonts[0].render('*' * len(input_fields['new_pass2'][:cursor_pos]) + '|' * (state[2] == 'new_pass2') + '*' * len(input_fields['new_pass2'][cursor_pos:]), False, 'White')
-            new2_input_rect = new2_input_text.get_rect(bottomleft=(new2_box.left + .5 * dim, new2_box.bottom - .4 * dim))
-            screen.blit(new2_input_text, new2_input_rect)
-
-            pass_input_text = fonts[0].render('*' * len(input_fields['password'][:cursor_pos]) + '|' * (state[2] == 'password') + '*' * len(input_fields['password'][cursor_pos:]), False, 'White')
-            pass_input_rect = pass_input_text.get_rect(bottomleft=(pass_box.left + .5 * dim, pass_box.bottom - .4 * dim))
-            screen.blit(pass_input_text, pass_input_rect)
-
-            ### WRITE TEXT
-            user_text = fonts[0].render('username', False, 'White')
-            user_rect = user_text.get_rect(bottomright=(user_box.left - 1 * dim, user_box.bottom - .4 * dim))
-            screen.blit(user_text, user_rect)
-
-            new1_text = fonts[0].render('new password', False, 'White')
-            new1_rect = new1_text.get_rect(bottomright=(new1_box.left - 1 * dim, new1_box.bottom - .4 * dim))
-            screen.blit(new1_text, new1_rect)
-
-            new2_text = fonts[0].render('confirm password', False, 'White')
-            new2_rect = new2_text.get_rect(bottomright=(new2_box.left - 1 * dim, new2_box.bottom - .4 * dim))
-            screen.blit(new2_text, new2_rect)
-
-            pass_text = fonts[0].render('current password', False, 'White')
-            pass_rect = pass_text.get_rect(bottomright=(pass_box.left - 1 * dim, pass_box.bottom - .4 * dim))
-            screen.blit(pass_text, pass_rect)
-
-            ### ERROR HANDLING
-            if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
-                error_code |= (1 << 0)
-                error_text = fonts[0].render('taken', False, 'White')
-                error_rect = error_text.get_rect(bottomleft=(user_box.right + 1 * dim, user_box.bottom - .4 * dim))
-                screen.blit(error_text, error_rect)
-            else:
-                error_code &= ~(1 << 0)
-            if input_fields['new_pass1'] != input_fields['new_pass2']:
-                error_code |= (1 << 1)
-                error_text = fonts[0].render('doesn\'t match', False, 'White')
-                error_rect = error_text.get_rect(bottomleft=(new2_box.right + 1 * dim, new2_box.bottom - .4 * dim))
-                screen.blit(error_text, error_rect)
-            else:
-                error_code &= ~(1 << 1)
-            if error_code & (1 << 2):
-                error_text = fonts[0].render('incorrect password', False, 'White')
-                error_rect = error_text.get_rect(bottomleft=(pass_box.right + 1 * dim, pass_box.bottom - .4 * dim))
-                screen.blit(error_text, error_rect)
-
-        elif state[1] == 'bindings':
-            key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
-                         ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
-            for c, column in enumerate(key_order):
-                for r, action in enumerate(column):
-                    action_text = fonts[0].render(action.replace('_', ' '), False, 'White')
-                    action_rect = action_text.get_rect(bottomleft=(screen.get_width() / 2 + (-13 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
-                    screen.blit(action_text, action_rect)
-
-                    key_text = fonts[0].render(pygame.key.name(input_fields[action]), False, 'White')
-                    key_rect = key_text.get_rect(bottomleft=(screen.get_width() / 2 + (-6 + c * 15) * dim, screen.get_height() / 2 + (-3 + r * 2) * dim))
-                    screen.blit(key_text, key_rect)
-
-        elif state[1] == 'handling':
-            slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
-            for i, control in enumerate(handling.keys()):
-                handling_text = fonts[0].render(control, False, 'White')
-                handling_rect = handling_text.get_rect(bottomleft=(screen.get_width() / 2 - 13 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim))
-                screen.blit(handling_text, handling_rect)
-
-                value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
-                value_text = fonts[0].render(value_text, False, 'White')
-                value_rect = value_text.get_rect(bottomleft=(screen.get_width() / 2 + 11 * dim, screen.get_height() / 2 + (-3 + i * 4) * dim))
-                screen.blit(value_text, value_rect)
-
-                start_pos = (screen.get_width() / 2 - 10 * dim, screen.get_height() / 2 + (-3.5 + i * 4) * dim)
-                end_pos   = (start_pos[0] + 20 * dim, start_pos[1])
-                pygame.draw.line(screen, 'White', start_pos, end_pos, border_width + 1)
-
-                value = input_fields[control] if control != 'SDF' or input_fields[control] != 0 else slider_range['SDF'][1]
-                percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
-                slider_pos = (start_pos[0] + 20 * dim * percentage, start_pos[1])
-                pygame.draw.circle(screen, 'White', slider_pos, dim / 3)
-
+            user_box.update(screen, input_fields['username'], cursor_pos if state[2] == 'username' else -1)
+            new1_box.update(screen, '*' * len(input_fields['new_pass1']), cursor_pos if state[2] == 'new_pass1' else -1)
+            new2_box.update(screen, '*' * len(input_fields['new_pass2']), cursor_pos if state[2] == 'new_pass2' else -1)
+            pass_box.update(screen, '*' * len(input_fields['password']), cursor_pos if state[2] == 'password' else -1)
+            error_group.update(screen)
+            error_group.draw(screen)
+        settings_group.draw(screen)
+        
         ### CLOCK
         pygame.display.update()
         clock.tick(60)
