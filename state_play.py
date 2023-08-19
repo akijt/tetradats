@@ -130,7 +130,10 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
             for dr, dc in game.minos[game.held][0]:
                 left = screen.get_width() / 2 + (-10 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr) * dim
-                pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
+                if game.hold_used:
+                    pygame.draw.rect(screen, 'Gray', [left, top, dim + border_width, dim + border_width])
+                else:
+                    pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW NEXT PIECES
         next_num = 3
