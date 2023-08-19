@@ -38,16 +38,17 @@ def state_login(screen, clock, sql_directory, state):
     error_group.add(error1_text)
     error_group.add(error2_text)
 
-    while True:
+    login_group.update(screen)
 
-        ### UPDATE SPRITES
-        login_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                login_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     if not (input_fields['user'] and input_fields['pass']):
@@ -126,10 +127,11 @@ def state_login(screen, clock, sql_directory, state):
                         error_code = 0
                         input_fields = {'': '', 'user': '', 'pass': ''}
                         state_transition = ['signup', 'login']
-                        signup_button.text = state[0]
+                        signup_button.update(screen, text=state[0])
                         state[0] = state_transition[state_transition.index(state[0]) - 1]
-                        title_text.text = state[0].upper()
-                        login_button.text = state[0].upper()
+                        title_text.update(screen, text=state[0].upper())
+                        login_button.update(screen, text=state[0].upper())
+                        state[1] = ''
                     elif guest_button.rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
@@ -168,17 +170,17 @@ def state_login(screen, clock, sql_directory, state):
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
-            error1_text.text = 'username taken'
+            error1_text.update(screen, text='username taken')
         elif error_code & (1 << 0):
-            error1_text.text = 'enter username'
+            error1_text.update(screen, text='enter username')
         else:
-            error1_text.text = ''
+            error1_text.update(screen, text='')
         if error_code & (1 << 1):
-            error2_text.text = 'enter password'
+            error2_text.update(screen, text='enter password')
         elif error_code & (1 << 2):
-            error2_text.text = 'incorrect password'
+            error2_text.update(screen, text='incorrect password')
         else:
-            error2_text.text = ''
+            error2_text.update(screen, text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, 'Black', screen.get_rect())
@@ -192,10 +194,9 @@ def state_login(screen, clock, sql_directory, state):
             # pygame.draw.rect(screen, 'White', [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW SPRITES
-        user_box.update(screen, input_fields['user'], cursor_pos if state[1] == 'user' else -1)
-        pass_box.update(screen, '*' * len(input_fields['pass']), cursor_pos if state[1] == 'pass' else -1)
+        user_box.update(screen, text=input_fields['user'], cursor_pos=cursor_pos if state[1] == 'user' else -1)
+        pass_box.update(screen, text='*' * len(input_fields['pass']), cursor_pos=cursor_pos if state[1] == 'pass' else -1)
         login_group.draw(screen)
-        error_group.update(screen)
         error_group.draw(screen)
 
         ### CLOCK

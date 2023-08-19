@@ -28,9 +28,9 @@ block stacking game
 - Holds specific PyGame functions for a specific state
 - Code in the order of:
   1. INIT STATE
-  1. UPDATE SPRITES
   1. EVENT LOOP
-  1. functions including ERROR HANDLING (if applicable)
+  1. functions (if applicable)
+  1. ERROR HANDLING (if applicable)
   1. CLEAR SCREEN
   1. print stuff on screen
   1. DRAW SPRITES

@@ -37,30 +37,19 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
     account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
     account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
 
+    play_group.update(screen)
+    account_group.update(screen)
+
     while True:
-
-        ### UPDATE SPRITES
-        time_elapsed = time.time() - game.stats['time']
-        minutes      = int(time_elapsed // 60)
-        seconds      = int(time_elapsed % 60)
-        milliseconds = int(time_elapsed % 1 * 1000)
-
-        time_text.text   = f'{minutes}:{seconds:02}.{milliseconds:03}'
-        score_text.text  = f'{game.stats["score"]}'
-        pieces_text.text = f'{game.stats["pieces"]}'
-        lines_text.text  = f'{game.stats["lines"]}'
-        level_text.text  = f'{game.stats["level"]}'
-        last_text.text   = f'{game.last_clear}'
-        b2b_text.text    = f'{game.b2b} B2B' if game.b2b > 0 else ''
-        combo_text.text  = f'{game.combo} combo' if game.combo > 0 else ''
-        play_group.update(screen)
-        account_group.update(screen)
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                play_group.update(screen)
+                account_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     game.pause(time.time())
@@ -152,6 +141,19 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW SPRITES
+        time_elapsed = time.time() - game.stats['time']
+        minutes      = int(time_elapsed // 60)
+        seconds      = int(time_elapsed % 60)
+        milliseconds = int(time_elapsed % 1 * 1000)
+
+        time_text.update(screen, text=f'{minutes}:{seconds:02}.{milliseconds:03}')
+        score_text.update(screen, text=f'{game.stats["score"]}')
+        pieces_text.update(screen, text=f'{game.stats["pieces"]}')
+        lines_text.update(screen, text=f'{game.stats["lines"]}')
+        level_text.update(screen, text=f'{game.stats["level"]}')
+        last_text.update(screen, text=f'{game.last_clear}')
+        b2b_text.update(screen, text=f'{game.b2b} B2B' if game.b2b > 0 else '')
+        combo_text.update(screen, text=f'{game.combo} combo' if game.combo > 0 else '')
         play_group.draw(screen)
         account_group.draw(screen)
 

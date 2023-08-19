@@ -89,22 +89,17 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
 
             interactables[control] = (slider, value_text)
 
-    while True:
+    settings_group.update(screen)
 
-        ### UPDATE SPRITES
-        if state[1] == 'handling':
-            slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
-            for i, control in enumerate(handling.keys()):
-                value = input_fields[control] if control != 'SDF' or input_fields[control] != 0 else slider_range['SDF'][1]
-                percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
-                interactables[control][0].offset[0] = -10 + 20 * percentage
-        settings_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                settings_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[2] = ''
@@ -252,11 +247,9 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                                         for k2 in bindings.keys():
                                             if input_fields[k2] == event.key:
                                                 input_fields[k2] = input_fields[k]
-                                                interactables[k2].text = interactables[k].text
-                                                interactables[k2].update(screen)
+                                                interactables[k2].update(screen, text=interactables[k].text)
                                         input_fields[k] = event.key
-                                        interactables[k].text = pygame.key.name(event.key)
-                                        interactables[k].update(screen)
+                                        interactables[k].update(screen, text=pygame.key.name(event.key))
                                         break
                                 break
                     elif state[1] == 'handling':
@@ -267,9 +260,6 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     if state[1] == 'handling':
-                        if state[2] == 'SDF' and input_fields['SDF'] == slider_range['SDF'][1]:
-                            input_fields['SDF'] = 0
-                            interactables['SDF'][1].text = 'inf'
                         state[2] = ''
 
         ### AUTOREPEAT FOR KEYBOARD
@@ -309,41 +299,47 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
             pos = min(max(pos, start_pos), end_pos)
             percentage = (pos - start_pos) / (end_pos - start_pos)
             input_fields[state[2]] = round(slider_range[state[2]][0] + (slider_range[state[2]][1] - slider_range[state[2]][0]) * percentage)
-            interactables[state[2]][1].text = str(input_fields[state[2]])
             if state[2] == 'SDF' and input_fields['SDF'] == slider_range['SDF'][1]:
                 input_fields['SDF'] = 0
-                interactables['SDF'][1].text = 'inf'
+                interactables['SDF'][1].update(screen, text='inf')
+            else:
+                interactables[state[2]][1].update(screen, text=str(input_fields[state[2]]))
 
         ### ERROR HANDLING
         if state[1] == 'account':
             if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
-                error1_text.text = 'taken'
+                error1_text.update(screen, text='taken')
                 error_code |= (1 << 0)
             else:
-                error1_text.text = ''
+                error1_text.update(screen, text='')
                 error_code &= ~(1 << 0)
             if input_fields['new_pass1'] != input_fields['new_pass2']:
-                error2_text.text = 'doesn\'t match'
+                error2_text.update(screen, text='doesn\'t match')
                 error_code |= (1 << 1)
             else:
-                error2_text.text = ''
+                error2_text.update(screen, text='')
                 error_code &= ~(1 << 1)
             if error_code & (1 << 2):
-                error3_text.text = 'incorrect password'
+                error3_text.update(screen, text='incorrect password')
             else:
-                error3_text.text = ''
+                error3_text.update(screen, text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, 'Black', screen.get_rect())
 
         ### DRAW SPRITES
         if state[1] == 'account':
-            user_box.update(screen, input_fields['username'], cursor_pos if state[2] == 'username' else -1)
-            new1_box.update(screen, '*' * len(input_fields['new_pass1']), cursor_pos if state[2] == 'new_pass1' else -1)
-            new2_box.update(screen, '*' * len(input_fields['new_pass2']), cursor_pos if state[2] == 'new_pass2' else -1)
-            pass_box.update(screen, '*' * len(input_fields['password']), cursor_pos if state[2] == 'password' else -1)
-            error_group.update(screen)
+            user_box.update(screen, text=input_fields['username'], cursor_pos=cursor_pos if state[2] == 'username' else -1)
+            new1_box.update(screen, text='*' * len(input_fields['new_pass1']), cursor_pos=cursor_pos if state[2] == 'new_pass1' else -1)
+            new2_box.update(screen, text='*' * len(input_fields['new_pass2']), cursor_pos=cursor_pos if state[2] == 'new_pass2' else -1)
+            pass_box.update(screen, text='*' * len(input_fields['password']), cursor_pos=cursor_pos if state[2] == 'password' else -1)
             error_group.draw(screen)
+        elif state[1] == 'handling':
+            slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
+            for i, control in enumerate(handling.keys()):
+                value = input_fields[control] if control != 'SDF' or input_fields[control] != 0 else slider_range['SDF'][1]
+                percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
+                interactables[control][0].update(screen, offset=(-10 + 20 * percentage, interactables[control][0].offset[1]))
         settings_group.draw(screen)
         
         ### CLOCK

@@ -31,17 +31,19 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
     account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
     account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
 
-    while True:
+    countdown_group.update(screen)
+    account_group.update(screen)
 
-        ### UPDATE SPRITES
-        countdown_group.update(screen)
-        account_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                countdown_group.update(screen)
+                account_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'
@@ -95,7 +97,7 @@ def state_countdown(screen, clock, game, colors, state, user_info, bindings, han
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW SPRITES
-        int_rect.text = f'{3 - int(time.time() - countdown)}'
+        int_rect.update(screen, text=f'{3 - int(time.time() - countdown)}')
         countdown_group.draw(screen)
         account_group.draw(screen)
 

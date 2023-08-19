@@ -35,17 +35,19 @@ def state_pause(screen, clock, game, state, user_info, bindings):
     account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
     account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
 
-    while True:
+    pause_group.update(screen)
+    account_group.update(screen)
 
-        ### UPDATE SPRITES
-        pause_group.update(screen)
-        account_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                pause_group.update(screen)
+                account_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     game.pause(time.time())

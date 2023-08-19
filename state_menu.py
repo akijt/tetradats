@@ -25,17 +25,19 @@ def state_menu(screen, clock, state, user_info):
     account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
     account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
 
-    while True:
+    menu_group.update(screen)
+    account_group.update(screen)
 
-        ### UPDATE SPRITES
-        menu_group.update(screen)
-        account_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                menu_group.update(screen)
+                account_group.update(screen)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()

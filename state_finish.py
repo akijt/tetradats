@@ -57,16 +57,17 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, st
     finish_group.add(retry_button)
     finish_group.add(menu_button)
 
-    while True:
+    finish_group.update(screen)
 
-        ### UPDATE SPRITES
-        finish_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                finish_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'

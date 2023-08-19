@@ -55,16 +55,17 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
         for c in range(1, len(top_n[r])):
             records_group.add(Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', 'White', 2, None))
 
-    while True:
+    records_group.update(screen)
 
-        ### UPDATE SPRITES
-        records_group.update(screen)
+    while True:
 
         ### EVENT LOOP
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            elif event.type == pygame.VIDEORESIZE:
+                records_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'
