@@ -1,8 +1,9 @@
 import pygame
+from sys import exit
 import datetime
 from utils import Sprite_text, Sprite_button
 
-def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, user_info, bindings):
+def state_records(screen, clock, csv_registrar, sql_registrar, order_by, font_path, state, user_info, bindings):
 
     ### INIT STATE
     # records_query = csv_registrar.load('' if state[2] == 'global' else user_info['username'], state[1], 10)
@@ -37,23 +38,23 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
                 top_n[r][-1] += datetime.timedelta(hours=hours, minutes=minutes) * neg
             top_n[r][-1] = top_n[r][-1].strftime('%m/%d/%Y, %H:%M:%S')
 
-    marathon_button = Sprite_button('marathon', (12, 2), 'bottomright', (-7, -7), 'center', 'White', 2 if state[1] != 'marathon' else 0, 'White' if state[1] != 'marathon' else 'Black', 4, None)
-    sprint_button   = Sprite_button('sprint', (12, 2), 'midbottom', (0, -7), 'center', 'White', 2 if state[1] != 'sprint' else 0, 'White' if state[1] != 'sprint' else 'Black', 4, None)
-    blitz_button    = Sprite_button('blitz', (12, 2), 'bottomleft', (7, -7), 'center', 'White', 2 if state[1] != 'blitz' else 0, 'White' if state[1] != 'blitz' else 'Black', 4, None)
-    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
-    global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', 'White', 2 if state[2] != 'global' else 0, 'White' if state[2] != 'global' else 'Black', 4, None)
+    marathon_button = Sprite_button('marathon', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'marathon' else 0, (255, 255, 255) if state[1] != 'marathon' else (0, 0, 0), 4, font_path)
+    sprint_button   = Sprite_button('sprint', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'sprint' else 0, (255, 255, 255) if state[1] != 'sprint' else (0, 0, 0), 4, font_path)
+    blitz_button    = Sprite_button('blitz', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'blitz' else 0, (255, 255, 255) if state[1] != 'blitz' else (0, 0, 0), 4, font_path)
+    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', (255, 255, 255), 2 if state[2] != 'global' else 0, (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path)
 
     records_group = pygame.sprite.Group()
-    records_group.add(Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', 'White', 4, None))
+    records_group.add(Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
     records_group.add(marathon_button)
     records_group.add(sprint_button)
     records_group.add(blitz_button)
     records_group.add(back_button)
     records_group.add(global_button)
     for r in range(len(top_n)):
-        records_group.add(Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', 'White', 2, None))
+        records_group.add(Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
         for c in range(1, len(top_n[r])):
-            records_group.add(Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', 'White', 2, None))
+            records_group.add(Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
 
     records_group.update(screen)
 
@@ -93,15 +94,15 @@ def state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, 
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', screen.get_rect())
+        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
         ### DRAW SPRITES
         records_group.draw(screen)
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(None, round(.75 * 2 * dim))
-        image = font.render(f'{round(clock.get_fps())}', False, 'White')
+        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)
 

@@ -56,7 +56,7 @@ class Sprite_text(pygame.sprite.Sprite):
 
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
 
-        font = pygame.font.Font(self.font_name, round(.75 * self.font_size * dim))
+        font = pygame.font.Font(self.font_name, round(.5 * self.font_size * dim))
         self.image = font.render(self.text, False, self.color)
         self.rect = self.image.get_rect()
 
@@ -114,9 +114,9 @@ class Sprite_button(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, self.size[0] * dim, self.size[1] * dim)
         pygame.draw.rect(self.image, self.rect_color, self.rect, self.width)
 
-        font = pygame.font.Font(self.font_name, round(.75 * self.font_size * dim))
+        font = pygame.font.Font(self.font_name, round(.5 * self.font_size * dim))
         text_image = font.render(self.text, False, self.font_color)
-        text_rect = text_image.get_rect(midbottom=self.rect.midbottom)
+        text_rect = text_image.get_rect(center=self.rect.center)
         self.image.blit(text_image, text_rect)
 
         self.rect.topleft = (self.offset[0] * dim, self.offset[1] * dim)
@@ -171,7 +171,7 @@ class Sprite_textfield(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, self.size[0] * dim, self.size[1] * dim)
         pygame.draw.rect(self.image, self.rect_color, self.rect, self.width)
 
-        font = pygame.font.Font(self.font_name, round(.75 * self.font_size * dim))
+        font = pygame.font.Font(self.font_name, round(.5 * self.font_size * dim))
         text_image = font.render(text, False, self.font_color)
         text_rect = text_image.get_rect(bottomleft=(self.rect.left + .5 * dim, self.rect.bottom - .4 * dim))
         if text_rect.width > self.rect.width - dim and self.cursor_pos > 8:

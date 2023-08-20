@@ -1,18 +1,19 @@
 import pygame
+from sys import exit
 from utils import Sprite_rect, Sprite_text, Sprite_button
 
-def state_menu(screen, clock, state, user_info):
+def state_menu(screen, clock, font_path, state, user_info):
 
     ### INIT STATE
-    marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', 'White', 2, 'White', 4, None)
-    sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', 'White', 2, 'White', 4, None)
-    blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', 'White', 2, 'White', 4, None)
-    records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', 'White', 2, 'White', 4, None)
-    settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', 'White', 2, 'White', 4, None)
-    logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
+    marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
     menu_group = pygame.sprite.Group()
-    menu_group.add(Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', 'White', 4, None))
+    menu_group.add(Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
     menu_group.add(marathon_button)
     menu_group.add(sprint_button)
     menu_group.add(blitz_button)
@@ -21,9 +22,9 @@ def state_menu(screen, clock, state, user_info):
     menu_group.add(logout_button)
 
     account_group = pygame.sprite.Group()
-    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', 'White', 2))
-    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
-    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
+    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2))
+    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1))
+    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path))
 
     menu_group.update(screen)
     account_group.update(screen)
@@ -68,7 +69,7 @@ def state_menu(screen, clock, state, user_info):
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', screen.get_rect())
+        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
         ### DRAW SPRITES
         menu_group.draw(screen)
@@ -76,8 +77,8 @@ def state_menu(screen, clock, state, user_info):
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(None, round(.75 * 2 * dim))
-        image = font.render(f'{round(clock.get_fps())}', False, 'White')
+        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)
 

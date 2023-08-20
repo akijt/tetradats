@@ -1,41 +1,42 @@
 import pygame
+from sys import exit
 import time
 from utils import Sprite_rect, Sprite_text, Sprite_button
 
-def state_play(screen, clock, game, colors, state, user_info, bindings):
+def state_play(screen, clock, game, colors, font_path, state, user_info, bindings):
 
     ### INIT STATE
-    pause_button = Sprite_button('pause', (8, 2), 'topleft', (1, 1), 'topleft', 'White', 2, 'White', 4, None)
-    time_text    = Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', 'White', 4, None)
-    score_text   = Sprite_text('0', 'bottomleft', (6, 10), 'center', 'White', 4, None)
-    pieces_text  = Sprite_text('0', 'bottomright', (-6, 4), 'center', 'White', 4, None)
-    lines_text   = Sprite_text('0', 'bottomright', (-6, 7), 'center', 'White', 4, None)
-    level_text   = Sprite_text('1', 'bottomright', (-6, 10), 'center', 'White', 4, None)
-    last_text    = Sprite_text('', 'bottomright', (-6, -4), 'center', 'White', 2, None)
-    b2b_text     = Sprite_text('', 'bottomright', (-6, -3), 'center', 'White', 2, None)
-    combo_text   = Sprite_text('', 'bottomright', (-6, -2), 'center', 'White', 2, None)
+    pause_button = Sprite_button('pause', (8, 2), 'topleft', (1, 1), 'topleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    time_text    = Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path)
+    score_text   = Sprite_text('0', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path)
+    pieces_text  = Sprite_text('0', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path)
+    lines_text   = Sprite_text('0', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path)
+    level_text   = Sprite_text('1', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path)
+    last_text    = Sprite_text('', 'bottomright', (-6, -4), 'center', (255, 255, 255), 2, font_path)
+    b2b_text     = Sprite_text('', 'bottomright', (-6, -3), 'center', (255, 255, 255), 2, font_path)
+    combo_text   = Sprite_text('', 'bottomright', (-6, -2), 'center', (255, 255, 255), 2, font_path)
 
     play_group = pygame.sprite.Group()
     play_group.add(pause_button)
-    play_group.add(Sprite_text('time', 'bottomleft', (6, 5), 'center', 'White', 2, None))
+    play_group.add(Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path))
     play_group.add(time_text)
-    play_group.add(Sprite_text('score', 'bottomleft', (6, 8), 'center', 'White', 2, None))
+    play_group.add(Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path))
     play_group.add(score_text)
-    play_group.add(Sprite_text('pieces', 'bottomright', (-6, 2), 'center', 'White', 2, None))
+    play_group.add(Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path))
     play_group.add(pieces_text)
-    play_group.add(Sprite_text('lines', 'bottomright', (-6, 5), 'center', 'White', 2, None))
+    play_group.add(Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path))
     play_group.add(lines_text)
-    play_group.add(Sprite_text('level', 'bottomright', (-6, 8), 'center', 'White', 2, None))
+    play_group.add(Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path))
     play_group.add(level_text)
     play_group.add(last_text)
     play_group.add(b2b_text)
     play_group.add(combo_text)
-    play_group.add(Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', 'White', 4, None))
+    play_group.add(Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path))
 
     account_group = pygame.sprite.Group()
-    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', 'White', 2))
-    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', 'White', 1))
-    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', 'White', 2, None))
+    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2))
+    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1))
+    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path))
 
     play_group.update(screen)
     account_group.update(screen)
@@ -99,7 +100,7 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
             return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', screen.get_rect())
+        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
         ### DRAW BOARD
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -111,7 +112,7 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
                 if game.board[r][c] != None:
                     pygame.draw.rect(screen, colors[game.board[r][c]], [left, top, dim + border_width, dim + border_width])
                 else:
-                    pygame.draw.rect(screen, 'Gray', [left, top, dim + border_width, dim + border_width], border_width)
+                    pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW CURRENT PIECE
         for dr, dc in game.minos[game.piece][game.rotation]:
@@ -131,7 +132,7 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
                 left = screen.get_width() / 2 + (-10 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr) * dim
                 if game.hold_used:
-                    pygame.draw.rect(screen, 'Gray', [left, top, dim + border_width, dim + border_width])
+                    pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width])
                 else:
                     pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
 
@@ -162,8 +163,8 @@ def state_play(screen, clock, game, colors, state, user_info, bindings):
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(None, round(.75 * 2 * dim))
-        image = font.render(f'{round(clock.get_fps())}', False, 'White')
+        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)
 

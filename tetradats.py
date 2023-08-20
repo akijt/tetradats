@@ -20,13 +20,13 @@ clock = pygame.time.Clock()
 
 ### INIT TETRIS
 game = Tetris()
-colors = {'z': 'Red',
-          'l': 'Orange',
-          'o': 'Yellow',
-          's': 'Green',
-          'i': 'Cyan',
-          'j': 'Blue',
-          't': 'Purple'}
+colors = {'z': (255, 0,   0),
+          'l': (255, 165, 0),
+          'o': (255, 255, 0),
+          's': (0,   255, 0),
+          'i': (0,   255, 255),
+          'j': (0,   0,   255),
+          't': (160, 32,  240)}
 
 ### INIT DIRECTORY
 header = ['username', 'password', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
@@ -47,42 +47,43 @@ sql_registrar = Records_sql('tetris', 'records', header, datatype)
 order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC'}
 
 ### INIT STATE
+font_path = 'font/FreeSansBold.ttf'
 state = ['login', '', '']
 
-while True: # TODO: maybe convert state_{}.py files to classes
+while True:
 
     # required parameters in the order defined:
-    # screen, clock, game, colors, sql_directory, csv_registrar, sql_registrar, order_by, state, user_info, bindings, handling
+    # screen, clock, game, colors, sql_directory, csv_registrar, sql_registrar, order_by, font_path, state, user_info, bindings, handling
 
     ### LOGIN/SIGNUP STATE
     if state[0] == 'login' or state[0] == 'signup':
-        acct_info = state_login(screen, clock, sql_directory, state)
+        acct_info = state_login(screen, clock, sql_directory, font_path, state)
         user_info, bindings, handling = acct_info
 
     ### MENU STATE
     elif state[0] == 'menu':
-        state_menu(screen, clock, state, user_info)
+        state_menu(screen, clock, font_path, state, user_info)
 
     ### COUNTDOWN STATE
     elif state[0] == 'countdown':
-        state_countdown(screen, clock, game, colors, state, user_info, bindings, handling)
+        state_countdown(screen, clock, game, colors, font_path, state, user_info, bindings, handling)
 
     ### PLAY STATE
     elif state[0] == 'play':
-        state_play(screen, clock, game, colors, state, user_info, bindings)
+        state_play(screen, clock, game, colors, font_path, state, user_info, bindings)
 
     ### PAUSE STATE
     elif state[0] == 'pause':
-        state_pause(screen, clock, game, state, user_info, bindings)
+        state_pause(screen, clock, game, font_path, state, user_info, bindings)
 
     ### FINISH STATE
     elif state[0] == 'finish':
-        state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, state, bindings, user_info)
+        state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, font_path, state, bindings, user_info)
 
     ### RECORDS STATE
     elif state[0] == 'records':
-        state_records(screen, clock, csv_registrar, sql_registrar, order_by, state, user_info, bindings)
+        state_records(screen, clock, csv_registrar, sql_registrar, order_by, font_path, state, user_info, bindings)
 
     ### SETTINGS STATE
     elif state[0] == 'settings':
-        state_settings(screen, clock, sql_directory, state, user_info, bindings, handling)
+        state_settings(screen, clock, sql_directory, font_path, state, user_info, bindings, handling)

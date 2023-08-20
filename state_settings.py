@@ -1,8 +1,9 @@
 import pygame
+from sys import exit
 import time
 from utils import Sprite_text, Sprite_button, Sprite_textfield, Sprite_line, Sprite_circle
 
-def state_settings(screen, clock, sql_directory, state, user_info, bindings, handling):
+def state_settings(screen, clock, sql_directory, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
     input_fields = {'': ''}
@@ -20,15 +21,15 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
     interactables = dict()
 
-    account_button  = Sprite_button('account', (12, 2), 'bottomright', (-7, -7), 'center', 'White', 2 if state[1] != 'account' else 0, 'White' if state[1] != 'account' else 'Black', 4, None)
-    bindings_button = Sprite_button('bindings', (12, 2), 'midbottom', (0, -7), 'center', 'White', 2 if state[1] != 'bindings' else 0, 'White' if state[1] != 'bindings' else 'Black', 4, None)
-    handling_button = Sprite_button('handling', (12, 2), 'bottomleft', (7, -7), 'center', 'White', 2 if state[1] != 'handling' else 0, 'White' if state[1] != 'handling' else 'Black', 4, None)
-    cancel_button   = Sprite_button('cancel', (8, 2), 'bottomright', (-1, 11), 'center', 'White', 2, 'White', 4, None)
-    apply_button    = Sprite_button('apply', (8, 2), 'bottomleft', (1, 11), 'center', 'White', 2, 'White', 4, None)
-    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', 'White', 2, 'White', 4, None)
+    account_button  = Sprite_button('account', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'account' else 0, (255, 255, 255) if state[1] != 'account' else (0, 0, 0), 4, font_path)
+    bindings_button = Sprite_button('bindings', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'bindings' else 0, (255, 255, 255) if state[1] != 'bindings' else (0, 0, 0), 4, font_path)
+    handling_button = Sprite_button('handling', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'handling' else 0, (255, 255, 255) if state[1] != 'handling' else (0, 0, 0), 4, font_path)
+    cancel_button   = Sprite_button('cancel', (8, 2), 'bottomright', (-1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    apply_button    = Sprite_button('apply', (8, 2), 'bottomleft', (1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
     settings_group = pygame.sprite.Group()
-    settings_group.add(Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', 'White', 4, None))
+    settings_group.add(Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
     settings_group.add(account_button)
     settings_group.add(bindings_button)
     settings_group.add(handling_button)
@@ -37,15 +38,15 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
     settings_group.add(back_button)
 
     if state[1] == 'account':
-        user_box = Sprite_textfield((12, 2), 'midbottom', (2, -3), 'center', 'White', 2, 'White', 2, None)
-        new1_box = Sprite_textfield((12, 2), 'midbottom', (2, 1), 'center', 'White', 2, 'White', 2, None)
-        new2_box = Sprite_textfield((12, 2), 'midbottom', (2, 4), 'center', 'White', 2, 'White', 2, None)
-        pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', 'White', 2, 'White', 2, None)
+        user_box = Sprite_textfield((12, 2), 'midbottom', (2, -3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
+        new1_box = Sprite_textfield((12, 2), 'midbottom', (2, 1), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
+        new2_box = Sprite_textfield((12, 2), 'midbottom', (2, 4), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
+        pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
 
-        settings_group.add(Sprite_text('username', 'bottomright', (-5, -3.4), 'center', 'White', 2, None))
-        settings_group.add(Sprite_text('new password', 'bottomright', (-5, 0.6), 'center', 'White', 2, None))
-        settings_group.add(Sprite_text('confirm password', 'bottomright', (-5, 3.6), 'center', 'White', 2, None))
-        settings_group.add(Sprite_text('current password', 'bottomright', (-5, 6.6), 'center', 'White', 2, None))
+        settings_group.add(Sprite_text('username', 'bottomright', (-5, -3.4), 'center', (255, 255, 255), 2, font_path))
+        settings_group.add(Sprite_text('new password', 'bottomright', (-5, 0.6), 'center', (255, 255, 255), 2, font_path))
+        settings_group.add(Sprite_text('confirm password', 'bottomright', (-5, 3.6), 'center', (255, 255, 255), 2, font_path))
+        settings_group.add(Sprite_text('current password', 'bottomright', (-5, 6.6), 'center', (255, 255, 255), 2, font_path))
         settings_group.add(user_box)
         settings_group.add(new1_box)
         settings_group.add(new2_box)
@@ -56,9 +57,9 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
         interactables['new_pass2'] = new2_box
         interactables['password'] = pass_box
 
-        error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', 'White', 2, None)
-        error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', 'White', 2, None)
-        error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', 'White', 2, None)
+        error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', (255, 255, 255), 2, font_path)
+        error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', (255, 255, 255), 2, font_path)
+        error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', (255, 255, 255), 2, font_path)
         error_group = pygame.sprite.Group()
         error_group.add(error1_text)
         error_group.add(error2_text)
@@ -69,9 +70,9 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                         ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
         for c, column in enumerate(key_order):
             for r, action in enumerate(column):
-                settings_group.add(Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', 'White', 2, None))
+                settings_group.add(Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path))
 
-                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', 'White', 2, None)
+                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path)
                 settings_group.add(key_text)
                 interactables[action] = key_text
 
@@ -79,12 +80,12 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
         slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
         for i, control in enumerate(handling.keys()):
             value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
-            value_text = Sprite_text(value_text, 'bottomleft', (11, -3 + i * 4), 'center', 'White', 2, None)
-            slider = Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', 'White', 0, 'Black')
+            value_text = Sprite_text(value_text, 'bottomleft', (11, -3 + i * 4), 'center', (255, 255, 255), 2, font_path)
+            slider = Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 0, (0, 0, 0))
 
-            settings_group.add(Sprite_text(control, 'bottomleft', (-13, -3 + i * 4), 'center', 'White', 2, None))
+            settings_group.add(Sprite_text(control, 'bottomleft', (-13, -3 + i * 4), 'center', (255, 255, 255), 2, font_path))
             settings_group.add(value_text)
-            settings_group.add(Sprite_line(20, (-10, -3.5 + i * 4), 'center', 'White', 3, 'horizontal'))
+            settings_group.add(Sprite_line(20, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 3, 'horizontal'))
             settings_group.add(slider)
 
             interactables[control] = (slider, value_text)
@@ -235,8 +236,8 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                     elif state[1] == 'bindings':
                         for k in bindings.keys():
                             if interactables[k].rect.collidepoint(pos):
-                                pygame.draw.rect(screen, 'Black', interactables[k].rect)
-                                pygame.draw.rect(screen, 'White', interactables[k].rect, 2)
+                                pygame.draw.rect(screen, (0, 0, 0), interactables[k].rect)
+                                pygame.draw.rect(screen, (255, 255, 255), interactables[k].rect, 2)
                                 pygame.display.update()
                                 while True:
                                     event = pygame.event.wait()
@@ -325,7 +326,7 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
                 error3_text.update(screen, text='')
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, 'Black', screen.get_rect())
+        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
         ### DRAW SPRITES
         if state[1] == 'account':
@@ -344,8 +345,8 @@ def state_settings(screen, clock, sql_directory, state, user_info, bindings, han
         
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(None, round(.75 * 2 * dim))
-        image = font.render(f'{round(clock.get_fps())}', False, 'White')
+        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)
 
