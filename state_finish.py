@@ -39,13 +39,13 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, fo
             if position[1] == 1:
                 global_pos_str = 'global record!'
             elif position[1] % 10 == 1 and position[1] // 10 % 100 != 1:
-                global_pos_str = f'global {position[1]}st best'
+                global_pos_str = f'global {position[1]}st'
             elif position[1] % 10 == 2 and position[1] // 10 % 100 != 1:
-                global_pos_str = f'global {position[1]}nd best'
+                global_pos_str = f'global {position[1]}nd'
             elif position[1] % 10 == 3 and position[1] // 10 % 100 != 1:
-                global_pos_str = f'global {position[1]}rd best'
+                global_pos_str = f'global {position[1]}rd'
             else:
-                global_pos_str = f'global {position[1]}th best'
+                global_pos_str = f'global {position[1]}th'
 
     retry_button = Sprite_button('retry', (8, 2), 'midleft', (1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     menu_button  = Sprite_button('menu', (8, 2), 'midright', (-1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
