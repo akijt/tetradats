@@ -100,6 +100,7 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 settings_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:

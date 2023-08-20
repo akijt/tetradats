@@ -47,6 +47,7 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 pause_group.update(screen)
                 account_group.update(screen)
             elif event.type == pygame.KEYDOWN:

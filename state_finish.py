@@ -68,6 +68,7 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, fo
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 finish_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:

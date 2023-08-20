@@ -43,6 +43,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 countdown_group.update(screen)
                 account_group.update(screen)
             elif event.type == pygame.KEYDOWN:

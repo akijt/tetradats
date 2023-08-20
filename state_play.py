@@ -49,6 +49,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 play_group.update(screen)
                 account_group.update(screen)
             elif event.type == pygame.KEYDOWN:

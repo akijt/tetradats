@@ -49,6 +49,7 @@ def state_login(screen, clock, sql_directory, font_path, state):
                 pygame.quit()
                 exit()
             elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 login_group.update(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
