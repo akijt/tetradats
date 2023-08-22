@@ -72,7 +72,7 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
             for r, action in enumerate(column):
                 settings_group.add(Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path))
 
-                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path)
+                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) # TODO: PyInstaller issue
                 settings_group.add(key_text)
                 interactables[action] = key_text
 
