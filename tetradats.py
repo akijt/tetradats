@@ -36,9 +36,9 @@ elif dir_type == 'sql':
     header = ['username', 'password', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     datatype = ['VARCHAR(16)' if h in ['username', 'password'] else
                 'INT'         for h in header]
-    directory = Accounts_sql('tetris', 'records', header, datatype) # TODO: rename database to 'tetradats'
+    directory = Accounts_sql('tetris', 'accounts', header, datatype) # TODO: rename database to 'tetradats'
 elif dir_type == 'msa':
-    directory = Accounts_msa('tetradats', 'records')
+    directory = Accounts_msa('tetradats', 'accounts')
 
 ### INIT REGISTRAR
 reg_type = 'sql'
