@@ -26,8 +26,8 @@ class Accounts_msa():
         acct_info = [x for x in self.cursor]
         if acct_info:
             user_info = {k: acct_info[0][i] for i, k in enumerate(self.user_info_names)}
-            bindings  = {k: acct_info[0][i + 2] for i, k in enumerate(self.binding_names)}
-            handling  = {k: acct_info[0][i + 12] for i, k in enumerate(self.handling_names)}
+            bindings  = {k: acct_info[0][i + 4] for i, k in enumerate(self.binding_names)}
+            handling  = {k: acct_info[0][i + 14] for i, k in enumerate(self.handling_names)}
             return user_info, bindings, handling
 
     def sign_up(self, username, password, datetime, timezone):
@@ -101,8 +101,8 @@ class Accounts_sql():
         acct_info = [x for x in self.cursor]
         if acct_info:
             user_info = {k: acct_info[0][i] for i, k in enumerate(self.user_info_names)}
-            bindings  = {k: acct_info[0][i + 2] for i, k in enumerate(self.binding_names)}
-            handling  = {k: acct_info[0][i + 12] for i, k in enumerate(self.handling_names)}
+            bindings  = {k: acct_info[0][i + 4] for i, k in enumerate(self.binding_names)}
+            handling  = {k: acct_info[0][i + 14] for i, k in enumerate(self.handling_names)}
             return user_info, bindings, handling
 
     def sign_up(self, username, password, datetime, timezone):

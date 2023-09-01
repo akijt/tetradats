@@ -186,7 +186,7 @@ class Tetris():
             self.last_action = 'rotate'
             return True
 
-    def drop(self, distance):
+    def drop(self, distance): # TODO: fix soft drop action when sdf != 0
         '''
         (7/17/26) The lowest row reached by a piece can be interpreted in two different ways. The
         way it is interpreted in this implementation is the lowest row that the 4x4 piece rotation
