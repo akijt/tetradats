@@ -186,7 +186,7 @@ class Tetris():
             self.last_action = 'rotate'
             return True
 
-    def drop(self, distance): # TODO: fix soft drop action when sdf != 0
+    def drop(self, distance):
         '''
         (7/17/26) The lowest row reached by a piece can be interpreted in two different ways. The
         way it is interpreted in this implementation is the lowest row that the 4x4 piece rotation
@@ -199,9 +199,9 @@ class Tetris():
         again to get more points.
         '''
         distance = min(distance, self.height)
-        self.position[0] -= distance
-        self.height -= distance
         if distance > 0:
+            self.position[0] -= distance
+            self.height -= distance
             if self.position[0] < self.lock_lowest:
                 self.lock_lowest = self.position[0]
                 self.lock_count  = 0
@@ -211,7 +211,7 @@ class Tetris():
         else:
             return False
 
-    def soft_drop(self, down=True):
+    def soft_drop(self, current_time, down=True):
         if down:
             self.stats['keys'] += 1
             self.key_state['soft_drop'] = 1
@@ -219,6 +219,7 @@ class Tetris():
                 self.gravity = 0
             else:
                 self.gravity /= self.stats['SDF']
+                self.gravity_time = current_time - self.gravity
         else:
             self.key_state['soft_drop'] = 0
             self.gravity = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
@@ -376,6 +377,7 @@ class Tetris():
         if gravity_timer > self.gravity:
             if self.gravity <= 0:
                 self.drop(40)
+                self.gravity_time = current_time
             else:
                 distance = int(gravity_timer // self.gravity)
                 self.drop(distance)
@@ -397,12 +399,13 @@ class Tetris():
         if self.finish:
             self.stats['time'] = current_time - self.stats['time']
             if self.stats['mode'] == 'marathon':
-                self.lose = False # in marathon, its always a finish, not a lose
+                self.lose = False # in marathon, it's always a finish, not a lose
 
     def frame_update(self, current_time):
         self.move_hold(current_time)
         self.gravity_drop(current_time)
         self.piece_lock(current_time)
+        self.finished(current_time)
 
     def pause(self, current_time):
         self.stats['time'] = current_time - self.stats['time']

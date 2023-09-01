@@ -75,12 +75,12 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 elif event.key == bindings['rotate_ccw']:
                     game.rotate(3, time.time())
                 elif event.key == bindings['soft_drop']:
-                    game.soft_drop() 
+                    game.soft_drop(time.time()) 
                 elif event.key == bindings['hard_drop']:
                     game.hard_drop(time.time())
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
-                    game.soft_drop(down=False)
+                    game.soft_drop(time.time(), down=False)
                 elif event.key == bindings['move_left']:
                     game.move_press(-1, time.time(), down=False)
                 elif event.key == bindings['move_right']:
@@ -95,7 +95,6 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
 
         ### FRAME UPDATE
         game.frame_update(time.time())
-        game.finished(time.time())
         if game.finish:
             state[0] = 'finish'
             return
