@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_text, Sprite_button, Sprite_textfield, Sprite_line, Sprite_circle
 
-def state_settings(screen, clock, sql_directory, font_path, state, user_info, bindings, handling):
+def state_settings(screen, clock, dir_type, directory, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
     input_fields = {'': ''}
@@ -110,10 +110,10 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
                     if state[1] == 'account':
                         if user_info['username'] != 'guest':
                             if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username']:
-                                sql_directory.settings(user_info['username'], '', {'username': input_fields['username']})
+                                directory.settings(user_info['username'], '', {'username': input_fields['username']})
                                 user_info['username'] = input_fields['username']
                             if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0:
-                                if not sql_directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
+                                if not directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
                                     error_code |= (1 << 2)
                         input_fields['username'] = user_info['username']
                         input_fields['password'] = ''
@@ -124,14 +124,14 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
                         changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                         if changes:
                             if user_info['username'] != 'guest':
-                                sql_directory.settings(user_info['username'], '', changes)
+                                directory.settings(user_info['username'], '', changes)
                             for k, v in changes.items():
                                 bindings[k] = v
                     elif state[1] == 'handling':
                         changes = {k: input_fields[k] for k, v in handling.items() if input_fields[k] != v}
                         if changes:
                             if user_info['username'] != 'guest':
-                                sql_directory.settings(user_info['username'], '', changes)
+                                directory.settings(user_info['username'], '', changes)
                             for k, v in changes.items():
                                 handling[k] = v
                 elif state[1] == 'account':
@@ -200,10 +200,10 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
                         if state[1] == 'account':
                             if user_info['username'] != 'guest':
                                 if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
-                                    sql_directory.settings(user_info['username'], '', {'username': input_fields['username']})
+                                    directory.settings(user_info['username'], '', {'username': input_fields['username']})
                                     user_info['username'] = input_fields['username']
                                 if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0:
-                                    if sql_directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
+                                    if directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
                                         pass
                                     else:
                                         error_code |= (1 << 2)
@@ -216,14 +216,14 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
                             changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                             if changes:
                                 if user_info['username'] != 'guest':
-                                    sql_directory.settings(user_info['username'], '', changes)
+                                    directory.settings(user_info['username'], '', changes)
                                 for k, v in changes.items():
                                     bindings[k] = v
                         elif state[1] == 'handling':
                             changes = {k: input_fields[k] for k, v in handling.items() if input_fields[k] != v}
                             if changes:
                                 if user_info['username'] != 'guest':
-                                    sql_directory.settings(user_info['username'], '', changes)
+                                    directory.settings(user_info['username'], '', changes)
                                 for k, v in changes.items():
                                     handling[k] = v
                     elif state[1] == 'account':
@@ -309,7 +309,7 @@ def state_settings(screen, clock, sql_directory, font_path, state, user_info, bi
 
         ### ERROR HANDLING
         if state[1] == 'account':
-            if input_fields['username'] != user_info['username'] and not sql_directory.username_available(input_fields['username']):
+            if input_fields['username'] != user_info['username'] and not directory.username_available(input_fields['username']):
                 error1_text.update(screen, text='taken')
                 error_code |= (1 << 0)
             else:

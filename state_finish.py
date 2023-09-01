@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_text, Sprite_button
 
-def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, font_path, state, bindings, user_info):
+def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, state, bindings, user_info):
 
     ### INIT STATE
     result_str     = ''
@@ -22,8 +22,10 @@ def state_finish(screen, clock, game, csv_registrar, sql_registrar, order_by, fo
 
         if user_info['username'] != 'guest':
             row = [user_info['username'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime())] + [game.stats[stat] for stat in game.stat_names]
-            position = csv_registrar.save(row, state[1], {'marathon': (5, 'desc'), 'sprint': (4, 'asc'), 'blitz': (5, 'desc')}[state[1]])
-            position = sql_registrar.save(row, order_by[state[1]])
+            if reg_type == 'csv':
+                position = registrar.save(row, state[1], order_by[state[1]])
+            elif reg_type == 'sql' or reg_type == 'msa':
+                position = registrar.save(row, order_by[state[1]])
 
             if position[0] == 1:
                 local_pos_str = 'new best!'

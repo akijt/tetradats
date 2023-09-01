@@ -2,7 +2,46 @@ import mysql.connector
 import os
 import csv
 
-# TODO: save into online database
+class Records_msa():
+
+    def __init__(self, database, table):
+        self.database = database
+        self.table = table
+        self.mydb = mysql.connector.connect(
+            user         = '',
+            password     = '',
+            host         = 'tetradats-db1.mysql.database.azure.com',
+            port         = 3306,
+            database     = self.database,
+            ssl_ca       = 'DigiCertGlobalRootCA.crt.pem',
+            ssl_disabled = False
+        )
+        self.cursor = self.mydb.cursor()
+
+    def save(self, row, order_by):
+        query = f'INSERT INTO {self.table} VALUES({("%s, " * len(row))[:-2]});'
+        self.cursor.execute(query, row)
+        self.mydb.commit()
+        query = f'SELECT datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE username = "{row[0]}" and mode = "{row[3]}"'
+        query = f'SELECT q.rank FROM ({query}) AS q WHERE datetime = "{row[1]}"'
+        self.cursor.execute(query)
+        position_local = [x for x in self.cursor][0][0]
+        query = f'SELECT username, datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE mode = "{row[3]}"'
+        query = f'SELECT q.rank FROM ({query}) as q WHERE username = "{row[0]}" and datetime = "{row[1]}"'
+        self.cursor.execute(query)
+        position_global = [x for x in self.cursor][0][0]
+        return (position_local, position_global)
+
+    def load(self, username, mode, order_by, n):
+        self.cursor.execute(f'SHOW COLUMNS FROM {self.table};')
+        top_n = [tuple([''] + [x[0] for x in self.cursor])]
+        if username:
+            query = f'SELECT RANK() OVER(ORDER BY {order_by}) AS "rank", {self.table}.* FROM {self.table} WHERE username = "{username}" and mode = "{mode}" ORDER BY {order_by} LIMIT {n}'
+        else:
+            query = f'SELECT RANK() OVER(ORDER BY {order_by}) AS "rank", {self.table}.* FROM {self.table} WHERE mode = "{mode}" ORDER BY {order_by} LIMIT {n}'
+        self.cursor.execute(query)
+        top_n += [x for x in self.cursor]
+        return top_n
 
 class Records_sql():
 
@@ -36,7 +75,7 @@ class Records_sql():
             query = query[:-2] + ');'
             self.cursor.execute(query)
 
-    def edit_sql(self):
+    def edit(self):
         '''
         used to make changes to the database
         '''
@@ -75,21 +114,21 @@ class Records_sql():
         query = f'INSERT INTO {self.table} VALUES({("%s, " * len(row))[:-2]});'
         self.cursor.execute(query, row)
         self.mydb.commit()
-        query = f'SELECT datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE user = "{row[0]}" and mode = "{row[3]}"'
+        query = f'SELECT datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE username = "{row[0]}" and mode = "{row[3]}"'
         query = f'SELECT q.rank FROM ({query}) AS q WHERE datetime = "{row[1]}"'
         self.cursor.execute(query)
         position_local = [x for x in self.cursor][0][0]
-        query = f'SELECT user, datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE mode = "{row[3]}"'
-        query = f'SELECT q.rank FROM ({query}) as q WHERE user = "{row[0]}" and datetime = "{row[1]}"'
+        query = f'SELECT username, datetime, RANK() OVER(ORDER BY {order_by}) AS "rank" FROM {self.table} WHERE mode = "{row[3]}"'
+        query = f'SELECT q.rank FROM ({query}) as q WHERE username = "{row[0]}" and datetime = "{row[1]}"'
         self.cursor.execute(query)
         position_global = [x for x in self.cursor][0][0]
         return (position_local, position_global)
 
-    def load(self, user, mode, order_by, n):
+    def load(self, username, mode, order_by, n):
         self.cursor.execute(f'SHOW COLUMNS FROM {self.table};')
         top_n = [tuple([''] + [x[0] for x in self.cursor])]
-        if user:
-            query = f'SELECT RANK() OVER(ORDER BY {order_by}) AS "rank", {self.table}.* FROM {self.table} WHERE user = "{user}" and mode = "{mode}" ORDER BY {order_by} LIMIT {n}'
+        if username:
+            query = f'SELECT RANK() OVER(ORDER BY {order_by}) AS "rank", {self.table}.* FROM {self.table} WHERE username = "{username}" and mode = "{mode}" ORDER BY {order_by} LIMIT {n}'
         else:
             query = f'SELECT RANK() OVER(ORDER BY {order_by}) AS "rank", {self.table}.* FROM {self.table} WHERE mode = "{mode}" ORDER BY {order_by} LIMIT {n}'
         self.cursor.execute(query)
@@ -137,13 +176,13 @@ class Records_csv():
                 writer.writerow(line)
         return (position_local, position_global)
 
-    def load(self, user, mode, n):
+    def load(self, username, mode, n):
         record_path = os.path.join(f'{self.directory}', f'{mode}.csv')
         with open(record_path, 'r', newline='') as f:
             reader = csv.reader(f)
             top_n = [next(reader)]
             for line in reader:
-                if user == '' or line[0] == user:
+                if username == '' or line[0] == username:
                     top_n.append(line)
                     if len(top_n) > n:
                         break

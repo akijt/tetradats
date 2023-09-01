@@ -3,15 +3,18 @@ from sys import exit
 import datetime
 from utils import Sprite_text, Sprite_button
 
-def state_records(screen, clock, csv_registrar, sql_registrar, order_by, font_path, state, user_info, bindings):
+def state_records(screen, clock, reg_type, registrar, order_by, font_path, state, user_info, bindings):
 
     ### INIT STATE
-    # records_query = csv_registrar.load('' if state[2] == 'global' else user_info['username'], state[1], 10)
-    # for r in range(len(records_query)):
-    #     records_query[r] = [str(r) if r != 0 else ''] + records_query[r]
-    #     if r != 0:
-    #         records_query[r][2] = datetime.datetime.strptime(records_query[r][2], '%Y/%m/%d %H:%M:%S')
-    records_query = sql_registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
+    if reg_type == 'csv':
+        records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], 10)
+        for r in range(len(records_query)):
+            records_query[r] = [str(r) if r != 0 else ''] + records_query[r]
+            if r != 0:
+                records_query[r][2] = datetime.datetime.strptime(records_query[r][2], '%Y/%m/%d %H:%M:%S')
+    elif reg_type == 'sql' or reg_type == 'msa':
+        records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
+        
     top_n = []
     for r in range(len(records_query)):
         top_n.append([str(records_query[r][0])])

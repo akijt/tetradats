@@ -4,7 +4,7 @@ import time
 from animation import Animation
 from utils import Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
 
-def state_login(screen, clock, sql_directory, font_path, state):
+def state_login(screen, clock, dir_type, directory, font_path, state):
 
     ### INIT STATE
     animation = Animation(.5, time.time())
@@ -57,9 +57,9 @@ def state_login(screen, clock, sql_directory, font_path, state):
                         error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                     else:
                         if state[0] == 'login':
-                            acct_info = sql_directory.login(input_fields['user'], input_fields['pass'])
+                            acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         elif state[0] == 'signup':
-                            acct_info = sql_directory.sign_up(input_fields['user'], input_fields['pass'])
+                            acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                         if acct_info:
                             state[0] = 'menu'
                             return acct_info
@@ -117,9 +117,9 @@ def state_login(screen, clock, sql_directory, font_path, state):
                             error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                         else:
                             if state[0] == 'login':
-                                acct_info = sql_directory.login(input_fields['user'], input_fields['pass'])
+                                acct_info = directory.login(input_fields['user'], input_fields['pass'])
                             elif state[0] == 'signup':
-                                acct_info = sql_directory.sign_up(input_fields['user'], input_fields['pass'])
+                                acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                             if acct_info:
                                 state[0] = 'menu'
                                 return acct_info
@@ -137,7 +137,7 @@ def state_login(screen, clock, sql_directory, font_path, state):
                     elif guest_button.rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
-                        acct_info = sql_directory.login(input_fields['user'], input_fields['pass'])
+                        acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         state[0] = 'menu'
                         return acct_info
                     else:
@@ -171,7 +171,7 @@ def state_login(screen, clock, sql_directory, font_path, state):
                 cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
         ### ERROR HANDLING
-        if state[0] == 'signup' and not sql_directory.username_available(input_fields['user']):
+        if state[0] == 'signup' and not directory.username_available(input_fields['user']):
             error1_text.update(screen, text='username taken')
         elif error_code & (1 << 0):
             error1_text.update(screen, text='enter username')
