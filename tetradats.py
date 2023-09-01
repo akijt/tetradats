@@ -29,14 +29,14 @@ colors = {'z': (255, 0,   0),
           't': (160, 32,  240)}
 
 ### INIT DIRECTORY
-dir_type = 'sql'
+dir_type = 'msa'
 if dir_type == 'csv':
     pass
 elif dir_type == 'sql':
     header = ['username', 'password', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     datatype = ['VARCHAR(16)' if h in ['username', 'password'] else
                 'INT'         for h in header]
-    directory = Accounts_sql('tetris', 'accounts', header, datatype) # TODO: rename database to 'tetradats'
+    directory = Accounts_sql('tetradats', 'accounts', header, datatype)
 elif dir_type == 'msa':
     directory = Accounts_msa('tetradats', 'accounts')
 
@@ -53,7 +53,7 @@ elif reg_type == 'sql':
                 'VARCHAR(5)'     if h in ['timezone'] else
                 'DOUBLE'         if h in ['time'] else
                 'INT'            for h in header]
-    registrar = Records_sql('tetris', 'records', header, datatype) # TODO: rename database to 'tetradats'
+    registrar = Records_sql('tetradats', 'records', header, datatype)
     order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC'}
 elif reg_type == 'msa':
     registrar = Records_msa('tetradats', 'records')

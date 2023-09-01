@@ -137,3 +137,8 @@ class Accounts_sql():
         self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
         acct_info = [x for x in self.cursor]
         return not acct_info
+    
+class Accounts_csv(): # TODO
+
+    def __init__(self):
+        pass
