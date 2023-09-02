@@ -14,8 +14,7 @@ block stacking game
 
 ## accounts.py
 - Holds classes for saving player data
-- Currently supports local My SQL and MS Azure MySQL
-- Local CSV (retroactive support) to come
+- Supports local CSV, local MySQL, and MS Azure MySQL
 
 ## animation.py
 - Holds class for cool animation on the login screen

@@ -57,9 +57,15 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                     else:
                         if state[0] == 'login':
-                            acct_info = directory.login(input_fields['user'], input_fields['pass'])
+                            if dir_type == 'csv':
+                                acct_info = directory.login(input_fields['user'])
+                            elif dir_type == 'sql' or dir_type == 'msa':
+                                acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         elif state[0] == 'signup':
-                            acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
+                            if dir_type == 'csv':
+                                acct_info = directory.sign_up(input_fields['user'])
+                            elif dir_type == 'sql' or dir_type == 'msa':
+                                acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                         if acct_info:
                             state[0] = 'menu'
                             return acct_info
@@ -88,7 +94,7 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                     cursor_pos = min(cursor_pos + 1, len(input_fields[state[1]]))
                 elif len(event.unicode) == 1 and len(input_fields[state[1]]) < 16:
                     alphanumeric = (48 <= ord(event.unicode) <= 57 or 65 <= ord(event.unicode) <= 90 or 97 <= ord(event.unicode) <= 122)
-                    if state[1] == 'user' and alphanumeric or state[1] == 'pass':
+                    if state[1] == 'user' and alphanumeric or state[1] == 'pass' and not event.unicode.isspace():
                         input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + event.unicode + input_fields[state[1]][cursor_pos:]
                         cursor_pos += 1
             elif event.type == pygame.KEYUP:
@@ -117,9 +123,15 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                             error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                         else:
                             if state[0] == 'login':
-                                acct_info = directory.login(input_fields['user'], input_fields['pass'])
+                                if dir_type == 'csv':
+                                    acct_info = directory.login(input_fields['user'])
+                                elif dir_type == 'sql' or dir_type == 'msa':
+                                    acct_info = directory.login(input_fields['user'], input_fields['pass'])
                             elif state[0] == 'signup':
-                                acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
+                                if dir_type == 'csv':
+                                    acct_info = directory.sign_up(input_fields['user'])
+                                elif dir_type == 'sql' or dir_type == 'msa':
+                                    acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                             if acct_info:
                                 state[0] = 'menu'
                                 return acct_info
@@ -137,7 +149,10 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                     elif guest_button.rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
-                        acct_info = directory.login(input_fields['user'], input_fields['pass'])
+                        if dir_type == 'csv':
+                            acct_info = directory.login(input_fields['user'])
+                        elif dir_type == 'sql' or dir_type == 'msa':
+                            acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         state[0] = 'menu'
                         return acct_info
                     else:

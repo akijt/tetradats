@@ -110,10 +110,10 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                     if state[1] == 'account':
                         if user_info['username'] != 'guest':
                             if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username']:
-                                directory.settings(user_info['username'], '', {'username': input_fields['username']})
+                                directory.settings(user_info['username'], {'username': input_fields['username']})
                                 user_info['username'] = input_fields['username']
-                            if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0:
-                                if not directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
+                            if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and dir_type != 'csv':
+                                if not directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
                                     error_code |= (1 << 2)
                         input_fields['username'] = user_info['username']
                         input_fields['password'] = ''
@@ -124,14 +124,14 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                         changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                         if changes:
                             if user_info['username'] != 'guest':
-                                directory.settings(user_info['username'], '', changes)
+                                directory.settings(user_info['username'], changes)
                             for k, v in changes.items():
                                 bindings[k] = v
                     elif state[1] == 'handling':
                         changes = {k: input_fields[k] for k, v in handling.items() if input_fields[k] != v}
                         if changes:
                             if user_info['username'] != 'guest':
-                                directory.settings(user_info['username'], '', changes)
+                                directory.settings(user_info['username'], changes)
                             for k, v in changes.items():
                                 handling[k] = v
                 elif state[1] == 'account':
@@ -200,10 +200,10 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                         if state[1] == 'account':
                             if user_info['username'] != 'guest':
                                 if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
-                                    directory.settings(user_info['username'], '', {'username': input_fields['username']})
+                                    directory.settings(user_info['username'], {'username': input_fields['username']})
                                     user_info['username'] = input_fields['username']
-                                if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0:
-                                    if directory.settings(user_info['username'], input_fields['password'], {'password': input_fields['new_pass1']}):
+                                if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and dir_type != 'csv':
+                                    if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
                                         pass
                                     else:
                                         error_code |= (1 << 2)
@@ -216,14 +216,14 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                             changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
                             if changes:
                                 if user_info['username'] != 'guest':
-                                    directory.settings(user_info['username'], '', changes)
+                                    directory.settings(user_info['username'], changes)
                                 for k, v in changes.items():
                                     bindings[k] = v
                         elif state[1] == 'handling':
                             changes = {k: input_fields[k] for k, v in handling.items() if input_fields[k] != v}
                             if changes:
                                 if user_info['username'] != 'guest':
-                                    directory.settings(user_info['username'], '', changes)
+                                    directory.settings(user_info['username'], changes)
                                 for k, v in changes.items():
                                     handling[k] = v
                     elif state[1] == 'account':

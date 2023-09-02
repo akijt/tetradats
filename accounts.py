@@ -1,10 +1,12 @@
 import mysql.connector
+import os
+import csv
 
  # TODO: add columns for email (maybe even level and exp)
 
 class Accounts_msa():
 
-    def __init__(self, database, table):
+    def __init__(self, database, table, header):
         self.database = database
         self.table = table
         self.mydb = mysql.connector.connect(
@@ -17,9 +19,9 @@ class Accounts_msa():
             ssl_disabled = False
         )
         self.cursor = self.mydb.cursor()
-        self.user_info_names = ['username']
-        self.binding_names   = ['quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop']
-        self.handling_names  = ['DAS', 'ARR', 'SDF']
+        self.user_info_names = header[0:1]
+        self.binding_names   = header[4:14]
+        self.handling_names  = header[14:17]
     
     def login(self, username, password):
         self.cursor.execute(f'SELECT * FROM {self.table} WHERE username = "{username}" AND password = "{password}"')
@@ -31,19 +33,15 @@ class Accounts_msa():
             return user_info, bindings, handling
 
     def sign_up(self, username, password, datetime, timezone):
-        self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
-        acct_info = [x for x in self.cursor]
-        if not acct_info:
+        if self.username_available(username):
             self.cursor.execute(f'INSERT INTO {self.table} VALUES ("{username}", "{password}", "{datetime}", "{timezone}", 27,  114, 99, 1073741904, 1073741903, 120, 1073742049, 122, 1073741905, 32, 300, 50, 20);')
             self.mydb.commit()
             return self.login(username, password)
 
-    def settings(self, username, password, changes):
+    def settings(self, username, changes, password=''):
         valid = True
         if 'username' in changes.keys(): # check if new username is unique
-            self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{changes["username"]}"')
-            acct_info = [x for x in self.cursor]
-            if acct_info:
+            if not self.username_available(changes["username"]):
                 valid = False
         if 'password' in changes.keys(): # password required for changing password
             self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}" AND password = "{password}"')
@@ -92,9 +90,9 @@ class Accounts_sql():
                 query += f'{column} {datatype[i]}, '
             query = query[:-2] + ');'
             self.cursor.execute(query)
-        self.user_info_names = ['username']
-        self.binding_names   = ['quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop']
-        self.handling_names  = ['DAS', 'ARR', 'SDF']
+        self.user_info_names = header[0:1]
+        self.binding_names   = header[4:14]
+        self.handling_names  = header[14:17]
 
     def login(self, username, password):
         self.cursor.execute(f'SELECT * FROM {self.table} WHERE username = "{username}" AND password = "{password}"')
@@ -106,19 +104,15 @@ class Accounts_sql():
             return user_info, bindings, handling
 
     def sign_up(self, username, password, datetime, timezone):
-        self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
-        acct_info = [x for x in self.cursor]
-        if not acct_info:
+        if self.username_available(username):
             self.cursor.execute(f'INSERT INTO {self.table} VALUES ("{username}", "{password}", "{datetime}", "{timezone}", 27,  114, 99, 1073741904, 1073741903, 120, 1073742049, 122, 1073741905, 32, 300, 50, 20);')
             self.mydb.commit()
             return self.login(username, password)
 
-    def settings(self, username, password, changes):
+    def settings(self, username, changes, password=''):
         valid = True
         if 'username' in changes.keys(): # check if new username is unique
-            self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{changes["username"]}"')
-            acct_info = [x for x in self.cursor]
-            if acct_info:
+            if not self.username_available(changes["username"]):
                 valid = False
         if 'password' in changes.keys(): # password required for changing password
             self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}" AND password = "{password}"')
@@ -138,7 +132,61 @@ class Accounts_sql():
         acct_info = [x for x in self.cursor]
         return not acct_info
     
-class Accounts_csv(): # TODO
+class Accounts_csv():
 
-    def __init__(self):
-        pass
+    def __init__(self, file, header):
+        self.file_path = f'{file}.csv'
+        if not os.path.isfile(self.file_path):
+            with open(self.file_path, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+        self.user_info_names = header[0:1]
+        self.binding_names   = header[1:11]
+        self.handling_names  = header[11:14]
+
+    def login(self, username):
+        with open(self.file_path, 'r', newline='') as f:
+            reader = csv.reader(f)
+            next(reader)
+            for line in reader:
+                if line[0] == username:
+                    user_info = {k: line[i] for i, k in enumerate(self.user_info_names)}
+                    bindings  = {k: int(line[i + 1]) for i, k in enumerate(self.binding_names)}
+                    handling  = {k: int(line[i + 11]) for i, k in enumerate(self.handling_names)}
+                    return user_info, bindings, handling
+
+    def sign_up(self, username):
+        if self.username_available(username):
+            with open(self.file_path, 'a', newline='') as f:
+                writer = csv.writer(f)
+                row = [username, 27,  114, 99, 1073741904, 1073741903, 120, 1073742049, 122, 1073741905, 32, 300, 50, 20]
+                writer.writerow(row)
+            return self.login(username)
+
+    def settings(self, username, changes):
+        with open(self.file_path, 'r', newline='') as f:
+            reader = csv.reader(f)
+            accounts = [next(reader)]
+            for line in reader:
+                if line[0] == username:
+                    for k, v in changes.items():
+                        line[accounts[0].index(k)] = v
+                    accounts.append(line)
+                    break
+                accounts.append(line)
+            for line in reader:
+                accounts.append(line)
+        with open(self.file_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            for line in accounts:
+                writer.writerow(line)
+        return True
+
+    def username_available(self, username):
+        with open(self.file_path, 'r', newline='') as f:
+            reader = csv.reader(f)
+            next(reader)
+            for line in reader:
+                if line[0] == username:
+                    return False
+        return True

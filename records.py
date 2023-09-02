@@ -150,7 +150,7 @@ class Records_csv():
 
     def save(self, row, mode, order):
         record_path = os.path.join(f'{self.directory}', f'{mode}.csv')
-        with open(record_path, 'r+', newline='') as f:
+        with open(record_path, 'r', newline='') as f:
             reader = csv.reader(f)
             records = [next(reader)]
             position_local = 1
@@ -159,18 +159,17 @@ class Records_csv():
                 if (order[1] == 'asc' and row[order[0]] < float(line[order[0]]) or
                     order[1] == 'desc' and row[order[0]] > float(line[order[0]])):
                     records.append(row)
+                    records.append(line)
+                    for line in reader:
+                        records.append(line)
                     break
                 records.append(line)
                 if line[0] == row[0]:
                     position_local += 1
                 position_global += 1
-            if row in records:
-                records.append(line)
-                for line in reader:
-                    records.append(line)
             else:
                 records.append(row)
-            f.seek(0)
+        with open(record_path, 'w', newline='') as f:
             writer = csv.writer(f)
             for line in records:
                 writer.writerow(line)
