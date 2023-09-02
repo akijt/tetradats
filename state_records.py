@@ -12,8 +12,11 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
             records_query[r] = [str(r) if r != 0 else ''] + records_query[r]
             if r != 0:
                 records_query[r][2] = datetime.datetime.strptime(records_query[r][2], '%Y/%m/%d %H:%M:%S')
-    elif reg_type == 'sql' or reg_type == 'msa':
+    elif reg_type == 'sql':
         records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
+    elif reg_type == 'msa':
+        records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
+        records_query[0] = records_query[0][:1] + records_query[0][2:]
         
     top_n = []
     for r in range(len(records_query)):

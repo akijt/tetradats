@@ -29,7 +29,7 @@ colors = {'z': (255, 0,   0),
           't': (160, 32,  240)}
 
 ### INIT DIRECTORY
-dir_type = 'csv'
+dir_type = 'msa'
 if dir_type == 'csv':
     header = ['username', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     directory = Accounts_csv('accounts', header)
@@ -45,14 +45,14 @@ elif dir_type == 'msa':
     directory = Accounts_msa('tetradats', 'accounts', header)
 
 ### INIT REGISTRAR
-reg_type = 'csv'
+reg_type = 'msa'
 if reg_type == 'csv':
-    header = ['user', 'datetime', 'timezone'] + game.stat_names
+    header = ['username', 'datetime', 'timezone'] + game.stat_names
     registrar = Records_csv('records', ['marathon', 'sprint', 'blitz'], header)
     order_by = {'marathon': (5, 'desc'), 'sprint': (4, 'asc'), 'blitz': (5, 'desc')}
 elif reg_type == 'sql':
-    header = ['user', 'datetime', 'timezone'] + game.stat_names
-    datatype = ['VARCHAR(16)' if h in ['user', 'mode'] else
+    header = ['username', 'datetime', 'timezone'] + game.stat_names
+    datatype = ['VARCHAR(16)' if h in ['username', 'mode'] else
                 'DATETIME'    if h in ['datetime'] else
                 'VARCHAR(5)'  if h in ['timezone'] else
                 'DOUBLE'      if h in ['time'] else
