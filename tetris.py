@@ -212,6 +212,18 @@ class Tetris():
             return False
 
     def soft_drop(self, current_time, down=True):
+        '''
+        (9/2/23) When self.stats['SDF'] > 1, both self.gravity and self.gravity_time must be
+        updated. Though unintuitive, self.gravity_time is updated because otherwise, the piece will
+        drop more rows than intended in most cases (see gravity_drop() implementation).
+        Because the piece should drop on the same frame soft_drop() is called, self.gravity_time is
+        set to current_time - self.gravity. However, if soft_drop() is called on the same frame the
+        piece would have dropped anyways, there would be a difference of a couple milliseconds in
+        self.gravity_time after gravity_drop() depending on whether the regular drop or soft drop
+        was interpreted as the cause of the drop. By choosing to assign the cause of these drops to
+        soft drop whenever the soft drop key is pressed, the consistency of soft drops is
+        preserved.
+        '''
         if down:
             self.stats['keys'] += 1
             self.key_state['soft_drop'] = 1
@@ -230,7 +242,7 @@ class Tetris():
         self.key_state['hard_drop'] will be set to 1 (that's it). In gravity_drop,
         self.key_state['hard_drop'] will be an additional condition for
         self.drop(40, current_time). After the drop() call, self.key_state['hard_drop'] is reverted
-        back to 0. In drop(), the addition to self.stats['score'] will need to muliply distance by
+        back to 0. In drop(), the addition to self.stats['score'] will need to multiply distance by
         2 if self.key_state['hard_drop'].
         '''
         self.stats['keys'] += 1
