@@ -41,6 +41,8 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
     play_group.update(screen)
     account_group.update(screen)
 
+    game.start(time.time())
+
     while True:
 
         ### EVENT LOOP
