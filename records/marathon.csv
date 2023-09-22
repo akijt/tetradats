@@ -1,4 +1,4 @@
-username,datetime,timezone,mode,time,score,pieces,lines,level,DAS,ARR,SDF,keys,holds,single,double,triple,tetris,mini t-spin null,mini t-spin single,mini t-spin double,t-spin null,t-spin single,t-spin double,t-spin triple,perfect clear single,perfect clear double,perfect clear triple,perfect clear tetris,max B2B,max combo
+username,datetime,timezone,mode,time,score,pieces,lines,level,DAS,ARR,SDF,keys,holds,single,double,triple,tetris,mini t-spin null,mini t-spin single,mini t-spin double,t-spin null,t-spin single,t-spin double,t-spin triple,perfect clear single,perfect clear double,perfect clear triple,perfect clear tetris,max B2B,max combo,finesse
 aki,2023/07/14 15:48:12,-0400,marathon,136.35483598709106,238245,239,89,9,133,0,0,0,0,10,4,0,0,0,0,0,0,0,11,13,2,4,0,0,1,3
 aki,2023/07/13 19:45:52,-0400,marathon,115.90517067909241,114366,171,61,7
 aki,2023/07/18 18:58:37,-0400,marathon,59.77466583251953,101510,144,51,6,133,0,0,475,41,9,1,0,0,1,0,0,0,0,5,8,0,3,0,0,3,5

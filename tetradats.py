@@ -29,7 +29,7 @@ colors = {'z': (255, 0,   0),
           't': (160, 32,  240)}
 
 ### INIT DIRECTORY
-dir_type = 'msa'
+dir_type = 'sql'
 if dir_type == 'csv':
     header = ['username', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     directory = Accounts_csv('accounts', header)
@@ -45,7 +45,7 @@ elif dir_type == 'msa':
     directory = Accounts_msa('tetradats', 'accounts', header)
 
 ### INIT REGISTRAR
-reg_type = 'msa'
+reg_type = 'sql'
 if reg_type == 'csv':
     header = ['username', 'datetime', 'timezone'] + game.stat_names
     registrar = Records_csv('records', ['marathon', 'sprint', 'blitz'], header)
@@ -74,8 +74,7 @@ while True:
 
     ### LOGIN/SIGNUP STATE
     if state[0] == 'login' or state[0] == 'signup':
-        acct_info = state_login(screen, clock, dir_type, directory, font_path, state)
-        user_info, bindings, handling = acct_info
+        user_info, bindings, handling = state_login(screen, clock, dir_type, directory, font_path, state)
 
     ### MENU STATE
     elif state[0] == 'menu':

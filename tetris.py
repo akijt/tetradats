@@ -31,7 +31,7 @@ class Tetris():
                              ((1, 1), (2, 1), (2, 2), (3, 2)),
                              ((1, 1), (1, 2), (2, 0), (2, 1)),
                              ((1, 0), (2, 0), (2, 1), (3, 1)))}
-        self.bag    = list(self.minos.keys())
+        self.bag = list(self.minos.keys())
         self.start_position = (18, 3)
         self.kicks  = {'t': (((),                                     # 0 >> 0
                               ((-1, 0), (-1, 1), ( 0,-2), (-1,-2)),   # 0 >> 1
@@ -66,14 +66,42 @@ class Tetris():
                               ((-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),   # 3 >> 2
                               ()))}                                   # 3 >> 3
         self.corner = ((3, 0), (3, 2), (1, 2), (1, 0))
+        self.finesse = {'t': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+                        'i': ((1, 2, 1, 0, 1, 2, 1),
+                              (2, 2, 2, 2, 1, 1, 2, 2, 2, 2),
+                              (1, 2, 1, 0, 1, 2, 1),
+                              (2, 2, 2, 2, 1, 1, 2, 2, 2, 2)),
+                        'o': ((1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1)),
+                        'j': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+                        'l': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+                        's': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 2, 1, 1, 2, 3, 2, 2),
+                              (1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 2, 1, 1, 2, 3, 2, 2)),
+                        'z': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 2, 1, 1, 2, 3, 2, 2),
+                              (1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 2, 1, 1, 2, 3, 2, 2))}
         self.stat_names = ['mode', 'time', 'score', 'pieces', 'lines', 'level', # Top row is REQUIRED
                            'DAS', 'ARR', 'SDF', 'keys', 'holds', # 'DAS', 'ARR', 'SDF' are REQUIRED
                            'single', 'double', 'triple', 'tetris',
                            'mini t-spin null', 'mini t-spin single', 'mini t-spin double',
                            't-spin null', 't-spin single', 't-spin double', 't-spin triple',
                            'perfect clear single', 'perfect clear double', 'perfect clear triple',
-                           'perfect clear tetris', 'max B2B', 'max combo'] # TODO: add finess
-        self.key_state  = {'soft_drop': 0, 'move_left': [0, 0], 'move_right': [0, 0]}
+                           'perfect clear tetris', 'max B2B', 'max combo', 'finesse']
+        self.key_state = {'soft_drop': 0, 'move_left': [0, 0], 'move_right': [0, 0]}
         self.lock = {'time': .5, 'count': 15}
         # TODO: add classic mode:
         # disable hold(), hard_drop(), and rotate(2)
@@ -90,6 +118,7 @@ class Tetris():
         self.hold_used = False
         self.b2b       = -1
         self.combo     = -1
+        self.fin_keys  = 0
 
         self.last_action = 'reset'
         self.last_clear  = ''
@@ -111,6 +140,7 @@ class Tetris():
         self.piece    = piece
         self.position = [x for x in self.start_position]
         self.rotation = 0
+        self.fin_keys = 0
 
         if self.collision():
             self.lose = True
@@ -159,6 +189,7 @@ class Tetris():
 
     def rotate(self, turns, current_time):
         self.stats['keys'] += 1
+        self.fin_keys += 1 if turns == 1 or turns == 3 else 2
         orig_height   = self.height
         orig_position = self.position
         orig_rotation = self.rotation
@@ -226,6 +257,7 @@ class Tetris():
         '''
         if down:
             self.stats['keys'] += 1
+            self.fin_keys += 5 # soft_drop is automatic finesse fail if not tucked/spun
             self.key_state['soft_drop'] = 1
             if self.stats['SDF'] <= 1:
                 self.gravity = 0
@@ -250,16 +282,24 @@ class Tetris():
         self.position[0] -= self.height
         self.place(current_time)
 
-    def place(self, current_time): 
-        below = False
-        for dr, dc in self.minos[self.piece][self.rotation]:
-            self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
-            if self.position[0] + dr < 20:
-                below = True
-        if not below:
+    def place(self, current_time):
+        if all([self.position[0] + dr >= 20 for dr, _ in self.minos[self.piece][self.rotation]]):
             self.lose = True # if entire mino is above 20, game is lost
             return
+
+        for dr, dc in self.minos[self.piece][self.rotation]:
+            c = self.position[1] + dc
+            if any([self.board[r][c] for r in range(self.position[0] + dr + 1, 22)]):
+                self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
+                break
+        else:
+            c = min([self.position[1] + dc for _, dc in self.minos[self.piece][self.rotation]])
+            if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
+                self.stats['finesse'] += 1
+
         self.stats['pieces'] += 1
+        for dr, dc in self.minos[self.piece][self.rotation]:
+            self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
         self.clear()
         self.new_piece(self.queue.pop(0), current_time)
         self.hold_used = False
@@ -361,6 +401,7 @@ class Tetris():
         direction_string_opp = {-1: 'move_left', 1: 'move_right'}[-direction]
         if down:
             self.stats['keys'] += 1
+            self.fin_keys += 1
             # self.move(direction, current_time) # Removed because self.position is not initialized before start()
             self.key_state[direction_string][0] = current_time
             self.key_state[direction_string][1] = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000
