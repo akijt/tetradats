@@ -22,7 +22,7 @@ class Accounts_msa():
         self.user_info_names = header[0:1]
         self.binding_names   = header[4:14]
         self.handling_names  = header[14:17]
-    
+
     def login(self, username, password):
         self.cursor.execute(f'SELECT * FROM {self.table} WHERE username = "{username}" AND password = "{password}"')
         acct_info = [x for x in self.cursor]
@@ -55,7 +55,7 @@ class Accounts_msa():
             return True
         else:
             return False
-        
+
     def username_available(self, username):
         self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
         acct_info = [x for x in self.cursor]
@@ -126,12 +126,12 @@ class Accounts_sql():
             return True
         else:
             return False
-        
+
     def username_available(self, username):
         self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
         acct_info = [x for x in self.cursor]
         return not acct_info
-    
+
 class Accounts_csv():
 
     def __init__(self, file, header):

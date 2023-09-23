@@ -10,7 +10,7 @@ class Sprite_rect(pygame.sprite.Sprite):
         self.alignment = alignment
         self.color     = color
         self.width     = width
-        
+
         if self.origin in ['topright', 'midright', 'bottomright']:
             self.offset[0] -= self.size[0]
         elif self.origin in ['midtop', 'center', 'midbottom']:
@@ -19,7 +19,7 @@ class Sprite_rect(pygame.sprite.Sprite):
             self.offset[1] -= self.size[1]
         elif self.origin in ['midleft', 'center', 'midright']:
             self.offset[1] -= self.size[1] / 2
-    
+
     def update(self, screen, **kwargs):
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
 
@@ -48,7 +48,7 @@ class Sprite_text(pygame.sprite.Sprite):
         self.color     = color
         self.font_size = font_size
         self.font_name = font_name
-        
+
     def update(self, screen, **kwargs):
         for k, v in kwargs.items():
             if k == 'text':
@@ -102,7 +102,7 @@ class Sprite_button(pygame.sprite.Sprite):
             self.offset[1] -= self.size[1]
         elif self.origin in ['midleft', 'center', 'midright']:
             self.offset[1] -= self.size[1] / 2
-    
+
     def update(self, screen, **kwargs):
         for k, v in kwargs.items():
             if k == 'text':
@@ -130,7 +130,7 @@ class Sprite_button(pygame.sprite.Sprite):
             self.rect.top += screen.get_height() / 2
 
 class Sprite_textfield(pygame.sprite.Sprite):
-    
+
     def __init__(self, size, origin, offset, alignment, rect_color, width, font_color, font_size, font_name=None):
         super().__init__()
         self.text       = ''
@@ -153,7 +153,7 @@ class Sprite_textfield(pygame.sprite.Sprite):
             self.offset[1] -= self.size[1]
         elif self.origin in ['midleft', 'center', 'midright']:
             self.offset[1] -= self.size[1] / 2
-    
+
     def update(self, screen, **kwargs):
         for k, v in kwargs.items():
             if k == 'text':
@@ -198,7 +198,7 @@ class Sprite_line(pygame.sprite.Sprite):
         self.color       = color
         self.width       = width
         self.orientation = orientation
-    
+
     def update(self, screen, **kwargs):
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
 
@@ -235,7 +235,7 @@ class Sprite_circle(pygame.sprite.Sprite):
         self.color       = color
         self.width       = width
         self.back_color  = back_color
-    
+
     def update(self, screen, **kwargs):
         for k, v in kwargs.items():
             if k == 'offset':

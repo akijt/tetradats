@@ -17,7 +17,7 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
     elif reg_type == 'msa':
         records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
         records_query[0] = records_query[0][:1] + records_query[0][2:]
-        
+
     top_n = []
     for r in range(len(records_query)):
         top_n.append([str(records_query[r][0])])

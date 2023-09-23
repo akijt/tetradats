@@ -51,7 +51,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
         settings_group.add(new1_box)
         settings_group.add(new2_box)
         settings_group.add(pass_box)
-        
+
         interactables['username'] = user_box
         interactables['new_pass1'] = new1_box
         interactables['new_pass2'] = new2_box
@@ -64,7 +64,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
         error_group.add(error1_text)
         error_group.add(error2_text)
         error_group.add(error3_text)
-    
+
     elif state[1] == 'bindings':
         key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
                         ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
@@ -343,7 +343,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                 percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
                 interactables[control][0].update(screen, offset=(-10 + 20 * percentage, interactables[control][0].offset[1]))
         settings_group.draw(screen)
-        
+
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
         font = pygame.font.Font(font_path, round(.75 * 2 * dim))

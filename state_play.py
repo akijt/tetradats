@@ -77,7 +77,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 elif event.key == bindings['rotate_ccw']:
                     game.rotate(3, time.time())
                 elif event.key == bindings['soft_drop']:
-                    game.soft_drop(time.time()) 
+                    game.soft_drop(time.time())
                 elif event.key == bindings['hard_drop']:
                     game.hard_drop(time.time())
             elif event.type == pygame.KEYUP:

@@ -153,7 +153,7 @@ class Tetris():
         self.lock_time    = 0 # when lock_time started/reset
         self.lock_count   = 0 # number of moves/rotations since touchdown
         self.lock_lowest  = 18 # the lowest row the piece has been on
-        
+
 
     def hold(self, current_time):
         self.stats['keys'] += 1
@@ -395,7 +395,7 @@ class Tetris():
         released, the first returns to its ARR without waiting for DAS. This change is made to
         reward holding on to the first direction and to raise the skill ceiling. To impliment the
         correct way, in the else block, uncomment the line marked "Correct implementation" and
-        comment the line above. 
+        comment the line above.
         '''
         direction_string     = {-1: 'move_left', 1: 'move_right'}[direction]
         direction_string_opp = {-1: 'move_left', 1: 'move_right'}[-direction]
