@@ -133,6 +133,7 @@ class Tetris():
         self.finish         = False
 
     def start(self, current_time):
+        self.stats['keys'] = 0
         self.stats['time'] = current_time
         self.new_piece(self.queue.pop(0), current_time)
 
