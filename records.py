@@ -15,7 +15,7 @@ class Records_msa():
             database     = self.database,
             ssl_ca       = 'DigiCertGlobalRootCA.crt.pem',
             ssl_disabled = False
-        )
+        ) # enter correct user, password, host, and ssl_ca
         self.cursor = self.mydb.cursor()
 
     def save(self, row, order_by):

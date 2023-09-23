@@ -17,7 +17,7 @@ class Accounts_msa():
             database     = self.database,
             ssl_ca       = 'DigiCertGlobalRootCA.crt.pem',
             ssl_disabled = False
-        )
+        ) # enter correct user, password, host, and ssl_ca
         self.cursor = self.mydb.cursor()
         self.user_info_names = header[0:1]
         self.binding_names   = header[4:14]
@@ -90,6 +90,8 @@ class Accounts_sql():
                 query += f'{column} {datatype[i]}, '
             query = query[:-2] + ');'
             self.cursor.execute(query)
+            self.cursor.execute(f'INSERT INTO {self.table} VALUES ("guest", "", "2023/01/01 00:00:00", "0000", 27,  114, 99, 1073741904, 1073741903, 120, 1073742049, 122, 1073741905, 32, 300, 50, 20);')
+            self.mydb.commit()
         self.user_info_names = header[0:1]
         self.binding_names   = header[4:14]
         self.handling_names  = header[14:17]
