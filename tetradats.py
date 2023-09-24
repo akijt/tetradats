@@ -28,29 +28,30 @@ colors = {'z': (255, 0,   0),
           'j': (0,   0,   255),
           't': (160, 32,  240)}
 
+### DATABASE TYPE # TODO: CSV only version: login password box, login guest button, settings password, records global -> local
+db_type = 'sql'
+
 ### INIT DIRECTORY
-dir_type = 'sql'
-if dir_type == 'csv':
+if db_type == 'csv':
     header = ['username', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     directory = Accounts_csv('accounts', header)
-elif dir_type == 'sql':
+elif db_type == 'sql':
     header = ['username', 'password', 'datetime', 'timezone', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     datatype = ['VARCHAR(16)' if h in ['username', 'password'] else
                 'DATETIME'    if h in ['datetime'] else
                 'VARCHAR(5)'  if h in ['timezone'] else
                 'INT'         for h in header]
     directory = Accounts_sql('tetradats', 'accounts', header, datatype)
-elif dir_type == 'msa':
+elif db_type == 'msa':
     header = ['username', 'password', 'datetime', 'timezone', 'quit', 'reset', 'hold', 'move_left', 'move_right', 'rotate_cw', 'rotate_180', 'rotate_ccw', 'soft_drop', 'hard_drop', 'DAS', 'ARR', 'SDF']
     directory = Accounts_msa('tetradats', 'accounts', header)
 
 ### INIT REGISTRAR
-reg_type = 'sql'
-if reg_type == 'csv':
+if db_type == 'csv':
     header = ['username', 'datetime', 'timezone'] + game.stat_names
     registrar = Records_csv('records', ['marathon', 'sprint', 'blitz'], header)
     order_by = {'marathon': (5, 'desc'), 'sprint': (4, 'asc'), 'blitz': (5, 'desc')}
-elif reg_type == 'sql':
+elif db_type == 'sql':
     header = ['username', 'datetime', 'timezone'] + game.stat_names
     datatype = ['VARCHAR(16)' if h in ['username', 'mode'] else
                 'DATETIME'    if h in ['datetime'] else
@@ -59,7 +60,7 @@ elif reg_type == 'sql':
                 'INT'         for h in header]
     registrar = Records_sql('tetradats', 'records', header, datatype)
     order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC'}
-elif reg_type == 'msa':
+elif db_type == 'msa':
     registrar = Records_msa('tetradats', 'records')
     order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC'}
 
@@ -70,11 +71,11 @@ state = ['login', '', '']
 while True:
 
     # required parameters in the order defined:
-    # screen, clock, game, colors, dir_type, directory, reg_type, registrar, order_by, font_path, state, user_info, bindings, handling
+    # screen, clock, game, colors, db_type, directory, registrar, order_by, font_path, state, user_info, bindings, handling
 
     ### LOGIN/SIGNUP STATE
     if state[0] == 'login' or state[0] == 'signup':
-        user_info, bindings, handling = state_login(screen, clock, dir_type, directory, font_path, state)
+        user_info, bindings, handling = state_login(screen, clock, db_type, directory, font_path, state)
 
     ### MENU STATE
     elif state[0] == 'menu':
@@ -94,12 +95,12 @@ while True:
 
     ### FINISH STATE
     elif state[0] == 'finish':
-        state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, state, bindings, user_info)
+        state_finish(screen, clock, game, db_type, registrar, order_by, font_path, state, bindings, user_info)
 
     ### RECORDS STATE
     elif state[0] == 'records':
-        state_records(screen, clock, reg_type, registrar, order_by, font_path, state, user_info, bindings)
+        state_records(screen, clock, db_type, registrar, order_by, font_path, state, user_info, bindings)
 
     ### SETTINGS STATE
     elif state[0] == 'settings':
-        state_settings(screen, clock, dir_type, directory, font_path, state, user_info, bindings, handling)
+        state_settings(screen, clock, db_type, directory, font_path, state, user_info, bindings, handling)
