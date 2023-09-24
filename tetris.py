@@ -126,7 +126,7 @@ class Tetris():
 
         for k, v in handling.items():
             self.stats[k] = v
-        self.stats['mode']  = mode # 'marathon', 'sprint', or 'blitz'
+        self.stats['mode']  = mode # 'marathon', 'sprint', 'blitz', or 'practice' ('classic' to come)
         self.stats['level'] = 1 # This needs to be in reset (countdown screen should show correct level)
         self.gravity        = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
         self.lose           = False
@@ -255,10 +255,19 @@ class Tetris():
         was interpreted as the cause of the drop. By choosing to assign the cause of these drops to
         soft drop whenever the soft drop key is pressed, the consistency of soft drops is
         preserved.
+        (9/24/23) Soft drops can be treated three different ways for finesse. It can count as a
+        move, it can be an automatic pass, or it can be an automatic fail (if not tucked/spun). The
+        first only makes sense when SDF is infinity; otherwise, the soft drop will take unnecessary
+        time. The second is the easy way out; the situation is deemed uncalculatable, so it is an
+        automatic pass. The third is the strictest; it considers all (non tuck/spin) soft drops as
+        incorrect, even if the number of key presses is within finesse limits. Of the three, the
+        first was chosen. The second is way too forgiving. The third punishes creative movements.
+        Though the first doesn't make sense when SDF is not infinity, the players at this level
+        probably don't care too much about finesse.
         '''
         if down:
             self.stats['keys'] += 1
-            self.fin_keys += 5 # soft_drop is automatic finesse fail if not tucked/spun
+            self.fin_keys += 1
             self.key_state['soft_drop'] = 1
             if self.stats['SDF'] <= 1:
                 self.gravity = 0
@@ -297,6 +306,9 @@ class Tetris():
             c = min([self.position[1] + dc for _, dc in self.minos[self.piece][self.rotation]])
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
+            elif self.stats['mode'] == 'practice':
+                self.new_piece(self.piece, current_time)
+                return
 
         self.stats['pieces'] += 1
         for dr, dc in self.minos[self.piece][self.rotation]:
