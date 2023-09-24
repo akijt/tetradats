@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 import time
-from utils import Sprite_rect, Sprite_text, Sprite_button
+from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 
 def state_pause(screen, clock, game, font_path, state, user_info, bindings):
 
@@ -15,29 +15,31 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
     retry_button  = Sprite_button('retry', (8, 2), 'bottomleft', (6, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     menu_button   = Sprite_button('menu', (8, 2), 'bottomright', (-6, -7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
-    pause_group = pygame.sprite.Group()
-    pause_group.add(resume_button)
-    pause_group.add(retry_button)
-    pause_group.add(menu_button)
-    pause_group.add(Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path))
-    pause_group.add(Sprite_text(f'{minutes}:{seconds:02}.{milliseconds:03}', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path))
-    pause_group.add(Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path))
-    pause_group.add(Sprite_text(f'{game.stats["score"]}', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path))
-    pause_group.add(Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path))
-    pause_group.add(Sprite_text(f'{game.stats["pieces"]}', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path))
-    pause_group.add(Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path))
-    pause_group.add(Sprite_text(f'{game.stats["lines"]}', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path))
-    pause_group.add(Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path))
-    pause_group.add(Sprite_text(f'{game.stats["level"]}', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path))
-    pause_group.add(Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path))
+    pause_group = Sprite_group(
+        resume_button,
+        retry_button,
+        menu_button,
+        Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(f'{minutes}:{seconds:02}.{milliseconds:03}', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(f'{game.stats["score"]}', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(f'{game.stats["pieces"]}', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(f'{game.stats["lines"]}', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(f'{game.stats["level"]}', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
+    )
 
-    account_group = pygame.sprite.Group()
-    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2))
-    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1))
-    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path))
+    account_group = Sprite_group(
+        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+    )
 
-    pause_group.update(screen)
-    account_group.update(screen)
+    pause_group.resize(screen)
+    account_group.resize(screen)
 
     while True:
 
@@ -48,8 +50,8 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                pause_group.update(screen)
-                account_group.update(screen)
+                pause_group.resize(screen)
+                account_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     game.pause(time.time())
@@ -90,7 +92,7 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)

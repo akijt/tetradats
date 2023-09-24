@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 import datetime
-from utils import Sprite_text, Sprite_button
+from utils import Sprite_group, Sprite_text, Sprite_button
 
 def state_records(screen, clock, reg_type, registrar, order_by, font_path, state, user_info, bindings):
 
@@ -50,19 +50,20 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
     back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', (255, 255, 255), 2 if state[2] != 'global' else 0, (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path)
 
-    records_group = pygame.sprite.Group()
-    records_group.add(Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
-    records_group.add(marathon_button)
-    records_group.add(sprint_button)
-    records_group.add(blitz_button)
-    records_group.add(back_button)
-    records_group.add(global_button)
+    records_group = Sprite_group(
+        Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        marathon_button,
+        sprint_button,
+        blitz_button,
+        back_button,
+        global_button
+    )
     for r in range(len(top_n)):
         records_group.add(Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
         for c in range(1, len(top_n[r])):
             records_group.add(Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
 
-    records_group.update(screen)
+    records_group.resize(screen)
 
     while True:
 
@@ -73,7 +74,7 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                records_group.update(screen)
+                records_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'
@@ -108,7 +109,7 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)

@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from utils import Sprite_rect, Sprite_text, Sprite_button
+from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 
 def state_menu(screen, clock, font_path, state, user_info):
 
@@ -12,22 +12,24 @@ def state_menu(screen, clock, font_path, state, user_info):
     settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
-    menu_group = pygame.sprite.Group()
-    menu_group.add(Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
-    menu_group.add(marathon_button)
-    menu_group.add(sprint_button)
-    menu_group.add(blitz_button)
-    menu_group.add(records_button)
-    menu_group.add(settings_button)
-    menu_group.add(logout_button)
+    menu_group = Sprite_group(
+        Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        marathon_button,
+        sprint_button,
+        blitz_button,
+        records_button,
+        settings_button,
+        logout_button
+    )
 
-    account_group = pygame.sprite.Group()
-    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2))
-    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1))
-    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path))
+    account_group = Sprite_group(
+        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+    )
 
-    menu_group.update(screen)
-    account_group.update(screen)
+    menu_group.resize(screen)
+    account_group.resize(screen)
 
     while True:
 
@@ -38,8 +40,8 @@ def state_menu(screen, clock, font_path, state, user_info):
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                menu_group.update(screen)
-                account_group.update(screen)
+                menu_group.resize(screen)
+                account_group.resize(screen)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -78,7 +80,7 @@ def state_menu(screen, clock, font_path, state, user_info):
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)

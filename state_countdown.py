@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 import time
-from utils import Sprite_rect, Sprite_text, Sprite_button
+from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 
 def state_countdown(screen, clock, game, colors, font_path, state, user_info, bindings, handling):
 
@@ -12,28 +12,30 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
     menu_button = Sprite_button('menu', (8, 2), 'topleft', (1, 1), 'topleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     int_rect    = Sprite_button('3', (8, 2), 'midbottom', (0, -2), 'center', (255, 255, 255), 0, (0, 0, 0), 4, font_path)
 
-    countdown_group = pygame.sprite.Group()
-    countdown_group.add(menu_button)
-    countdown_group.add(int_rect)
-    countdown_group.add(Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path))
-    countdown_group.add(Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path))
-    countdown_group.add(Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path))
-    countdown_group.add(Sprite_text('0', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path))
-    countdown_group.add(Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path))
-    countdown_group.add(Sprite_text('0', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path))
-    countdown_group.add(Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path))
-    countdown_group.add(Sprite_text('0', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path))
-    countdown_group.add(Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path))
-    countdown_group.add(Sprite_text('1', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path))
-    countdown_group.add(Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path))
+    countdown_group = Sprite_group(
+        menu_button,
+        int_rect,
+        Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('0', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('0', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('0', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('1', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
+    )
 
-    account_group = pygame.sprite.Group()
-    account_group.add(Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2))
-    account_group.add(Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1))
-    account_group.add(Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path))
+    account_group = Sprite_group(
+        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+    )
 
-    countdown_group.update(screen)
-    account_group.update(screen)
+    countdown_group.resize(screen)
+    account_group.resize(screen)
 
     while True:
 
@@ -44,8 +46,8 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                countdown_group.update(screen)
-                account_group.update(screen)
+                countdown_group.resize(screen)
+                account_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'
@@ -98,13 +100,13 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW SPRITES
-        int_rect.update(screen, text=f'{3 - int(time.time() - countdown)}')
+        int_rect.update(text=f'{3 - int(time.time() - countdown)}')
         countdown_group.draw(screen)
         account_group.draw(screen)
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)

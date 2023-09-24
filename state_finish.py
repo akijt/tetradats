@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 import time
-from utils import Sprite_text, Sprite_button
+from utils import Sprite_group, Sprite_text, Sprite_button
 
 def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, state, bindings, user_info):
 
@@ -52,15 +52,16 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
     retry_button = Sprite_button('retry', (8, 2), 'midleft', (1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     menu_button  = Sprite_button('menu', (8, 2), 'midright', (-1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
-    finish_group = pygame.sprite.Group()
-    finish_group.add(Sprite_text('FINISH' if not game.lose else 'LOSE', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path))
-    finish_group.add(Sprite_text(result_str, 'midbottom', (0, -2), 'center', (255, 255, 255), 4, font_path))
-    finish_group.add(Sprite_text(local_pos_str, 'midbottom', (0, 0), 'center', (255, 255, 255), 2, font_path))
-    finish_group.add(Sprite_text(global_pos_str, 'midbottom', (0, 2), 'center', (255, 255, 255), 2, font_path))
-    finish_group.add(retry_button)
-    finish_group.add(menu_button)
+    finish_group = Sprite_group(
+        Sprite_text('FINISH' if not game.lose else 'LOSE', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text(result_str, 'midbottom', (0, -2), 'center', (255, 255, 255), 4, font_path),
+        Sprite_text(local_pos_str, 'midbottom', (0, 0), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text(global_pos_str, 'midbottom', (0, 2), 'center', (255, 255, 255), 2, font_path),
+        retry_button,
+        menu_button
+    )
 
-    finish_group.update(screen)
+    finish_group.resize(screen)
 
     while True:
 
@@ -71,7 +72,7 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                finish_group.update(screen)
+                finish_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
                     state[0] = 'menu'
@@ -97,7 +98,7 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)

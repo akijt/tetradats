@@ -2,7 +2,7 @@ import pygame
 from sys import exit
 import time
 from animation import Animation
-from utils import Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
+from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
 
 def state_login(screen, clock, dir_type, directory, font_path, state):
 
@@ -21,25 +21,28 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
     guest_button  = Sprite_button('play as guest', (8, 2), 'midbottom', (0, 10), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path)
     quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
 
-    login_group = pygame.sprite.Group()
-    login_group.add(title_text)
-    login_group.add(Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', (255, 255, 255), 2))
-    login_group.add(Sprite_text('username', 'bottomleft', (-6, -4), 'center', (255, 255, 255), 2, font_path))
-    login_group.add(Sprite_text('password', 'bottomleft', (-6, 1), 'center', (255, 255, 255), 2, font_path))
-    login_group.add(user_box)
-    login_group.add(pass_box)
-    login_group.add(login_button)
-    login_group.add(signup_button)
-    login_group.add(guest_button)
-    login_group.add(quit_button)
+    login_group = Sprite_group(
+        title_text,
+        Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', (255, 255, 255), 2),
+        Sprite_text('username', 'bottomleft', (-6, -4), 'center', (255, 255, 255), 2, font_path),
+        Sprite_text('password', 'bottomleft', (-6, 1), 'center', (255, 255, 255), 2, font_path),
+        user_box,
+        pass_box,
+        login_button,
+        signup_button,
+        guest_button,
+        quit_button
+    )
 
     error1_text = Sprite_text('', 'topright', (6, -2), 'center', (255, 255, 255), 2, font_path)
     error2_text = Sprite_text('', 'topright', (6, 3), 'center', (255, 255, 255), 2, font_path)
-    error_group = pygame.sprite.Group()
-    error_group.add(error1_text)
-    error_group.add(error2_text)
+    error_group = Sprite_group(
+        error1_text,
+        error2_text
+    )
 
-    login_group.update(screen)
+    login_group.resize(screen)
+    error_group.resize(screen)
 
     while True:
 
@@ -50,7 +53,7 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                 exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                login_group.update(screen)
+                login_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     if not (input_fields['user'] and input_fields['pass']):
@@ -141,10 +144,10 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         error_code = 0
                         input_fields = {'': '', 'user': '', 'pass': ''}
                         state_transition = ['signup', 'login']
-                        signup_button.update(screen, text=state[0])
+                        signup_button.update(text=state[0])
                         state[0] = state_transition[state_transition.index(state[0]) - 1]
-                        title_text.update(screen, text=state[0].upper())
-                        login_button.update(screen, text=state[0].upper())
+                        title_text.update(text=state[0].upper())
+                        login_button.update(text=state[0].upper())
                         state[1] = ''
                     elif guest_button.rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
@@ -187,17 +190,17 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not directory.username_available(input_fields['user']):
-            error1_text.update(screen, text='username taken')
+            error1_text.update(text='username taken')
         elif error_code & (1 << 0):
-            error1_text.update(screen, text='enter username')
+            error1_text.update(text='enter username')
         else:
-            error1_text.update(screen, text='')
+            error1_text.update(text='')
         if error_code & (1 << 1):
-            error2_text.update(screen, text='enter password')
+            error2_text.update(text='enter password')
         elif error_code & (1 << 2):
-            error2_text.update(screen, text='incorrect password')
+            error2_text.update(text='incorrect password')
         else:
-            error2_text.update(screen, text='')
+            error2_text.update(text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
@@ -211,14 +214,14 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
             # pygame.draw.rect(screen, (255, 255, 255), [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW SPRITES
-        user_box.update(screen, text=input_fields['user'], cursor_pos=cursor_pos if state[1] == 'user' else -1)
-        pass_box.update(screen, text='*' * len(input_fields['pass']), cursor_pos=cursor_pos if state[1] == 'pass' else -1)
+        user_box.update(text=input_fields['user'], cursor_pos=cursor_pos if state[1] == 'user' else -1)
+        pass_box.update(text='*' * len(input_fields['pass']), cursor_pos=cursor_pos if state[1] == 'pass' else -1)
         login_group.draw(screen)
         error_group.draw(screen)
 
         ### CLOCK
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
-        font = pygame.font.Font(font_path, round(.75 * 2 * dim))
+        font = pygame.font.Font(font_path, round(.5 * 3 * dim))
         image = font.render(f'{round(clock.get_fps())}', False, (255, 255, 255))
         rect = image.get_rect(bottomright=(screen.get_width() - 1 * dim, 5 * dim))
         screen.blit(image, rect)
