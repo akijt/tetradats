@@ -220,9 +220,12 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                             state[2] = ''
                     elif state[1] == 'bindings':
                         for k in bindings.keys():
-                            if settings_group.get(input_to_sprite[k]).rect.collidepoint(pos):
-                                pygame.draw.rect(screen, (0, 0, 0), settings_group.get(input_to_sprite[k]).rect)
-                                pygame.draw.rect(screen, (255, 255, 255), settings_group.get(input_to_sprite[k]).rect, 2) # TODO: make bigger box
+                            key_rect = settings_group.get(input_to_sprite[k]).rect
+                            if key_rect.width < key_rect.height:
+                                key_rect.width = key_rect.height
+                            if key_rect.collidepoint(pos):
+                                pygame.draw.rect(screen, (0, 0, 0), key_rect)
+                                pygame.draw.rect(screen, (255, 255, 255), key_rect, 2)
                                 pygame.display.update()
                                 while True:
                                     event = pygame.event.wait()
