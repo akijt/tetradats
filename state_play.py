@@ -37,7 +37,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
 
     while True:
 
-        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
+        current_time = time.time()
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -50,47 +50,47 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 account_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
-                    game.pause(time.time())
+                    game.pause(current_time)
                     state[0] = 'pause'
                     return
                 elif event.key == bindings['reset']:
                     state[0] = 'countdown'
                     return
                 elif event.key == bindings['hold']:
-                    game.hold(time.time())
+                    game.hold(current_time)
                 elif event.key == bindings['move_left']:
-                    game.move(-1, time.time())
-                    game.move_press(-1, time.time())
+                    game.move(-1, current_time)
+                    game.move_press(-1, current_time)
                 elif event.key == bindings['move_right']:
-                    game.move(1, time.time())
-                    game.move_press(1, time.time())
+                    game.move(1, current_time)
+                    game.move_press(1, current_time)
                 elif event.key == bindings['rotate_cw']:
-                    game.rotate(1, time.time())
+                    game.rotate(1, current_time)
                 elif event.key == bindings['rotate_180']:
-                    game.rotate(2, time.time())
+                    game.rotate(2, current_time)
                 elif event.key == bindings['rotate_ccw']:
-                    game.rotate(3, time.time())
+                    game.rotate(3, current_time)
                 elif event.key == bindings['soft_drop']:
-                    game.soft_drop(time.time())
+                    game.soft_drop(current_time)
                 elif event.key == bindings['hard_drop']:
-                    game.hard_drop(time.time())
+                    game.hard_drop(current_time)
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
-                    game.soft_drop(time.time(), down=False)
+                    game.soft_drop(current_time, down=False)
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, time.time(), down=False)
+                    game.move_press(-1, current_time, down=False)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, time.time(), down=False)
+                    game.move_press(1, current_time, down=False)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if play_group.get('pause_button').rect.collidepoint(pos):
-                        game.pause(time.time())
+                        game.pause(current_time)
                         state[0] = 'pause'
                         return
 
         ### FRAME UPDATE
-        game.frame_update(time.time())
+        game.frame_update(current_time)
         if game.finish:
             state[0] = 'finish'
             return
@@ -141,7 +141,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW SPRITES
-        time_elapsed = time.time() - game.stats['time']
+        time_elapsed = current_time - game.stats['time']
         minutes      = int(time_elapsed // 60)
         seconds      = int(time_elapsed % 60)
         milliseconds = int(time_elapsed % 1 * 1000)

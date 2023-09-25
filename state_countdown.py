@@ -36,7 +36,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
 
     while True:
 
-        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
+        current_time = time.time()
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -53,20 +53,20 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                     return
                 elif event.key == bindings['reset']:
                     game.reset(state[1], handling)
-                    countdown = time.time()
+                    countdown = current_time
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, time.time())
+                    game.move_press(-1, current_time)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, time.time())
+                    game.move_press(1, current_time)
                 elif event.key == bindings['soft_drop']:
                     game.soft_drop()
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
                     game.soft_drop(down=False)
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, time.time(), down=False)
+                    game.move_press(-1, current_time, down=False)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, time.time(), down=False)
+                    game.move_press(1, current_time, down=False)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -74,7 +74,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                         state[0] = 'menu'
                         return
 
-        if time.time() - countdown > 3:
+        if current_time - countdown > 3:
             state[0] = 'play'
             return
 
@@ -99,7 +99,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW SPRITES
-        countdown_group.get('int_rect').update(text=f'{3 - int(time.time() - countdown)}')
+        countdown_group.get('int_rect').update(text=f'{3 - int(current_time - countdown)}')
         countdown_group.draw(screen)
         account_group.draw(screen)
 

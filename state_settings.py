@@ -83,7 +83,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
 
     while True:
 
-        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
+        current_time = time.time()
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -131,20 +131,20 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                         state[2] = state_transition[state_transition.index(state[2]) - 1]
                         cursor_pos = len(input_fields[state[2]])
                     elif event.key == pygame.K_BACKSPACE:
-                        key_state['Backspace'] = time.time() - .05 + .3 # (- ARR + DAS)
+                        key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Delete'] = 0
                         input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - 1, 0)] + input_fields[state[2]][cursor_pos:]
                         cursor_pos = max(cursor_pos - 1, 0)
                     elif event.key == pygame.K_DELETE:
-                        key_state['Delete'] = time.time() - .05 + .3 # (- ARR + DAS)
+                        key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Backspace'] = 0
                         input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + 1:]
                     elif event.key == pygame.K_LEFT:
-                        key_state['Left'] = time.time() - .05 + .3 # (- ARR + DAS)
+                        key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Right'] = 0
                         cursor_pos = max(cursor_pos - 1, 0)
                     elif event.key == pygame.K_RIGHT:
-                        key_state['Right'] = time.time() - .05 + .3 # (- ARR + DAS)
+                        key_state['Right'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Left'] = 0
                         cursor_pos = min(cursor_pos + 1, len(input_fields[state[2]]))
                     elif len(event.unicode) == 1 and len(input_fields[state[2]]) < 16:
@@ -258,26 +258,26 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
         ### AUTOREPEAT FOR KEYBOARD
         if state[1] == 'account':
             if key_state['Backspace']:
-                remove_timer = time.time() - key_state['Backspace']
+                remove_timer = current_time - key_state['Backspace']
                 if remove_timer > .05:
                     distance = int(remove_timer // .05)
                     key_state['Backspace'] += distance * .05
                     input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - distance, 0)] + input_fields[state[2]][cursor_pos:]
                     cursor_pos = max(cursor_pos - distance, 0)
             elif key_state['Delete']:
-                remove_timer = time.time() - key_state['Delete']
+                remove_timer = current_time - key_state['Delete']
                 if remove_timer > .05:
                     distance = int(remove_timer // .05)
                     key_state['Delete'] += distance * .05
                     input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + distance:]
             if key_state['Left']:
-                move_timer = time.time() - key_state['Left']
+                move_timer = current_time - key_state['Left']
                 if move_timer > .05:
                     distance = int(move_timer // .05)
                     key_state['Left'] += distance * .05
                     cursor_pos = max(cursor_pos - distance, 0)
             elif key_state['Right']:
-                move_timer = time.time() - key_state['Right']
+                move_timer = current_time - key_state['Right']
                 if move_timer > .05:
                     distance = int(move_timer // .05)
                     key_state['Right'] += distance * .05

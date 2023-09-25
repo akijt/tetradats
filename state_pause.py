@@ -39,7 +39,7 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
 
     while True:
 
-        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
+        current_time = time.time()
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -52,7 +52,7 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
                 account_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == bindings['quit']:
-                    game.pause(time.time())
+                    game.pause(current_time)
                     state[0] = 'play'
                     return
                 elif event.key == bindings['reset']:
@@ -62,7 +62,7 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if pause_group.get('resume_button').rect.collidepoint(pos):
-                        game.pause(time.time())
+                        game.pause(current_time)
                         state[0] = 'play'
                         return
                     elif pause_group.get('retry_button').rect.collidepoint(pos):
