@@ -141,7 +141,7 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         login_group.get('signup_button').update(text=state[0])
                         state[0] = state_transition[state_transition.index(state[0]) - 1]
                         login_group.get('title_text').update(text=state[0].upper())
-                        login_group.get('login_button').update(text=state[0].upper())
+                        login_group.get('login_button').update(text=state[0])
                         state[1] = ''
                     elif login_group.get('guest_button').rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
