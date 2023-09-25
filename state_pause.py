@@ -11,37 +11,35 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
     seconds      = int(time_elapsed % 60)
     milliseconds = int(time_elapsed % 1 * 1000)
 
-    resume_button = Sprite_button('resume', (8, 2), 'bottomleft', (6, -7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    retry_button  = Sprite_button('retry', (8, 2), 'bottomleft', (6, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    menu_button   = Sprite_button('menu', (8, 2), 'bottomright', (-6, -7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-
     pause_group = Sprite_group(
-        resume_button,
-        retry_button,
-        menu_button,
-        Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(f'{minutes}:{seconds:02}.{milliseconds:03}', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(f'{game.stats["score"]}', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(f'{game.stats["pieces"]}', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(f'{game.stats["lines"]}', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(f'{game.stats["level"]}', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
+        resume_button = Sprite_button('resume', (8, 2), 'bottomleft', (6, -7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        retry_button  = Sprite_button('retry', (8, 2), 'bottomleft', (6, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        menu_button   = Sprite_button('menu', (8, 2), 'bottomright', (-6, -7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        time_label    = Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
+        time_value    = Sprite_text(f'{minutes}:{seconds:02}.{milliseconds:03}', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path),
+        score_label   = Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
+        score_value   = Sprite_text(f'{game.stats["score"]}', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path),
+        pieces_label  = Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
+        pieces_value  = Sprite_text(f'{game.stats["pieces"]}', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path),
+        lines_label   = Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
+        lines_value   = Sprite_text(f'{game.stats["lines"]}', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path),
+        level_label   = Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
+        level_value   = Sprite_text(f'{game.stats["level"]}', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path),
+        mode_text     = Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
     )
 
     account_group = Sprite_group(
-        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
-        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
-        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+        tab_rect  = Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        pfp_rect  = Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        user_text = Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
     )
 
     pause_group.resize(screen)
     account_group.resize(screen)
 
     while True:
+
+        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -63,14 +61,14 @@ def state_pause(screen, clock, game, font_path, state, user_info, bindings):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if resume_button.rect.collidepoint(pos):
+                    if pause_group.get('resume_button').rect.collidepoint(pos):
                         game.pause(time.time())
                         state[0] = 'play'
                         return
-                    elif retry_button.rect.collidepoint(pos):
+                    elif pause_group.get('retry_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         return
-                    elif menu_button.rect.collidepoint(pos):
+                    elif pause_group.get('menu_button').rect.collidepoint(pos):
                         state[0] = 'menu'
                         return
 

@@ -6,38 +6,28 @@ from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 def state_play(screen, clock, game, colors, font_path, state, user_info, bindings):
 
     ### INIT STATE
-    pause_button = Sprite_button('pause', (8, 2), 'topleft', (1, 1), 'topleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    time_text    = Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path)
-    score_text   = Sprite_text('0', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path)
-    pieces_text  = Sprite_text('0', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path)
-    lines_text   = Sprite_text('0', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path)
-    level_text   = Sprite_text('1', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path)
-    last_text    = Sprite_text('', 'bottomright', (-6, -4), 'center', (255, 255, 255), 2, font_path)
-    b2b_text     = Sprite_text('', 'bottomright', (-6, -3), 'center', (255, 255, 255), 2, font_path)
-    combo_text   = Sprite_text('', 'bottomright', (-6, -2), 'center', (255, 255, 255), 2, font_path)
-
     play_group = Sprite_group(
-        pause_button,
-        Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
-        time_text,
-        Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
-        score_text,
-        Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
-        pieces_text,
-        Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
-        lines_text,
-        Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
-        level_text,
-        last_text,
-        b2b_text,
-        combo_text,
-        Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
+        pause_button = Sprite_button('pause', (8, 2), 'topleft', (1, 1), 'topleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        time_label   = Sprite_text('time', 'bottomleft', (6, 5), 'center', (255, 255, 255), 2, font_path),
+        time_value   = Sprite_text('0:00.000', 'bottomleft', (6, 7), 'center', (255, 255, 255), 4, font_path),
+        score_label  = Sprite_text('score', 'bottomleft', (6, 8), 'center', (255, 255, 255), 2, font_path),
+        score_value  = Sprite_text('0', 'bottomleft', (6, 10), 'center', (255, 255, 255), 4, font_path),
+        pieces_label = Sprite_text('pieces', 'bottomright', (-6, 2), 'center', (255, 255, 255), 2, font_path),
+        pieces_value = Sprite_text('0', 'bottomright', (-6, 4), 'center', (255, 255, 255), 4, font_path),
+        lines_label  = Sprite_text('lines', 'bottomright', (-6, 5), 'center', (255, 255, 255), 2, font_path),
+        lines_value  = Sprite_text('0', 'bottomright', (-6, 7), 'center', (255, 255, 255), 4, font_path),
+        level_label  = Sprite_text('level', 'bottomright', (-6, 8), 'center', (255, 255, 255), 2, font_path),
+        level_value  = Sprite_text('1', 'bottomright', (-6, 10), 'center', (255, 255, 255), 4, font_path),
+        last_text    = Sprite_text('', 'bottomright', (-6, -4), 'center', (255, 255, 255), 2, font_path),
+        b2b_text     = Sprite_text('', 'bottomright', (-6, -3), 'center', (255, 255, 255), 2, font_path),
+        combo_text   = Sprite_text('', 'bottomright', (-6, -2), 'center', (255, 255, 255), 2, font_path),
+        mode_text    = Sprite_text(f'{game.stats["mode"]}', 'midbottom', (0, 12), 'center', (255, 255, 255), 4, font_path)
     )
 
     account_group = Sprite_group(
-        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
-        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
-        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+        tab_rect  = Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        pfp_rect  = Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        user_text = Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
     )
 
     play_group.resize(screen)
@@ -46,6 +36,8 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
     game.start(time.time())
 
     while True:
+
+        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -92,7 +84,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if pause_button.rect.collidepoint(pos):
+                    if play_group.get('pause_button').rect.collidepoint(pos):
                         game.pause(time.time())
                         state[0] = 'pause'
                         return
@@ -154,50 +146,58 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
         seconds      = int(time_elapsed % 60)
         milliseconds = int(time_elapsed % 1 * 1000)
 
-        fonts = []
-        fonts.append(pygame.font.Font(font_path, round(.5 * 2 * dim)))
-        fonts.append(pygame.font.Font(font_path, round(.5 * 4 * dim)))
+        # fonts = []
+        # fonts.append(pygame.font.Font(font_path, round(.5 * 2 * dim)))
+        # fonts.append(pygame.font.Font(font_path, round(.5 * 4 * dim)))
 
-        time_text.text = f'{minutes}:{seconds:02}.{milliseconds:03}'
-        time_text.image = fonts[1].render(time_text.text, False, time_text.color)
-        time_text.rect = time_text.image.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim))
+        # time_value = play_group.get('time_value')
+        # time_value.text = f'{minutes}:{seconds:02}.{milliseconds:03}'
+        # time_value.image = fonts[1].render(time_value.text, False, time_value.color)
+        # time_value.rect = time_value.image.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 7 * dim))
 
-        score_text.text = f'{game.stats["score"]}'
-        score_text.image = fonts[1].render(score_text.text, False, score_text.color)
-        score_text.rect = score_text.image.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim))
+        # score_value = play_group.get('score_value')
+        # score_value.text = f'{game.stats["score"]}'
+        # score_value.image = fonts[1].render(score_value.text, False, score_value.color)
+        # score_value.rect = score_value.image.get_rect(bottomleft=(screen.get_width() / 2 + 6 * dim, screen.get_height() / 2 + 10 * dim))
 
-        pieces_text.text = f'{game.stats["pieces"]}'
-        pieces_text.image = fonts[1].render(pieces_text.text, False, pieces_text.color)
-        pieces_text.rect = pieces_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim))
+        # pieces_value = play_group.get('pieces_value')
+        # pieces_value.text = f'{game.stats["pieces"]}'
+        # pieces_value.image = fonts[1].render(pieces_value.text, False, pieces_value.color)
+        # pieces_value.rect = pieces_value.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 4 * dim))
 
-        lines_text.text = f'{game.stats["lines"]}'
-        lines_text.image = fonts[1].render(lines_text.text, False, lines_text.color)
-        lines_text.rect = lines_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim))
+        # lines_value = play_group.get('lines_value')
+        # lines_value.text = f'{game.stats["lines"]}'
+        # lines_value.image = fonts[1].render(lines_value.text, False, lines_value.color)
+        # lines_value.rect = lines_value.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 7 * dim))
 
-        level_text.text = f'{game.stats["level"]}'
-        level_text.image = fonts[1].render(level_text.text, False, level_text.color)
-        level_text.rect = level_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim))
+        # level_value = play_group.get('level_value')
+        # level_value.text = f'{game.stats["level"]}'
+        # level_value.image = fonts[1].render(level_value.text, False, level_value.color)
+        # level_value.rect = level_value.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 + 10 * dim))
 
-        last_text.text = f'{game.last_clear}'
-        last_text.image = fonts[0].render(last_text.text, False, last_text.color)
-        last_text.rect = last_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim))
+        # last_text = play_group.get('last_text')
+        # last_text.text = f'{game.last_clear}'
+        # last_text.image = fonts[0].render(last_text.text, False, last_text.color)
+        # last_text.rect = last_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 4 * dim))
 
-        b2b_text.text = f'{game.b2b} B2B' if game.b2b > 0 else ''
-        b2b_text.image = fonts[0].render(b2b_text.text, False, b2b_text.color)
-        b2b_text.rect = b2b_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 3 * dim))
+        # b2b_text = play_group.get('b2b_text')
+        # b2b_text.text = f'{game.b2b} B2B' if game.b2b > 0 else ''
+        # b2b_text.image = fonts[0].render(b2b_text.text, False, b2b_text.color)
+        # b2b_text.rect = b2b_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 3 * dim))
 
-        combo_text.text = f'{game.combo} combo' if game.combo > 0 else ''
-        combo_text.image = fonts[0].render(combo_text.text, False, combo_text.color)
-        combo_text.rect = combo_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 2 * dim))
+        # combo_text = play_group.get('combo_text')
+        # combo_text.text = f'{game.combo} combo' if game.combo > 0 else ''
+        # combo_text.image = fonts[0].render(combo_text.text, False, combo_text.color)
+        # combo_text.rect = combo_text.image.get_rect(bottomright=(screen.get_width() / 2 - 6 * dim, screen.get_height() / 2 - 2 * dim))
 
-        # time_text.update(text=f'{minutes}:{seconds:02}.{milliseconds:03}')
-        # score_text.update(text=f'{game.stats["score"]}')
-        # pieces_text.update(text=f'{game.stats["pieces"]}')
-        # lines_text.update(text=f'{game.stats["lines"]}')
-        # level_text.update(text=f'{game.stats["level"]}')
-        # last_text.update(text=f'{game.last_clear}')
-        # b2b_text.update(text=f'{game.b2b} B2B' if game.b2b > 0 else '')
-        # combo_text.update(text=f'{game.combo} combo' if game.combo > 0 else '')
+        play_group.get('time_value').update(text=f'{minutes}:{seconds:02}.{milliseconds:03}')
+        play_group.get('score_value').update(text=f'{game.stats["score"]}')
+        play_group.get('pieces_value').update(text=f'{game.stats["pieces"]}')
+        play_group.get('lines_value').update(text=f'{game.stats["lines"]}')
+        play_group.get('level_value').update(text=f'{game.stats["level"]}')
+        play_group.get('last_text').update(text=f'{game.last_clear}')
+        play_group.get('b2b_text').update(text=f'{game.b2b} B2B' if game.b2b > 0 else '')
+        play_group.get('combo_text').update(text=f'{game.combo} combo' if game.combo > 0 else '')
         play_group.draw(screen)
         account_group.draw(screen)
 

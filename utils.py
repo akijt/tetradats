@@ -2,26 +2,29 @@ import pygame
 
 class Sprite_group():
 
-    def __init__(self, *args):
-        self.group = list(args)
+    def __init__(self, dictionary=None, **kwargs):
+        self.group = dictionary if isinstance(dictionary, dict) else {}
+        self.group.update(kwargs)
 
-    def add(self, *args):
-        self.group.extend(list(args))
+    def add(self, dictionary=None, **kwargs):
+        if isinstance(dictionary, dict):
+            self.group.update(dictionary)
+        self.group.update(kwargs)
 
-    def get(self, i):
-        return self.group[i]
+    def get(self, name):
+        return self.group[name]
 
     def resize(self, screen):
-        for s in self.group:
+        for s in self.group.values():
             s.resize(screen)
             s.update()
 
     def update(self):
-        for s in self.group:
+        for s in self.group.values():
             s.update()
 
     def draw(self, screen):
-        for s in self.group:
+        for s in self.group.values():
             screen.blit(s.image, s.rect)
 
 class Sprite_rect():

@@ -5,27 +5,20 @@ from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 def state_menu(screen, clock, font_path, state, user_info):
 
     ### INIT STATE
-    marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-
     menu_group = Sprite_group(
-        Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        marathon_button,
-        sprint_button,
-        blitz_button,
-        records_button,
-        settings_button,
-        logout_button
+        title_text      = Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     )
 
     account_group = Sprite_group(
-        Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
-        Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
-        Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+        tab_rect  = Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
+        pfp_rect  = Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
+        user_text = Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
     )
 
     menu_group.resize(screen)
@@ -45,28 +38,28 @@ def state_menu(screen, clock, font_path, state, user_info):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if logout_button.rect.collidepoint(pos):
+                    if menu_group.get('logout_button').rect.collidepoint(pos):
                         state[0] = 'login'
                         return
-                    elif marathon_button.rect.collidepoint(pos):
+                    elif menu_group.get('marathon_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'marathon'
                         return
-                    elif sprint_button.rect.collidepoint(pos):
+                    elif menu_group.get('sprint_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'sprint'
                         return
-                    elif blitz_button.rect.collidepoint(pos):
+                    elif menu_group.get('blitz_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'blitz'
                         return
-                    elif records_button.rect.collidepoint(pos):
+                    elif menu_group.get('records_button').rect.collidepoint(pos):
                         state[0] = 'records'
                         state[1] = 'marathon'
                         if user_info['username'] == 'guest':
                             state[2] = 'global'
                         return
-                    elif settings_button.rect.collidepoint(pos):
+                    elif menu_group.get('settings_button').rect.collidepoint(pos):
                         state[0] = 'settings'
                         state[1] = 'account'
                         return

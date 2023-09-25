@@ -49,16 +49,13 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
             else:
                 global_pos_str = f'global {position[1]}th'
 
-    retry_button = Sprite_button('retry', (8, 2), 'midleft', (1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    menu_button  = Sprite_button('menu', (8, 2), 'midright', (-1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-
     finish_group = Sprite_group(
-        Sprite_text('FINISH' if not game.lose else 'LOSE', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text(result_str, 'midbottom', (0, -2), 'center', (255, 255, 255), 4, font_path),
-        Sprite_text(local_pos_str, 'midbottom', (0, 0), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text(global_pos_str, 'midbottom', (0, 2), 'center', (255, 255, 255), 2, font_path),
-        retry_button,
-        menu_button
+        title_text      = Sprite_text('FINISH' if not game.lose else 'LOSE', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        result_text     = Sprite_text(result_str, 'midbottom', (0, -2), 'center', (255, 255, 255), 4, font_path),
+        local_pos_text  = Sprite_text(local_pos_str, 'midbottom', (0, 0), 'center', (255, 255, 255), 2, font_path),
+        global_pos_text = Sprite_text(global_pos_str, 'midbottom', (0, 2), 'center', (255, 255, 255), 2, font_path),
+        retry_button    = Sprite_button('retry', (8, 2), 'midleft', (1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        menu_button     = Sprite_button('menu', (8, 2), 'midright', (-1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     )
 
     finish_group.resize(screen)
@@ -83,10 +80,10 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if retry_button.rect.collidepoint(pos):
+                    if finish_group.get('retry_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         return
-                    elif menu_button.rect.collidepoint(pos):
+                    elif finish_group.get('menu_button').rect.collidepoint(pos):
                         state[0] = 'menu'
                         return
 

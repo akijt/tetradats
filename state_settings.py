@@ -6,7 +6,7 @@ from utils import Sprite_group, Sprite_text, Sprite_button, Sprite_textfield, Sp
 def state_settings(screen, clock, dir_type, directory, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
-    input_fields = {'': ''}
+    input_fields = {'': ''} # TODO: align key names with settings_group
     for k, v in user_info.items():
         input_fields[k] = v
     for k, v in bindings.items():
@@ -21,85 +21,69 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
     interactables = dict()
 
-    account_button  = Sprite_button('account', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'account' else 0, (255, 255, 255) if state[1] != 'account' else (0, 0, 0), 4, font_path)
-    bindings_button = Sprite_button('bindings', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'bindings' else 0, (255, 255, 255) if state[1] != 'bindings' else (0, 0, 0), 4, font_path)
-    handling_button = Sprite_button('handling', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'handling' else 0, (255, 255, 255) if state[1] != 'handling' else (0, 0, 0), 4, font_path)
-    cancel_button   = Sprite_button('cancel', (8, 2), 'bottomright', (-1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    apply_button    = Sprite_button('apply', (8, 2), 'bottomleft', (1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-
     settings_group = Sprite_group(
-        Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        account_button,
-        bindings_button,
-        handling_button,
-        cancel_button,
-        apply_button,
-        back_button
+        title_text      = Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        account_button  = Sprite_button('account', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'account' else 0, (255, 255, 255) if state[1] != 'account' else (0, 0, 0), 4, font_path),
+        bindings_button = Sprite_button('bindings', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'bindings' else 0, (255, 255, 255) if state[1] != 'bindings' else (0, 0, 0), 4, font_path),
+        handling_button = Sprite_button('handling', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'handling' else 0, (255, 255, 255) if state[1] != 'handling' else (0, 0, 0), 4, font_path),
+        cancel_button   = Sprite_button('cancel', (8, 2), 'bottomright', (-1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        apply_button    = Sprite_button('apply', (8, 2), 'bottomleft', (1, 11), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     )
 
     if state[1] == 'account':
-        user_box = Sprite_textfield((12, 2), 'midbottom', (2, -3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-        new1_box = Sprite_textfield((12, 2), 'midbottom', (2, 1), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-        new2_box = Sprite_textfield((12, 2), 'midbottom', (2, 4), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-        pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-
         settings_group.add(
-            Sprite_text('username', 'bottomright', (-5, -3.4), 'center', (255, 255, 255), 2, font_path),
-            Sprite_text('new password', 'bottomright', (-5, 0.6), 'center', (255, 255, 255), 2, font_path),
-            Sprite_text('confirm password', 'bottomright', (-5, 3.6), 'center', (255, 255, 255), 2, font_path),
-            Sprite_text('current password', 'bottomright', (-5, 6.6), 'center', (255, 255, 255), 2, font_path),
-            user_box,
-            new1_box,
-            new2_box,
-            pass_box
+            user_label = Sprite_text('username', 'bottomright', (-5, -3.4), 'center', (255, 255, 255), 2, font_path),
+            new1_label = Sprite_text('new password', 'bottomright', (-5, 0.6), 'center', (255, 255, 255), 2, font_path),
+            new2_label = Sprite_text('confirm password', 'bottomright', (-5, 3.6), 'center', (255, 255, 255), 2, font_path),
+            pass_label = Sprite_text('current password', 'bottomright', (-5, 6.6), 'center', (255, 255, 255), 2, font_path),
+            user_box = Sprite_textfield((12, 2), 'midbottom', (2, -3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+            new1_box = Sprite_textfield((12, 2), 'midbottom', (2, 1), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+            new2_box = Sprite_textfield((12, 2), 'midbottom', (2, 4), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+            pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
         )
 
-        interactables['username'] = user_box
-        interactables['new_pass1'] = new1_box
-        interactables['new_pass2'] = new2_box
-        interactables['password'] = pass_box
+        interactables['username'] = settings_group.get('user_box') # TODO: remove interactables
+        interactables['new_pass1'] = settings_group.get('new1_box')
+        interactables['new_pass2'] = settings_group.get('new2_box')
+        interactables['password'] = settings_group.get('pass_box')
 
-        error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', (255, 255, 255), 2, font_path)
-        error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', (255, 255, 255), 2, font_path)
-        error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', (255, 255, 255), 2, font_path)
         error_group = Sprite_group(
-            error1_text,
-            error2_text,
-            error3_text
+            error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', (255, 255, 255), 2, font_path),
+            error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', (255, 255, 255), 2, font_path),
+            error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', (255, 255, 255), 2, font_path)
         )
         error_group.resize(screen)
 
     elif state[1] == 'bindings':
         key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
-                        ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
-        for c, column in enumerate(key_order):
-            for r, action in enumerate(column):
-                settings_group.add(Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path))
-
-                key_text = Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) # TODO: PyInstaller issue
-                settings_group.add(key_text)
-                interactables[action] = key_text
+                     ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
+        settings_group.add({f'{action}_label' : Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)})
+        settings_group.add({f'{action}_value' : Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)}) # TODO: PyInstaller issue
+        
+        for column in key_order:
+            for action in column:
+                interactables[action] = settings_group.get(f'{action}_value')
 
     elif state[1] == 'handling':
         slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
         for i, control in enumerate(handling.keys()):
             value_text = str(input_fields[control]) if not (control == 'SDF' and (input_fields[control] == slider_range['SDF'][1] or input_fields[control] == 0)) else 'inf'
-            value_text = Sprite_text(value_text, 'bottomleft', (11, -3 + i * 4), 'center', (255, 255, 255), 2, font_path)
-            slider = Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 0, (0, 0, 0))
 
-            settings_group.add(
-                Sprite_text(control, 'bottomleft', (-13, -3 + i * 4), 'center', (255, 255, 255), 2, font_path),
-                value_text,
-                Sprite_line(20, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 3, 'horizontal'),
-                slider
-            )
+            settings_group.add({
+                f'{control}_label' : Sprite_text(control, 'bottomleft', (-13, -3 + i * 4), 'center', (255, 255, 255), 2, font_path),
+                f'{control}_value' : Sprite_text(value_text, 'bottomleft', (11, -3 + i * 4), 'center', (255, 255, 255), 2, font_path),
+                f'{control}_line'   : Sprite_line(20, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 3, 'horizontal'),
+                f'{control}_circle' : Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 0, (0, 0, 0))
+            })
 
-            interactables[control] = (slider, value_text)
+            interactables[control] = (settings_group.get(f'{control}_circle'), settings_group.get(f'{control}_value'))
 
     settings_group.resize(screen)
 
     while True:
+
+        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -180,30 +164,30 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if back_button.rect.collidepoint(pos):
+                    if settings_group.get('back_button').rect.collidepoint(pos):
                         state[0] = 'menu'
                         state[1] = ''
                         state[2] = ''
                         return
-                    elif account_button.rect.collidepoint(pos):
+                    elif settings_group.get('account_button').rect.collidepoint(pos):
                         if state[1] != 'account':
                             state[1] = 'account'
                             state[2] = ''
                             return
-                    elif bindings_button.rect.collidepoint(pos):
+                    elif settings_group.get('bindings_button').rect.collidepoint(pos):
                         if state[1] != 'bindings':
                             state[1] = 'bindings'
                             state[2] = ''
                             return
-                    elif handling_button.rect.collidepoint(pos):
+                    elif settings_group.get('handling_button').rect.collidepoint(pos):
                         if state[1] != 'handling':
                             state[1] = 'handling'
                             state[2] = ''
                             return
-                    elif cancel_button.rect.collidepoint(pos):
+                    elif settings_group.get('cancel_button').rect.collidepoint(pos):
                         state[2] = ''
                         return
-                    elif apply_button.rect.collidepoint(pos):
+                    elif settings_group.get('apply_button').rect.collidepoint(pos):
                         if state[1] == 'account':
                             if user_info['username'] != 'guest':
                                 if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
@@ -317,31 +301,31 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
         ### ERROR HANDLING
         if state[1] == 'account':
             if input_fields['username'] != user_info['username'] and not directory.username_available(input_fields['username']):
-                error1_text.update(text='taken')
+                error_group.get('error1_text').update(text='taken')
                 error_code |= (1 << 0)
             else:
-                error1_text.update(text='')
+                error_group.get('error1_text').update(text='')
                 error_code &= ~(1 << 0)
             if input_fields['new_pass1'] != input_fields['new_pass2']:
-                error2_text.update(text='doesn\'t match')
+                error_group.get('error2_text').update(text='doesn\'t match')
                 error_code |= (1 << 1)
             else:
-                error2_text.update(text='')
+                error_group.get('error2_text').update(text='')
                 error_code &= ~(1 << 1)
             if error_code & (1 << 2):
-                error3_text.update(text='incorrect password')
+                error_group.get('error3_text').update(text='incorrect password')
             else:
-                error3_text.update(text='')
+                error_group.get('error3_text').update(text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
         ### DRAW SPRITES
         if state[1] == 'account':
-            user_box.update(text=input_fields['username'], cursor_pos=cursor_pos if state[2] == 'username' else -1)
-            new1_box.update(text='*' * len(input_fields['new_pass1']), cursor_pos=cursor_pos if state[2] == 'new_pass1' else -1)
-            new2_box.update(text='*' * len(input_fields['new_pass2']), cursor_pos=cursor_pos if state[2] == 'new_pass2' else -1)
-            pass_box.update(text='*' * len(input_fields['password']), cursor_pos=cursor_pos if state[2] == 'password' else -1)
+            settings_group.get('user_box').update(text=input_fields['username'], cursor_pos=cursor_pos if state[2] == 'username' else -1)
+            settings_group.get('new1_box').update(text='*' * len(input_fields['new_pass1']), cursor_pos=cursor_pos if state[2] == 'new_pass1' else -1)
+            settings_group.get('new2_box').update(text='*' * len(input_fields['new_pass2']), cursor_pos=cursor_pos if state[2] == 'new_pass2' else -1)
+            settings_group.get('pass_box').update(text='*' * len(input_fields['password']), cursor_pos=cursor_pos if state[2] == 'password' else -1)
             error_group.draw(screen)
         elif state[1] == 'handling':
             slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}

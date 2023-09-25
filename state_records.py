@@ -44,24 +44,17 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
                 top_n[r][-1] += datetime.timedelta(hours=hours, minutes=minutes) * neg
             top_n[r][-1] = top_n[r][-1].strftime('%m/%d/%Y, %H:%M:%S')
 
-    marathon_button = Sprite_button('marathon', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'marathon' else 0, (255, 255, 255) if state[1] != 'marathon' else (0, 0, 0), 4, font_path)
-    sprint_button   = Sprite_button('sprint', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'sprint' else 0, (255, 255, 255) if state[1] != 'sprint' else (0, 0, 0), 4, font_path)
-    blitz_button    = Sprite_button('blitz', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'blitz' else 0, (255, 255, 255) if state[1] != 'blitz' else (0, 0, 0), 4, font_path)
-    back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', (255, 255, 255), 2 if state[2] != 'global' else 0, (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path)
-
     records_group = Sprite_group(
-        Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        marathon_button,
-        sprint_button,
-        blitz_button,
-        back_button,
-        global_button
+        title_text      = Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
+        marathon_button = Sprite_button('marathon', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'marathon' else 0, (255, 255, 255) if state[1] != 'marathon' else (0, 0, 0), 4, font_path),
+        sprint_button   = Sprite_button('sprint', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'sprint' else 0, (255, 255, 255) if state[1] != 'sprint' else (0, 0, 0), 4, font_path),
+        blitz_button    = Sprite_button('blitz', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'blitz' else 0, (255, 255, 255) if state[1] != 'blitz' else (0, 0, 0), 4, font_path),
+        back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', (255, 255, 255), 2 if state[2] != 'global' else 0, (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path),
     )
     for r in range(len(top_n)):
-        records_group.add(Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
-        for c in range(1, len(top_n[r])):
-            records_group.add(Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path))
+        records_group.add({f'header{r}_text' : Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path)})
+        records_group.add({f'entry{c}-{r}_text' : Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path) for c in range(1, len(top_n[r]))})
 
     records_group.resize(screen)
 
@@ -82,19 +75,19 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if back_button.rect.collidepoint(pos):
+                    if records_group.get('back_button').rect.collidepoint(pos):
                         state[0] = 'menu'
                         return
-                    elif marathon_button.rect.collidepoint(pos):
+                    elif records_group.get('marathon_button').rect.collidepoint(pos):
                         state[1] = 'marathon'
                         return
-                    elif sprint_button.rect.collidepoint(pos):
+                    elif records_group.get('sprint_button').rect.collidepoint(pos):
                         state[1] = 'sprint'
                         return
-                    elif blitz_button.rect.collidepoint(pos):
+                    elif records_group.get('blitz_button').rect.collidepoint(pos):
                         state[1] = 'blitz'
                         return
-                    elif global_button.rect.collidepoint(pos):
+                    elif records_group.get('global_button').rect.collidepoint(pos):
                         if state[2] == '':
                             state[2] = 'global'
                         elif user_info['username'] != 'guest':

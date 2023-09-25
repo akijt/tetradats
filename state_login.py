@@ -13,38 +13,30 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
     error_code = 0
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
 
-    title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', (255, 255, 255), 4, font_path)
-    user_box      = Sprite_textfield((12, 2), 'midbottom', (0, -2), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-    pass_box      = Sprite_textfield((12, 2), 'midbottom', (0, 3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
-    login_button  = Sprite_button('login', (8, 2), 'bottomleft', (-1, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-    signup_button = Sprite_button('sign up', (5, 2), 'bottomright', (-2, 7), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path)
-    guest_button  = Sprite_button('play as guest', (8, 2), 'midbottom', (0, 10), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path)
-    quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
-
     login_group = Sprite_group(
-        title_text,
-        Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', (255, 255, 255), 2),
-        Sprite_text('username', 'bottomleft', (-6, -4), 'center', (255, 255, 255), 2, font_path),
-        Sprite_text('password', 'bottomleft', (-6, 1), 'center', (255, 255, 255), 2, font_path),
-        user_box,
-        pass_box,
-        login_button,
-        signup_button,
-        guest_button,
-        quit_button
+        title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', (255, 255, 255), 4, font_path),
+        menu_rect     = Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', (255, 255, 255), 2),
+        user_label    = Sprite_text('username', 'bottomleft', (-6, -4), 'center', (255, 255, 255), 2, font_path),
+        pass_label    = Sprite_text('password', 'bottomleft', (-6, 1), 'center', (255, 255, 255), 2, font_path),
+        user_box      = Sprite_textfield((12, 2), 'midbottom', (0, -2), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+        pass_box      = Sprite_textfield((12, 2), 'midbottom', (0, 3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+        login_button  = Sprite_button('login', (8, 2), 'bottomleft', (-1, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
+        signup_button = Sprite_button('sign up', (5, 2), 'bottomright', (-2, 7), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path),
+        guest_button  = Sprite_button('play as guest', (8, 2), 'midbottom', (0, 10), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path),
+        quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     )
 
-    error1_text = Sprite_text('', 'topright', (6, -2), 'center', (255, 255, 255), 2, font_path)
-    error2_text = Sprite_text('', 'topright', (6, 3), 'center', (255, 255, 255), 2, font_path)
     error_group = Sprite_group(
-        error1_text,
-        error2_text
+        error1_text = Sprite_text('', 'topright', (6, -2), 'center', (255, 255, 255), 2, font_path),
+        error2_text = Sprite_text('', 'topright', (6, 3), 'center', (255, 255, 255), 2, font_path)
     )
 
     login_group.resize(screen)
     error_group.resize(screen)
 
     while True:
+
+        # current_time = time.time() # TODO: use current_time so all time within a frame is the same
 
         ### EVENT LOOP
         for event in pygame.event.get():
@@ -112,16 +104,16 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if quit_button.rect.collidepoint(pos):
+                    if login_group.get('quit_button').rect.collidepoint(pos):
                         pygame.quit()
                         exit()
-                    elif user_box.rect.collidepoint(pos):
+                    elif login_group.get('user_box').rect.collidepoint(pos):
                         state[1] = 'user'
                         cursor_pos = len(input_fields[state[1]])
-                    elif pass_box.rect.collidepoint(pos):
+                    elif login_group.get('pass_box').rect.collidepoint(pos):
                         state[1] = 'pass'
                         cursor_pos = len(input_fields[state[1]])
-                    elif login_button.rect.collidepoint(pos):
+                    elif login_group.get('login_button').rect.collidepoint(pos):
                         if not (input_fields['user'] and input_fields['pass']):
                             error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
                         else:
@@ -140,16 +132,16 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                                 return acct_info
                             elif state[0] == 'login':
                                 error_code = 4
-                    elif signup_button.rect.collidepoint(pos):
+                    elif login_group.get('signup_button').rect.collidepoint(pos):
                         error_code = 0
                         input_fields = {'': '', 'user': '', 'pass': ''}
                         state_transition = ['signup', 'login']
-                        signup_button.update(text=state[0])
+                        login_group.get('signup_button').update(text=state[0])
                         state[0] = state_transition[state_transition.index(state[0]) - 1]
-                        title_text.update(text=state[0].upper())
-                        login_button.update(text=state[0].upper())
+                        login_group.get('title_text').update(text=state[0].upper())
+                        login_group.get('login_button').update(text=state[0].upper())
                         state[1] = ''
-                    elif guest_button.rect.collidepoint(pos):
+                    elif login_group.get('guest_button').rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
                         if dir_type == 'csv':
@@ -190,17 +182,17 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not directory.username_available(input_fields['user']):
-            error1_text.update(text='username taken')
+            error_group.get('error1_text').update(text='username taken')
         elif error_code & (1 << 0):
-            error1_text.update(text='enter username')
+            error_group.get('error1_text').update(text='enter username')
         else:
-            error1_text.update(text='')
+            error_group.get('error1_text').update(text='')
         if error_code & (1 << 1):
-            error2_text.update(text='enter password')
+            error_group.get('error2_text').update(text='enter password')
         elif error_code & (1 << 2):
-            error2_text.update(text='incorrect password')
+            error_group.get('error2_text').update(text='incorrect password')
         else:
-            error2_text.update(text='')
+            error_group.get('error2_text').update(text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
@@ -214,8 +206,8 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
             # pygame.draw.rect(screen, (255, 255, 255), [screen.get_width() / 2 + (i[0] - 2) * dim, screen.get_height() / 2 + (-11 - i[1]) * dim, dim + border_width, dim + border_width], border_width)
 
         ### DRAW SPRITES
-        user_box.update(text=input_fields['user'], cursor_pos=cursor_pos if state[1] == 'user' else -1)
-        pass_box.update(text='*' * len(input_fields['pass']), cursor_pos=cursor_pos if state[1] == 'pass' else -1)
+        login_group.get('user_box').update(text=input_fields['user'], cursor_pos=cursor_pos if state[1] == 'user' else -1)
+        login_group.get('pass_box').update(text='*' * len(input_fields['pass']), cursor_pos=cursor_pos if state[1] == 'pass' else -1)
         login_group.draw(screen)
         error_group.draw(screen)
 
