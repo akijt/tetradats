@@ -8,7 +8,7 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
 
     ### INIT STATE
     animation = Animation(.5, time.time())
-    input_fields = {'': '', 'user': '', 'pass': ''}
+    input_fields = {'user': '', 'pass': ''}
     cursor_pos = 0
     error_code = 0
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
@@ -69,29 +69,31 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                 elif event.key == pygame.K_TAB:
                     state_transition = ['pass', 'user', '']
                     state[1] = state_transition[state_transition.index(state[1]) - 1]
-                    cursor_pos = len(input_fields[state[1]])
-                elif event.key == pygame.K_BACKSPACE:
-                    key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
-                    key_state['Delete'] = 0
-                    input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - 1, 0)] + input_fields[state[1]][cursor_pos:]
-                    cursor_pos = max(cursor_pos - 1, 0)
-                elif event.key == pygame.K_DELETE:
-                    key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
-                    key_state['Backspace'] = 0
-                    input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + 1:]
-                elif event.key == pygame.K_LEFT:
-                    key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
-                    key_state['Right'] = 0
-                    cursor_pos = max(cursor_pos - 1, 0)
-                elif event.key == pygame.K_RIGHT:
-                    key_state['Right'] = current_time - .05 + .3 # (- ARR + DAS)
-                    key_state['Left'] = 0
-                    cursor_pos = min(cursor_pos + 1, len(input_fields[state[1]]))
-                elif len(event.unicode) == 1 and len(input_fields[state[1]]) < 16:
-                    alphanumeric = (48 <= ord(event.unicode) <= 57 or 65 <= ord(event.unicode) <= 90 or 97 <= ord(event.unicode) <= 122)
-                    if state[1] == 'user' and alphanumeric or state[1] == 'pass' and not event.unicode.isspace():
-                        input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + event.unicode + input_fields[state[1]][cursor_pos:]
-                        cursor_pos += 1
+                    if state[1]:
+                        cursor_pos = len(input_fields[state[1]])
+                if state[1]:
+                    if event.key == pygame.K_BACKSPACE:
+                        key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
+                        key_state['Delete'] = 0
+                        input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - 1, 0)] + input_fields[state[1]][cursor_pos:]
+                        cursor_pos = max(cursor_pos - 1, 0)
+                    elif event.key == pygame.K_DELETE:
+                        key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
+                        key_state['Backspace'] = 0
+                        input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + 1:]
+                    elif event.key == pygame.K_LEFT:
+                        key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
+                        key_state['Right'] = 0
+                        cursor_pos = max(cursor_pos - 1, 0)
+                    elif event.key == pygame.K_RIGHT:
+                        key_state['Right'] = current_time - .05 + .3 # (- ARR + DAS)
+                        key_state['Left'] = 0
+                        cursor_pos = min(cursor_pos + 1, len(input_fields[state[1]]))
+                    elif len(event.unicode) == 1 and len(input_fields[state[1]]) < 16:
+                        alphanumeric = (48 <= ord(event.unicode) <= 57 or 65 <= ord(event.unicode) <= 90 or 97 <= ord(event.unicode) <= 122)
+                        if state[1] == 'user' and alphanumeric or state[1] == 'pass' and not event.unicode.isspace():
+                            input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + event.unicode + input_fields[state[1]][cursor_pos:]
+                            cursor_pos += 1
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
                     key_state['Backspace'] = 0
@@ -109,10 +111,10 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         exit()
                     elif login_group.get('user_box').rect.collidepoint(pos):
                         state[1] = 'user'
-                        cursor_pos = len(input_fields[state[1]])
+                        cursor_pos = len(input_fields['user'])
                     elif login_group.get('pass_box').rect.collidepoint(pos):
                         state[1] = 'pass'
-                        cursor_pos = len(input_fields[state[1]])
+                        cursor_pos = len(input_fields['pass'])
                     elif login_group.get('login_button').rect.collidepoint(pos):
                         if not (input_fields['user'] and input_fields['pass']):
                             error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
@@ -154,31 +156,32 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         state[1] = ''
 
         ### AUTOREPEAT FOR KEYBOARD
-        if key_state['Backspace']:
-            remove_timer = current_time - key_state['Backspace']
-            if remove_timer > .05:
-                distance = int(remove_timer // .05)
-                key_state['Backspace'] += distance * .05
-                input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - distance, 0)] + input_fields[state[1]][cursor_pos:]
-                cursor_pos = max(cursor_pos - distance, 0)
-        elif key_state['Delete']:
-            remove_timer = current_time - key_state['Delete']
-            if remove_timer > .05:
-                distance = int(remove_timer // .05)
-                key_state['Delete'] += distance * .05
-                input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + distance:]
-        if key_state['Left']:
-            move_timer = current_time - key_state['Left']
-            if move_timer > .05:
-                distance = int(move_timer // .05)
-                key_state['Left'] += distance * .05
-                cursor_pos = max(cursor_pos - distance, 0)
-        elif key_state['Right']:
-            move_timer = current_time - key_state['Right']
-            if move_timer > .05:
-                distance = int(move_timer // .05)
-                key_state['Right'] += distance * .05
-                cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
+        if state[1]:
+            if key_state['Backspace']:
+                remove_timer = current_time - key_state['Backspace']
+                if remove_timer > .05:
+                    distance = int(remove_timer // .05)
+                    key_state['Backspace'] += distance * .05
+                    input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - distance, 0)] + input_fields[state[1]][cursor_pos:]
+                    cursor_pos = max(cursor_pos - distance, 0)
+            elif key_state['Delete']:
+                remove_timer = current_time - key_state['Delete']
+                if remove_timer > .05:
+                    distance = int(remove_timer // .05)
+                    key_state['Delete'] += distance * .05
+                    input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + distance:]
+            if key_state['Left']:
+                move_timer = current_time - key_state['Left']
+                if move_timer > .05:
+                    distance = int(move_timer // .05)
+                    key_state['Left'] += distance * .05
+                    cursor_pos = max(cursor_pos - distance, 0)
+            elif key_state['Right']:
+                move_timer = current_time - key_state['Right']
+                if move_timer > .05:
+                    distance = int(move_timer // .05)
+                    key_state['Right'] += distance * .05
+                    cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
         ### ERROR HANDLING
         if state[0] == 'signup' and not directory.username_available(input_fields['user']):

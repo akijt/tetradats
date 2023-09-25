@@ -6,20 +6,21 @@ from utils import Sprite_group, Sprite_text, Sprite_button, Sprite_textfield, Sp
 def state_settings(screen, clock, dir_type, directory, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
-    input_fields = {'': ''} # TODO: align key names with settings_group
-    for k, v in user_info.items():
-        input_fields[k] = v
-    for k, v in bindings.items():
-        input_fields[k] = v
-    for k, v in handling.items():
-        input_fields[k] = v
-    input_fields['password'] = ''
-    input_fields['new_pass1'] = ''
-    input_fields['new_pass2'] = ''
-    cursor_pos = 0
-    error_code = 0
-    key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
-    interactables = dict()
+    if state[1] == 'account':
+        input_fields = {k: v for k, v in user_info.items()}
+        input_fields['password'] = ''
+        input_fields['new_pass1'] = ''
+        input_fields['new_pass2'] = ''
+        input_to_sprite = {'username': 'user_box', 'password': 'pass_box', 'new_pass1': 'new1_box', 'new_pass2': 'new2_box'}
+        cursor_pos = 0
+        error_code = 0
+        key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
+    elif state[1] == 'bindings':
+        input_fields = {k: v for k, v in bindings.items()}
+        input_to_sprite = {k: f'{k}_value' for k in bindings.keys()}
+    elif state[1] == 'handling':
+        input_fields = {k: v for k, v in handling.items()}
+        input_to_sprite = {k: (f'{k}_circle', f'{k}_value') for k in handling.keys()}
 
     settings_group = Sprite_group(
         title_text      = Sprite_text('SETTINGS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
@@ -43,16 +44,12 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
             pass_box = Sprite_textfield((12, 2), 'midbottom', (2, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path)
         )
 
-        interactables['username'] = settings_group.get('user_box') # TODO: remove interactables
-        interactables['new_pass1'] = settings_group.get('new1_box')
-        interactables['new_pass2'] = settings_group.get('new2_box')
-        interactables['password'] = settings_group.get('pass_box')
-
         error_group = Sprite_group(
             error1_text = Sprite_text('', 'bottomleft', (9, -3.4), 'center', (255, 255, 255), 2, font_path),
             error2_text = Sprite_text('', 'bottomleft', (9, 3.6), 'center', (255, 255, 255), 2, font_path),
             error3_text = Sprite_text('', 'bottomleft', (9, 6.6), 'center', (255, 255, 255), 2, font_path)
         )
+
         error_group.resize(screen)
 
     elif state[1] == 'bindings':
@@ -60,10 +57,6 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                      ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
         settings_group.add({f'{action}_label' : Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)})
         settings_group.add({f'{action}_value' : Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)}) # TODO: PyInstaller issue
-        
-        for column in key_order:
-            for action in column:
-                interactables[action] = settings_group.get(f'{action}_value')
 
     elif state[1] == 'handling':
         slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
@@ -76,8 +69,6 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                 f'{control}_line'   : Sprite_line(20, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 3, 'horizontal'),
                 f'{control}_circle' : Sprite_circle(0.4, (-10, -3.5 + i * 4), 'center', (255, 255, 255), 0, (0, 0, 0))
             })
-
-            interactables[control] = (settings_group.get(f'{control}_circle'), settings_group.get(f'{control}_value'))
 
     settings_group.resize(screen)
 
@@ -129,29 +120,31 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                     if event.key == pygame.K_TAB:
                         state_transition = ['password', 'new_pass2', 'new_pass1', 'username', '']
                         state[2] = state_transition[state_transition.index(state[2]) - 1]
-                        cursor_pos = len(input_fields[state[2]])
-                    elif event.key == pygame.K_BACKSPACE:
-                        key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
-                        key_state['Delete'] = 0
-                        input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - 1, 0)] + input_fields[state[2]][cursor_pos:]
-                        cursor_pos = max(cursor_pos - 1, 0)
-                    elif event.key == pygame.K_DELETE:
-                        key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
-                        key_state['Backspace'] = 0
-                        input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + 1:]
-                    elif event.key == pygame.K_LEFT:
-                        key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
-                        key_state['Right'] = 0
-                        cursor_pos = max(cursor_pos - 1, 0)
-                    elif event.key == pygame.K_RIGHT:
-                        key_state['Right'] = current_time - .05 + .3 # (- ARR + DAS)
-                        key_state['Left'] = 0
-                        cursor_pos = min(cursor_pos + 1, len(input_fields[state[2]]))
-                    elif len(event.unicode) == 1 and len(input_fields[state[2]]) < 16:
-                        alphanumeric = (48 <= ord(event.unicode) <= 57 or 65 <= ord(event.unicode) <= 90 or 97 <= ord(event.unicode) <= 122)
-                        if state[2] == 'username' and alphanumeric or state[2] == 'password' or state[2] == 'new_pass1' or state[2] == 'new_pass2':
-                            input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + event.unicode + input_fields[state[2]][cursor_pos:]
-                            cursor_pos += 1
+                        if state[2]:
+                            cursor_pos = len(input_fields[state[2]])
+                    if state[2]:
+                        if event.key == pygame.K_BACKSPACE:
+                            key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
+                            key_state['Delete'] = 0
+                            input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - 1, 0)] + input_fields[state[2]][cursor_pos:]
+                            cursor_pos = max(cursor_pos - 1, 0)
+                        elif event.key == pygame.K_DELETE:
+                            key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
+                            key_state['Backspace'] = 0
+                            input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + 1:]
+                        elif event.key == pygame.K_LEFT:
+                            key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
+                            key_state['Right'] = 0
+                            cursor_pos = max(cursor_pos - 1, 0)
+                        elif event.key == pygame.K_RIGHT:
+                            key_state['Right'] = current_time - .05 + .3 # (- ARR + DAS)
+                            key_state['Left'] = 0
+                            cursor_pos = min(cursor_pos + 1, len(input_fields[state[2]]))
+                        elif len(event.unicode) == 1 and len(input_fields[state[2]]) < 16:
+                            alphanumeric = (48 <= ord(event.unicode) <= 57 or 65 <= ord(event.unicode) <= 90 or 97 <= ord(event.unicode) <= 122)
+                            if state[2] == 'username' and alphanumeric or state[2] == 'password' or state[2] == 'new_pass1' or state[2] == 'new_pass2':
+                                input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + event.unicode + input_fields[state[2]][cursor_pos:]
+                                cursor_pos += 1
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
                     key_state['Backspace'] = 0
@@ -219,17 +212,17 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                                     handling[k] = v
                     elif state[1] == 'account':
                         for k in ['username', 'new_pass1', 'new_pass2', 'password']:
-                            if interactables[k].rect.collidepoint(pos):
+                            if settings_group.get(input_to_sprite[k]).rect.collidepoint(pos):
                                 state[2] = k
-                                cursor_pos = len(input_fields[state[2]])
+                                cursor_pos = len(input_fields[k])
                                 break
                         else:
                             state[2] = ''
                     elif state[1] == 'bindings':
                         for k in bindings.keys():
-                            if interactables[k].rect.collidepoint(pos):
-                                pygame.draw.rect(screen, (0, 0, 0), interactables[k].rect)
-                                pygame.draw.rect(screen, (255, 255, 255), interactables[k].rect, 2)
+                            if settings_group.get(input_to_sprite[k]).rect.collidepoint(pos):
+                                pygame.draw.rect(screen, (0, 0, 0), settings_group.get(input_to_sprite[k]).rect)
+                                pygame.draw.rect(screen, (255, 255, 255), settings_group.get(input_to_sprite[k]).rect, 2) # TODO: make bigger box
                                 pygame.display.update()
                                 while True:
                                     event = pygame.event.wait()
@@ -240,14 +233,15 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                                         for k2 in bindings.keys():
                                             if input_fields[k2] == event.key:
                                                 input_fields[k2] = input_fields[k]
-                                                interactables[k2].update(text=interactables[k].text)
+                                                settings_group.get(input_to_sprite[k2]).update(text=settings_group.get(input_to_sprite[k]).text)
+                                                break
                                         input_fields[k] = event.key
-                                        interactables[k].update(text=pygame.key.name(event.key))
+                                        settings_group.get(input_to_sprite[k]).update(text=pygame.key.name(event.key))
                                         break
                                 break
                     elif state[1] == 'handling':
                         for k in handling.keys():
-                            if interactables[k][0].rect.collidepoint(pos):
+                            if settings_group.get(input_to_sprite[k][0]).rect.collidepoint(pos):
                                 state[2] = k
                                 break
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -256,7 +250,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                         state[2] = ''
 
         ### AUTOREPEAT FOR KEYBOARD
-        if state[1] == 'account':
+        if state[1] == 'account' and state[2]:
             if key_state['Backspace']:
                 remove_timer = current_time - key_state['Backspace']
                 if remove_timer > .05:
@@ -294,9 +288,9 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
             input_fields[state[2]] = round(slider_range[state[2]][0] + (slider_range[state[2]][1] - slider_range[state[2]][0]) * percentage)
             if state[2] == 'SDF' and input_fields['SDF'] == slider_range['SDF'][1]:
                 input_fields['SDF'] = 0
-                interactables['SDF'][1].update(text='inf')
+                settings_group.get(input_to_sprite['SDF'][1]).update(text='inf')
             else:
-                interactables[state[2]][1].update(text=str(input_fields[state[2]]))
+                settings_group.get(input_to_sprite[state[2]][1]).update(text=str(input_fields[state[2]]))
 
         ### ERROR HANDLING
         if state[1] == 'account':
@@ -332,7 +326,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
             for i, control in enumerate(handling.keys()):
                 value = input_fields[control] if control != 'SDF' or input_fields[control] != 0 else slider_range['SDF'][1]
                 percentage = (value - slider_range[control][0]) / (slider_range[control][1] - slider_range[control][0])
-                interactables[control][0].update(offset=(-10 + 20 * percentage, interactables[control][0].offset[1]))
+                settings_group.get(input_to_sprite[control][0]).update(offset=(-10 + 20 * percentage, settings_group.get(input_to_sprite[control][0]).offset[1]))
         settings_group.draw(screen)
 
         ### CLOCK
