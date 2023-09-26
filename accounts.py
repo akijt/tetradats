@@ -53,8 +53,6 @@ class Accounts_msa():
             self.cursor.execute(f'UPDATE {self.table} SET {changes_string} WHERE username = "{username}"')
             self.mydb.commit()
             return True
-        else:
-            return False
 
     def username_available(self, username):
         self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
@@ -126,8 +124,6 @@ class Accounts_sql():
             self.cursor.execute(f'UPDATE {self.table} SET {changes_string} WHERE username = "{username}"')
             self.mydb.commit()
             return True
-        else:
-            return False
 
     def username_available(self, username):
         self.cursor.execute(f'SELECT username FROM {self.table} WHERE username = "{username}"')
@@ -166,23 +162,28 @@ class Accounts_csv():
             return self.login(username)
 
     def settings(self, username, changes):
-        with open(self.file_path, 'r', newline='') as f:
-            reader = csv.reader(f)
-            accounts = [next(reader)]
-            for line in reader:
-                if line[0] == username:
-                    for k, v in changes.items():
-                        line[accounts[0].index(k)] = v
+        valid = True
+        if 'username' in changes.keys(): # check if new username is unique
+            if not self.username_available(changes["username"]):
+                valid = False
+        if valid:
+            with open(self.file_path, 'r', newline='') as f:
+                reader = csv.reader(f)
+                accounts = [next(reader)]
+                for line in reader:
+                    if line[0] == username:
+                        for k, v in changes.items():
+                            line[accounts[0].index(k)] = v
+                        accounts.append(line)
+                        break
                     accounts.append(line)
-                    break
-                accounts.append(line)
-            for line in reader:
-                accounts.append(line)
-        with open(self.file_path, 'w', newline='') as f:
-            writer = csv.writer(f)
-            for line in accounts:
-                writer.writerow(line)
-        return True
+                for line in reader:
+                    accounts.append(line)
+            with open(self.file_path, 'w', newline='') as f:
+                writer = csv.writer(f)
+                for line in accounts:
+                    writer.writerow(line)
+            return True
 
     def username_available(self, username):
         with open(self.file_path, 'r', newline='') as f:

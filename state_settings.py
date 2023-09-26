@@ -13,7 +13,6 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
         input_fields['new_pass2'] = ''
         input_to_sprite = {'username': 'user_box', 'password': 'pass_box', 'new_pass1': 'new1_box', 'new_pass2': 'new2_box'}
         cursor_pos = 0
-        error_code = 0
         key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
         state_transition = ['password', 'new_pass2', 'new_pass1', 'username', '']
     elif state[1] == 'bindings':
@@ -91,17 +90,7 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                     return
                 elif event.key == pygame.K_RETURN:
                     if state[1] == 'account':
-                        if user_info['username'] != 'guest':
-                            if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username']:
-                                directory.settings(user_info['username'], {'username': input_fields['username']})
-                                user_info['username'] = input_fields['username']
-                            if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
-                                if not directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
-                                    error_code |= (1 << 2)
-                        input_fields['username'] = user_info['username']
-                        input_fields['password'] = ''
-                        input_fields['new_pass1'] = ''
-                        input_fields['new_pass2'] = ''
+                        input_submit(db_type, directory, state, user_info, input_fields, error_group)
                         state[2] = ''
                     elif state[1] == 'bindings':
                         changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
@@ -128,10 +117,12 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                             key_state['Delete'] = 0
                             input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - 1, 0)] + input_fields[state[2]][cursor_pos:]
                             cursor_pos = max(cursor_pos - 1, 0)
+                            input_edit(directory, state, user_info, input_fields, error_group)
                         elif event.key == pygame.K_DELETE:
                             key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
                             key_state['Backspace'] = 0
                             input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + 1:]
+                            input_edit(directory, state, user_info, input_fields, error_group)
                         elif event.key == pygame.K_LEFT:
                             key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
                             key_state['Right'] = 0
@@ -145,6 +136,7 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                             if state[2] == 'username' and alphanumeric or state[2] == 'password' or state[2] == 'new_pass1' or state[2] == 'new_pass2':
                                 input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + event.unicode + input_fields[state[2]][cursor_pos:]
                                 cursor_pos += 1
+                                input_edit(directory, state, user_info, input_fields, error_group)
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
                     key_state['Backspace'] = 0
@@ -182,19 +174,7 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                         return
                     elif settings_group.get('apply_button').rect.collidepoint(pos):
                         if state[1] == 'account':
-                            if user_info['username'] != 'guest':
-                                if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
-                                    directory.settings(user_info['username'], {'username': input_fields['username']})
-                                    user_info['username'] = input_fields['username']
-                                if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
-                                    if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
-                                        pass
-                                    else:
-                                        error_code |= (1 << 2)
-                            input_fields['username'] = user_info['username']
-                            input_fields['password'] = ''
-                            input_fields['new_pass1'] = ''
-                            input_fields['new_pass2'] = ''
+                            input_submit(db_type, directory, state, user_info, input_fields, error_group)
                             state[2] = ''
                         elif state[1] == 'bindings':
                             changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
@@ -261,12 +241,14 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                     key_state['Backspace'] += distance * .05
                     input_fields[state[2]] = input_fields[state[2]][:max(cursor_pos - distance, 0)] + input_fields[state[2]][cursor_pos:]
                     cursor_pos = max(cursor_pos - distance, 0)
+                    input_edit(directory, state, user_info, input_fields, error_group)
             elif key_state['Delete']:
                 remove_timer = current_time - key_state['Delete']
                 if remove_timer > .05:
                     distance = int(remove_timer // .05)
                     key_state['Delete'] += distance * .05
                     input_fields[state[2]] = input_fields[state[2]][:cursor_pos] + input_fields[state[2]][cursor_pos + distance:]
+                    input_edit(directory, state, user_info, input_fields, error_group)
             if key_state['Left']:
                 move_timer = current_time - key_state['Left']
                 if move_timer > .05:
@@ -295,25 +277,6 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
             else:
                 settings_group.get(input_to_sprite[state[2]][1]).update(text=str(input_fields[state[2]]))
 
-        ### ERROR HANDLING # TODO: clean like state_login.py
-        if state[1] == 'account':
-            if input_fields['username'] != user_info['username'] and not directory.username_available(input_fields['username']):
-                error_group.get('error1_text').update(text='taken')
-                error_code |= (1 << 0)
-            else:
-                error_group.get('error1_text').update(text='')
-                error_code &= ~(1 << 0)
-            if input_fields['new_pass1'] != input_fields['new_pass2']:
-                error_group.get('error2_text').update(text='doesn\'t match')
-                error_code |= (1 << 1)
-            else:
-                error_group.get('error2_text').update(text='')
-                error_code &= ~(1 << 1)
-            if error_code & (1 << 2):
-                error_group.get('error3_text').update(text='incorrect password')
-            else:
-                error_group.get('error3_text').update(text='')
-
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
 
@@ -341,3 +304,34 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
 
         pygame.display.update()
         clock.tick(60)
+
+### INPUT FUNCTIONS AND ERROR HANDLING
+
+def input_edit(directory, state, user_info, input_fields, error_group):
+    if state[2] == 'username':
+        if user_info['username'] == input_fields['username'] or directory.username_available(input_fields['username']):
+            error_group.get('error1_text').update(text='')
+        else:
+            error_group.get('error1_text').update(text='taken')
+    elif state[2] == 'new_pass1' or state[2] == 'new_pass2':
+        if input_fields['new_pass1'] == input_fields['new_pass2']:
+            error_group.get('error2_text').update(text='')
+        else:
+            error_group.get('error2_text').update(text='doesn\'t match')
+
+def input_submit(db_type, directory, state, user_info, input_fields, error_group):
+    if user_info['username'] != 'guest':
+        if len(input_fields['username']) > 0 and user_info['username'] != input_fields['username']:
+            if directory.settings(user_info['username'], {'username': input_fields['username']}):
+                user_info['username'] = input_fields['username']
+        if input_fields['new_pass1'] == input_fields['new_pass2'] and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
+            if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
+                error_group.get('error3_text').update(text='')
+            else:
+                error_group.get('error3_text').update(text='incorrect password')
+    input_fields['username'] = user_info['username']
+    input_fields['password'] = ''
+    input_fields['new_pass1'] = ''
+    input_fields['new_pass2'] = ''
+    error_group.get('error1_text').update(text='')
+    error_group.get('error2_text').update(text='')

@@ -28,8 +28,8 @@ block stacking game
   1. INIT STATE
   1. EVENT LOOP
   1. functions (if applicable)
-  1. ERROR HANDLING (if applicable)
   1. CLEAR SCREEN
   1. print stuff on screen
   1. DRAW SPRITES
   1. CLOCK
+  1. INPUT FUNCTIONS AND ERROR HANDLING (if applicable)
