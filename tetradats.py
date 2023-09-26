@@ -29,7 +29,7 @@ colors = {'z': (255, 0,   0),
           't': (160, 32,  240)}
 
 ### DATABASE TYPE
-db_type = 'sql'
+db_type = 'csv'
 
 ### INIT DIRECTORY
 if db_type == 'csv':
@@ -103,4 +103,4 @@ while True:
 
     ### SETTINGS STATE
     elif state[0] == 'settings':
-        state_settings(screen, clock, db_type, directory, font_path, state, user_info, bindings, handling)
+        state_settings(screen, clock, db_type, directory, registrar, font_path, state, user_info, bindings, handling)

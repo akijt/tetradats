@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_group, Sprite_text, Sprite_button, Sprite_textfield, Sprite_line, Sprite_circle
 
-def state_settings(screen, clock, db_type, directory, font_path, state, user_info, bindings, handling):
+def state_settings(screen, clock, db_type, directory, registrar, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
     if state[1] == 'account':
@@ -90,7 +90,7 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                     return
                 elif event.key == pygame.K_RETURN:
                     if state[1] == 'account':
-                        input_submit(db_type, directory, state, user_info, input_fields, error_group)
+                        input_submit(db_type, directory, registrar, user_info, input_fields, error_group)
                         state[2] = ''
                     elif state[1] == 'bindings':
                         changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
@@ -174,7 +174,7 @@ def state_settings(screen, clock, db_type, directory, font_path, state, user_inf
                         return
                     elif settings_group.get('apply_button').rect.collidepoint(pos):
                         if state[1] == 'account':
-                            input_submit(db_type, directory, state, user_info, input_fields, error_group)
+                            input_submit(db_type, directory, registrar, user_info, input_fields, error_group)
                             state[2] = ''
                         elif state[1] == 'bindings':
                             changes = {k: input_fields[k] for k, v in bindings.items() if input_fields[k] != v}
@@ -319,13 +319,14 @@ def input_edit(directory, state, user_info, input_fields, error_group):
         else:
             error_group.get('error2_text').update(text='doesn\'t match')
 
-def input_submit(db_type, directory, state, user_info, input_fields, error_group):
+def input_submit(db_type, directory, registrar, user_info, input_fields, error_group):
     if user_info['username'] != 'guest':
         if len(input_fields['username']) > 0 and user_info['username'] != input_fields['username']:
             if directory.settings(user_info['username'], {'username': input_fields['username']}):
+                registrar.update(user_info['username'], input_fields['username'])
                 user_info['username'] = input_fields['username']
         if input_fields['new_pass1'] == input_fields['new_pass2'] and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
-            if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
+            if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, password=input_fields['password']):
                 error_group.get('error3_text').update(text='')
             else:
                 error_group.get('error3_text').update(text='incorrect password')

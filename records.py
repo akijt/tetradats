@@ -43,6 +43,11 @@ class Records_msa():
         top_n += [x for x in self.cursor]
         return top_n
 
+    def update(self, username, new_username):
+        query = f'UPDATE {self.table} SET username = "{new_username}" WHERE username = "{username}";'
+        self.cursor.execute(query)
+        self.mydb.commit()
+
 class Records_sql():
 
     def __init__(self, database, table, header, datatype):
@@ -135,6 +140,11 @@ class Records_sql():
         top_n += [x for x in self.cursor]
         return top_n
 
+    def update(self, username, new_username):
+        query = f'UPDATE {self.table} SET username = "{new_username}" WHERE username = "{username}";'
+        self.cursor.execute(query)
+        self.mydb.commit()
+
 class Records_csv():
 
     def __init__(self, directory, modes, header):
@@ -186,3 +196,18 @@ class Records_csv():
                     if len(top_n) > n:
                         break
         return top_n
+
+    def update(self, username, new_username):
+        for filename in os.listdir(self.directory):
+            record_path = os.path.join(f'{self.directory}', filename)
+            with open(record_path, 'r', newline='') as f:
+                reader = csv.reader(f)
+                records = [next(reader)]
+                for line in reader:
+                    if line[0] == username:
+                        line[0] = new_username
+                    records.append(line)
+            with open(record_path, 'w', newline='') as f:
+                writer = csv.writer(f)
+                for line in records:
+                    writer.writerow(line)

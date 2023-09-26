@@ -109,7 +109,7 @@ class Accounts_sql():
             self.mydb.commit()
             return self.login(username, password)
 
-    def settings(self, username, changes, password=''):
+    def settings(self, username, changes, password=None):
         valid = True
         if 'username' in changes.keys(): # check if new username is unique
             if not self.username_available(changes["username"]):
