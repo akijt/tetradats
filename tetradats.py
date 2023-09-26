@@ -28,8 +28,8 @@ colors = {'z': (255, 0,   0),
           'j': (0,   0,   255),
           't': (160, 32,  240)}
 
-### DATABASE TYPE # TODO: CSV only version: login password box, login guest button, settings password, records global -> local
-db_type = 'sql'
+### DATABASE TYPE
+db_type = 'csv'
 
 ### INIT DIRECTORY
 if db_type == 'csv':

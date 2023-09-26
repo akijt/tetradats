@@ -3,18 +3,18 @@ from sys import exit
 import datetime
 from utils import Sprite_group, Sprite_text, Sprite_button
 
-def state_records(screen, clock, reg_type, registrar, order_by, font_path, state, user_info, bindings):
+def state_records(screen, clock, db_type, registrar, order_by, font_path, state, user_info, bindings):
 
     ### INIT STATE
-    if reg_type == 'csv':
+    if db_type == 'csv':
         records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], 10)
         for r in range(len(records_query)):
             records_query[r] = [str(r) if r != 0 else ''] + records_query[r]
             if r != 0:
                 records_query[r][2] = datetime.datetime.strptime(records_query[r][2], '%Y/%m/%d %H:%M:%S')
-    elif reg_type == 'sql':
+    elif db_type == 'sql':
         records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
-    elif reg_type == 'msa':
+    elif db_type == 'msa':
         records_query = registrar.load('' if state[2] == 'global' else user_info['username'], state[1], order_by[state[1]], 10)
         records_query[0] = records_query[0][:1] + records_query[0][2:]
 
@@ -55,6 +55,9 @@ def state_records(screen, clock, reg_type, registrar, order_by, font_path, state
     for r in range(len(top_n)):
         records_group.add({f'header{r}_text' : Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path)})
         records_group.add({f'entry{c}-{r}_text' : Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path) for c in range(1, len(top_n[r]))})
+
+    if db_type == 'csv':
+        records_group.get('global_button').text = 'local'
 
     records_group.resize(screen)
 

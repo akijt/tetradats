@@ -4,14 +4,17 @@ import time
 from animation import Animation
 from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
 
-def state_login(screen, clock, dir_type, directory, font_path, state):
+def state_login(screen, clock, db_type, directory, font_path, state):
 
     ### INIT STATE
     animation = Animation(.5, time.time())
     input_fields = {'user': '', 'pass': ''}
     cursor_pos = 0
-    error_code = 0
     key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
+    if db_type == 'csv':
+        state_transition = ['user', '']
+    else:
+        state_transition = ['pass', 'user', '']
 
     login_group = Sprite_group(
         title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', (255, 255, 255), 4, font_path),
@@ -26,10 +29,22 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
         quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
     )
 
+    if db_type == 'csv': # hide password features and reorganize
+        login_group.get('pass_label').offset = [50, 50]
+        login_group.get('pass_box').offset = [50, 50]
+        login_group.get('guest_button').offset = [50, 50]
+        login_group.get('user_label').offset[1] += 2
+        login_group.get('user_box').offset[1] += 2
+        login_group.get('login_button').offset[1] -= 1
+        login_group.get('signup_button').offset[1] -= 1
+
     error_group = Sprite_group(
         error1_text = Sprite_text('', 'topright', (6, -2), 'center', (255, 255, 255), 2, font_path),
         error2_text = Sprite_text('', 'topright', (6, 3), 'center', (255, 255, 255), 2, font_path)
     )
+
+    if db_type == 'csv':
+        error_group.get('error1_text').offset[1] += 2
 
     login_group.resize(screen)
     error_group.resize(screen)
@@ -48,26 +63,30 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                 login_group.resize(screen)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    if not (input_fields['user'] and input_fields['pass']):
-                        error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
-                    else:
+                    if not input_fields['user']:
+                        error_group.get('error1_text').update(text='enter username')
+                    if not input_fields['pass'] and db_type != 'csv':
+                        error_group.get('error2_text').update(text='enter password')
+                    if input_fields['user'] and (input_fields['pass'] or db_type == 'csv'):
                         if state[0] == 'login':
-                            if dir_type == 'csv':
+                            if db_type == 'csv':
                                 acct_info = directory.login(input_fields['user'])
-                            elif dir_type == 'sql' or dir_type == 'msa':
+                            elif db_type == 'sql' or db_type == 'msa':
                                 acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         elif state[0] == 'signup':
-                            if dir_type == 'csv':
+                            if db_type == 'csv':
                                 acct_info = directory.sign_up(input_fields['user'])
-                            elif dir_type == 'sql' or dir_type == 'msa':
+                            elif db_type == 'sql' or db_type == 'msa':
                                 acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                         if acct_info:
                             state[0] = 'menu'
                             return acct_info
                         elif state[0] == 'login':
-                            error_code = 4
+                            if db_type == 'csv':
+                                error_group.get('error1_text').update(text='void account')
+                            elif db_type == 'sql' or db_type == 'msa':
+                                error_group.get('error2_text').update(text='incorrect password')
                 elif event.key == pygame.K_TAB:
-                    state_transition = ['pass', 'user', '']
                     state[1] = state_transition[state_transition.index(state[1]) - 1]
                     if state[1]:
                         cursor_pos = len(input_fields[state[1]])
@@ -77,10 +96,20 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         key_state['Delete'] = 0
                         input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - 1, 0)] + input_fields[state[1]][cursor_pos:]
                         cursor_pos = max(cursor_pos - 1, 0)
+                        if state[0] == 'signup' and state[1] == 'user':
+                            if not directory.username_available(input_fields['user']):
+                                error_group.get('error1_text').update(text='username taken')
+                            else:
+                                error_group.get('error1_text').update(text='')
                     elif event.key == pygame.K_DELETE:
                         key_state['Delete'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Backspace'] = 0
                         input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + 1:]
+                        if state[0] == 'signup' and state[1] == 'user':
+                            if not directory.username_available(input_fields['user']):
+                                error_group.get('error1_text').update(text='username taken')
+                            else:
+                                error_group.get('error1_text').update(text='')
                     elif event.key == pygame.K_LEFT:
                         key_state['Left'] = current_time - .05 + .3 # (- ARR + DAS)
                         key_state['Right'] = 0
@@ -94,6 +123,13 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         if state[1] == 'user' and alphanumeric or state[1] == 'pass' and not event.unicode.isspace():
                             input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + event.unicode + input_fields[state[1]][cursor_pos:]
                             cursor_pos += 1
+                            if state[1] == 'user':
+                                if state[0] == 'signup' and not directory.username_available(input_fields['user']):
+                                    error_group.get('error1_text').update(text='username taken')
+                                elif error_group.get('error1_text').text == 'enter username' or error_group.get('error1_text').text == 'username taken':
+                                    error_group.get('error1_text').update(text='')
+                            if state[1] == 'pass' and error_group.get('error2_text').text == 'enter password':
+                                error_group.get('error2_text').update(text='')
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
                     key_state['Backspace'] = 0
@@ -116,39 +152,45 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                         state[1] = 'pass'
                         cursor_pos = len(input_fields['pass'])
                     elif login_group.get('login_button').rect.collidepoint(pos):
-                        if not (input_fields['user'] and input_fields['pass']):
-                            error_code = (not input_fields['user']) + (not input_fields['pass']) * 2
-                        else:
+                        if not input_fields['user']:
+                            error_group.get('error1_text').update(text='enter username')
+                        if not input_fields['pass'] and db_type != 'csv':
+                            error_group.get('error2_text').update(text='enter password')
+                        if input_fields['user'] and (input_fields['pass'] or db_type == 'csv'):
                             if state[0] == 'login':
-                                if dir_type == 'csv':
+                                if db_type == 'csv':
                                     acct_info = directory.login(input_fields['user'])
-                                elif dir_type == 'sql' or dir_type == 'msa':
+                                elif db_type == 'sql' or db_type == 'msa':
                                     acct_info = directory.login(input_fields['user'], input_fields['pass'])
                             elif state[0] == 'signup':
-                                if dir_type == 'csv':
+                                if db_type == 'csv':
                                     acct_info = directory.sign_up(input_fields['user'])
-                                elif dir_type == 'sql' or dir_type == 'msa':
+                                elif db_type == 'sql' or db_type == 'msa':
                                     acct_info = directory.sign_up(input_fields['user'], input_fields['pass'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime()))
                             if acct_info:
                                 state[0] = 'menu'
                                 return acct_info
                             elif state[0] == 'login':
-                                error_code = 4
+                                if db_type == 'csv':
+                                    error_group.get('error1_text').update(text='void account')
+                                elif db_type == 'sql' or db_type == 'msa':
+                                    error_group.get('error2_text').update(text='incorrect password')
                     elif login_group.get('signup_button').rect.collidepoint(pos):
-                        error_code = 0
-                        input_fields = {'': '', 'user': '', 'pass': ''}
-                        state_transition = ['signup', 'login']
+                        input_fields = {'user': '', 'pass': ''}
                         login_group.get('signup_button').update(text=state[0])
-                        state[0] = state_transition[state_transition.index(state[0]) - 1]
+                        state0_transition = ['signup', 'login']
+                        state[0] = state0_transition[state0_transition.index(state[0]) - 1]
+                        state[1] = ''
                         login_group.get('title_text').update(text=state[0].upper())
                         login_group.get('login_button').update(text=state[0])
-                        state[1] = ''
+                        error_group.get('error1_text').update(text='')
+                        error_group.get('error2_text').update(text='')
                     elif login_group.get('guest_button').rect.collidepoint(pos):
                         input_fields['user'] = 'guest'
                         input_fields['pass'] = ''
-                        if dir_type == 'csv':
+                        if db_type == 'csv':
                             acct_info = directory.login(input_fields['user'])
-                        elif dir_type == 'sql' or dir_type == 'msa':
+                        elif db_type == 'sql' or db_type == 'msa':
                             acct_info = directory.login(input_fields['user'], input_fields['pass'])
                         state[0] = 'menu'
                         return acct_info
@@ -164,12 +206,22 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                     key_state['Backspace'] += distance * .05
                     input_fields[state[1]] = input_fields[state[1]][:max(cursor_pos - distance, 0)] + input_fields[state[1]][cursor_pos:]
                     cursor_pos = max(cursor_pos - distance, 0)
+                    if state[0] == 'signup' and state[1] == 'user':
+                        if not directory.username_available(input_fields['user']):
+                            error_group.get('error1_text').update(text='username taken')
+                        else:
+                            error_group.get('error1_text').update(text='')
             elif key_state['Delete']:
                 remove_timer = current_time - key_state['Delete']
                 if remove_timer > .05:
                     distance = int(remove_timer // .05)
                     key_state['Delete'] += distance * .05
                     input_fields[state[1]] = input_fields[state[1]][:cursor_pos] + input_fields[state[1]][cursor_pos + distance:]
+                    if state[0] == 'signup' and state[1] == 'user':
+                        if not directory.username_available(input_fields['user']):
+                            error_group.get('error1_text').update(text='username taken')
+                        else:
+                            error_group.get('error1_text').update(text='')
             if key_state['Left']:
                 move_timer = current_time - key_state['Left']
                 if move_timer > .05:
@@ -182,20 +234,6 @@ def state_login(screen, clock, dir_type, directory, font_path, state):
                     distance = int(move_timer // .05)
                     key_state['Right'] += distance * .05
                     cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
-
-        ### ERROR HANDLING
-        if state[0] == 'signup' and not directory.username_available(input_fields['user']):
-            error_group.get('error1_text').update(text='username taken')
-        elif error_code & (1 << 0):
-            error_group.get('error1_text').update(text='enter username')
-        else:
-            error_group.get('error1_text').update(text='')
-        if error_code & (1 << 1):
-            error_group.get('error2_text').update(text='enter password')
-        elif error_code & (1 << 2):
-            error_group.get('error2_text').update(text='incorrect password')
-        else:
-            error_group.get('error2_text').update(text='')
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())

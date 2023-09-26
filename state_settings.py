@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_group, Sprite_text, Sprite_button, Sprite_textfield, Sprite_line, Sprite_circle
 
-def state_settings(screen, clock, dir_type, directory, font_path, state, user_info, bindings, handling):
+def state_settings(screen, clock, db_type, directory, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
     if state[1] == 'account':
@@ -15,6 +15,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
         cursor_pos = 0
         error_code = 0
         key_state  = {'Backspace': 0, 'Delete': 0, 'Left': 0, 'Right': 0}
+        state_transition = ['password', 'new_pass2', 'new_pass1', 'username', '']
     elif state[1] == 'bindings':
         input_fields = {k: v for k, v in bindings.items()}
         input_to_sprite = {k: f'{k}_value' for k in bindings.keys()}
@@ -94,7 +95,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                             if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username']:
                                 directory.settings(user_info['username'], {'username': input_fields['username']})
                                 user_info['username'] = input_fields['username']
-                            if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and dir_type != 'csv':
+                            if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
                                 if not directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
                                     error_code |= (1 << 2)
                         input_fields['username'] = user_info['username']
@@ -118,11 +119,10 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                                 handling[k] = v
                 elif state[1] == 'account':
                     if event.key == pygame.K_TAB:
-                        state_transition = ['password', 'new_pass2', 'new_pass1', 'username', '']
                         state[2] = state_transition[state_transition.index(state[2]) - 1]
                         if state[2]:
                             cursor_pos = len(input_fields[state[2]])
-                    if state[2]:
+                    if state[2] and not (db_type != 'csv' and user_info['username'] == 'guest') and not (db_type == 'csv' and state[2] != 'username'):
                         if event.key == pygame.K_BACKSPACE:
                             key_state['Backspace'] = current_time - .05 + .3 # (- ARR + DAS)
                             key_state['Delete'] = 0
@@ -186,7 +186,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
                                 if not (error_code & (1 << 0)) and user_info['username'] != input_fields['username'] and len(input_fields['username']) > 0:
                                     directory.settings(user_info['username'], {'username': input_fields['username']})
                                     user_info['username'] = input_fields['username']
-                                if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and dir_type != 'csv':
+                                if not (error_code & (1 << 1)) and len(input_fields['new_pass1']) > 0 and db_type != 'csv':
                                     if directory.settings(user_info['username'], {'password': input_fields['new_pass1']}, input_fields['password']):
                                         pass
                                     else:
@@ -295,7 +295,7 @@ def state_settings(screen, clock, dir_type, directory, font_path, state, user_in
             else:
                 settings_group.get(input_to_sprite[state[2]][1]).update(text=str(input_fields[state[2]]))
 
-        ### ERROR HANDLING
+        ### ERROR HANDLING # TODO: clean like state_login.py
         if state[1] == 'account':
             if input_fields['username'] != user_info['username'] and not directory.username_available(input_fields['username']):
                 error_group.get('error1_text').update(text='taken')

@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_group, Sprite_text, Sprite_button
 
-def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, state, bindings, user_info):
+def state_finish(screen, clock, game, db_type, registrar, order_by, font_path, state, bindings, user_info):
 
     ### INIT STATE
     result_str     = ''
@@ -22,9 +22,9 @@ def state_finish(screen, clock, game, reg_type, registrar, order_by, font_path, 
 
         if user_info['username'] != 'guest':
             row = [user_info['username'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime())] + [game.stats[stat] for stat in game.stat_names]
-            if reg_type == 'csv':
+            if db_type == 'csv':
                 position = registrar.save(row, state[1], order_by[state[1]])
-            elif reg_type == 'sql' or reg_type == 'msa':
+            elif db_type == 'sql' or db_type == 'msa':
                 position = registrar.save(row, order_by[state[1]])
 
             if position[0] == 1:
