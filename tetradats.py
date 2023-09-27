@@ -29,7 +29,7 @@ colors = {'z': (255, 0,   0),
           't': (160, 32,  240)}
 
 ### DATABASE TYPE
-db_type = 'csv'
+db_type = 'sql'
 
 ### INIT DIRECTORY
 if db_type == 'csv':

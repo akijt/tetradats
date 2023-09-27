@@ -307,7 +307,7 @@ class Tetris():
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
             elif self.stats['mode'] == 'practice':
-                self.new_piece(self.piece, current_time)
+                self.new_piece(self.piece, current_time) # TODO: find a way to reset score too
                 return
 
         self.stats['pieces'] += 1

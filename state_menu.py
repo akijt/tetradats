@@ -63,6 +63,10 @@ def state_menu(screen, clock, font_path, state, user_info):
                         state[0] = 'settings'
                         state[1] = 'account'
                         return
+                    elif menu_group.get('title_text').rect.collidepoint(pos):
+                        state[0] = 'countdown'
+                        state[1] = 'practice'
+                        return
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
