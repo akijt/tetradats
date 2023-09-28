@@ -56,7 +56,7 @@ def state_settings(screen, clock, db_type, directory, registrar, font_path, stat
         key_order = (('quit', 'hold', 'rotate_cw', 'rotate_180', 'rotate_ccw'),
                      ('reset', 'move_left', 'move_right', 'soft_drop', 'hard_drop'))
         settings_group.add({f'{action}_label' : Sprite_text(action.replace('_', ' '), 'bottomleft', (-13 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)})
-        settings_group.add({f'{action}_value' : Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)}) # TODO: PyInstaller issue
+        settings_group.add({f'{action}_value' : Sprite_text(pygame.key.name(input_fields[action]), 'bottomleft', (-6 + c * 15, -3 + r * 2), 'center', (255, 255, 255), 2, font_path) for c, column in enumerate(key_order) for r, action in enumerate(column)})
 
     elif state[1] == 'handling':
         slider_range = {'DAS': (0, 400), 'ARR': (0, 80), 'SDF': (5, 41)}
@@ -138,14 +138,15 @@ def state_settings(screen, clock, db_type, directory, registrar, font_path, stat
                                 cursor_pos += 1
                                 input_edit(directory, state, user_info, input_fields, error_group)
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_BACKSPACE:
-                    key_state['Backspace'] = 0
-                elif event.key == pygame.K_DELETE:
-                    key_state['Delete'] = 0
-                elif event.key == pygame.K_LEFT:
-                    key_state['Left'] = 0
-                elif event.key == pygame.K_RIGHT:
-                    key_state['Right'] = 0
+                if state[1] == 'accounts':
+                    if event.key == pygame.K_BACKSPACE:
+                        key_state['Backspace'] = 0
+                    elif event.key == pygame.K_DELETE:
+                        key_state['Delete'] = 0
+                    elif event.key == pygame.K_LEFT:
+                        key_state['Left'] = 0
+                    elif event.key == pygame.K_RIGHT:
+                        key_state['Right'] = 0
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -216,10 +217,10 @@ def state_settings(screen, clock, db_type, directory, registrar, font_path, stat
                                         for k2 in bindings.keys():
                                             if input_fields[k2] == event.key:
                                                 input_fields[k2] = input_fields[k]
-                                                settings_group.get(input_to_sprite[k2]).update(text=settings_group.get(input_to_sprite[k]).text)
+                                                settings_group.get(input_to_sprite[k2]).update(text=pygame.key.name(input_fields[k2]))
                                                 break
                                         input_fields[k] = event.key
-                                        settings_group.get(input_to_sprite[k]).update(text=pygame.key.name(event.key))
+                                        settings_group.get(input_to_sprite[k]).update(text=pygame.key.name(input_fields[k]))
                                         break
                                 break
                     elif state[1] == 'handling':

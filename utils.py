@@ -290,6 +290,5 @@ class Sprite_circle():
         self.rect = pygame.Rect(0, 0, self.radius * 2 * self.dim, self.radius * 2 * self.dim)
         pygame.draw.rect(self.image, self.back_color, self.rect, 0)
         pygame.draw.circle(self.image, self.color, (self.radius * self.dim, self.radius * self.dim), self.radius * self.dim, self.width)
-        # pygame.draw.circle(self.image, self.color, (int(self.radius * dim), int(self.radius * dim)), int(self.radius * dim), self.width) # TODO: PyInstaller issue
 
         self.rect.topleft = (self.origin_offset[0] + (self.offset[0] - self.radius) * self.dim, self.origin_offset[1] + (self.offset[1] - self.radius) * self.dim)
