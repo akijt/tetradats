@@ -29,22 +29,24 @@ class Sprite_group():
 
 class Sprite_rect():
 
-    def __init__(self, size, anchor, offset, origin, color, width):
-        self.size   = size
-        self.anchor = anchor
-        self.offset = [x for x in offset]
-        self.origin = origin
-        self.color  = color
-        self.width  = width
+    def __init__(self, anchor, offset, origin, rect_size, rect_color, bord_color, bord_width):
+        self.anchor     = anchor
+        self.offset     = [x for x in offset]
+        self.origin     = origin
+
+        self.rect_size  = rect_size
+        self.rect_color = rect_color
+        self.bord_color = bord_color
+        self.bord_width = bord_width
 
         if self.anchor in ['topright', 'midright', 'bottomright']:
-            self.offset[0] -= self.size[0]
+            self.offset[0] -= self.rect_size[0]
         elif self.anchor in ['midtop', 'center', 'midbottom']:
-            self.offset[0] -= self.size[0] / 2
+            self.offset[0] -= self.rect_size[0] / 2
         if self.anchor in ['bottomleft', 'midbottom', 'bottomright']:
-            self.offset[1] -= self.size[1]
+            self.offset[1] -= self.rect_size[1]
         elif self.anchor in ['midleft', 'center', 'midright']:
-            self.offset[1] -= self.size[1] / 2
+            self.offset[1] -= self.rect_size[1] / 2
 
     def resize(self, screen):
         self.dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -60,21 +62,24 @@ class Sprite_rect():
             self.origin_offset[1] = screen.get_height() / 2
 
     def update(self, **kwargs):
-        self.image = pygame.Surface((self.size[0] * self.dim, self.size[1] * self.dim))
-        self.rect = pygame.Rect(0, 0, self.size[0] * self.dim, self.size[1] * self.dim)
-        pygame.draw.rect(self.image, self.color, self.rect, self.width)
+        self.image = pygame.Surface((self.rect_size[0] * self.dim, self.rect_size[1] * self.dim))
+        self.rect = pygame.Rect(0, 0, self.rect_size[0] * self.dim, self.rect_size[1] * self.dim)
+        pygame.draw.rect(self.image, self.rect_color, self.rect)
+        if self.bord_width:
+            pygame.draw.rect(self.image, self.bord_color, self.rect, self.bord_width)
         self.rect.topleft = (self.origin_offset[0] + self.offset[0] * self.dim, self.origin_offset[1] + self.offset[1] * self.dim)
 
 class Sprite_text():
 
-    def __init__(self, text, anchor, offset, origin, color, font_size, font_name=None):
-        self.text      = text
-        self.anchor    = anchor
-        self.offset    = [x for x in offset]
-        self.origin    = origin
-        self.color     = color
-        self.font_size = font_size
-        self.font_name = font_name
+    def __init__(self, anchor, offset, origin, text, font_color, font_size, font_path=None):
+        self.anchor     = anchor
+        self.offset     = [x for x in offset]
+        self.origin     = origin
+
+        self.text       = text
+        self.font_color = font_color
+        self.font_size  = font_size
+        self.font_path  = font_path
 
     def resize(self, screen):
         self.dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -94,8 +99,8 @@ class Sprite_text():
             if k == 'text':
                 self.text = v
 
-        self.font = pygame.font.Font(self.font_name, round(.5 * self.font_size * self.dim))
-        self.image = self.font.render(self.text, False, self.color)
+        self.font = pygame.font.Font(self.font_path, round(.5 * self.font_size * self.dim))
+        self.image = self.font.render(self.text, False, self.font_color)
         self.rect = self.image.get_rect(topleft=(self.origin_offset[0] + self.offset[0] * self.dim, self.origin_offset[1] + self.offset[1] * self.dim))
 
         if self.anchor in ['topright', 'midright', 'bottomright']:
@@ -109,26 +114,29 @@ class Sprite_text():
 
 class Sprite_button():
 
-    def __init__(self, text, size, anchor, offset, origin, rect_color, width, font_color, font_size, font_name=None):
-        self.text       = text
-        self.size       = size
+    def __init__(self, anchor, offset, origin, rect_size, rect_color, bord_color, bord_width, text, font_color, font_size, font_path=None):
         self.anchor     = anchor
         self.offset     = [x for x in offset]
         self.origin     = origin
+
+        self.rect_size  = rect_size
         self.rect_color = rect_color
-        self.width      = width
+        self.bord_color = bord_color
+        self.bord_width = bord_width
+
+        self.text       = text
         self.font_color = font_color
         self.font_size  = font_size
-        self.font_name  = font_name
+        self.font_path  = font_path
 
         if self.anchor in ['topright', 'midright', 'bottomright']:
-            self.offset[0] -= self.size[0]
+            self.offset[0] -= self.rect_size[0]
         elif self.anchor in ['midtop', 'center', 'midbottom']:
-            self.offset[0] -= self.size[0] / 2
+            self.offset[0] -= self.rect_size[0] / 2
         if self.anchor in ['bottomleft', 'midbottom', 'bottomright']:
-            self.offset[1] -= self.size[1]
+            self.offset[1] -= self.rect_size[1]
         elif self.anchor in ['midleft', 'center', 'midright']:
-            self.offset[1] -= self.size[1] / 2
+            self.offset[1] -= self.rect_size[1] / 2
 
     def resize(self, screen):
         self.dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -148,40 +156,45 @@ class Sprite_button():
             if k == 'text':
                 self.text = v
 
-        self.image = pygame.Surface((self.size[0] * self.dim, self.size[1] * self.dim))
-        self.rect = pygame.Rect(0, 0, self.size[0] * self.dim, self.size[1] * self.dim)
-        pygame.draw.rect(self.image, self.rect_color, self.rect, self.width)
+        self.image = pygame.Surface((self.rect_size[0] * self.dim, self.rect_size[1] * self.dim))
+        self.rect = pygame.Rect(0, 0, self.rect_size[0] * self.dim, self.rect_size[1] * self.dim)
+        pygame.draw.rect(self.image, self.rect_color, self.rect)
 
-        font = pygame.font.Font(self.font_name, round(.5 * self.font_size * self.dim))
+        font = pygame.font.Font(self.font_path, round(.5 * self.font_size * self.dim))
         text_image = font.render(self.text, False, self.font_color)
         text_rect = text_image.get_rect(center=self.rect.center)
         self.image.blit(text_image, text_rect)
+        if self.bord_width:
+            pygame.draw.rect(self.image, self.bord_color, self.rect, self.bord_width)
 
         self.rect.topleft = (self.origin_offset[0] + self.offset[0] * self.dim, self.origin_offset[1] + self.offset[1] * self.dim)
 
 class Sprite_textfield():
 
-    def __init__(self, size, anchor, offset, origin, rect_color, width, font_color, font_size, font_name=None):
-        self.text       = ''
-        self.size       = size
+    def __init__(self, anchor, offset, origin, rect_size, rect_color, bord_color, bord_width, font_color, font_size, font_path=None):
         self.anchor     = anchor
         self.offset     = [x for x in offset]
         self.origin     = origin
+
+        self.rect_size  = rect_size
         self.rect_color = rect_color
-        self.width      = width
+        self.bord_color = bord_color
+        self.bord_width = bord_width
+
+        self.text       = ''
         self.font_color = font_color
         self.font_size  = font_size
-        self.font_name  = font_name
+        self.font_path  = font_path
         self.cursor_pos = -1
 
         if self.anchor in ['topright', 'midright', 'bottomright']:
-            self.offset[0] -= self.size[0]
+            self.offset[0] -= self.rect_size[0]
         elif self.anchor in ['midtop', 'center', 'midbottom']:
-            self.offset[0] -= self.size[0] / 2
+            self.offset[0] -= self.rect_size[0] / 2
         if self.anchor in ['bottomleft', 'midbottom', 'bottomright']:
-            self.offset[1] -= self.size[1]
+            self.offset[1] -= self.rect_size[1]
         elif self.anchor in ['midleft', 'center', 'midright']:
-            self.offset[1] -= self.size[1] / 2
+            self.offset[1] -= self.rect_size[1] / 2
 
     def resize(self, screen):
         self.dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -207,25 +220,28 @@ class Sprite_textfield():
         if self.cursor_pos >= 0:
             text = text[:self.cursor_pos] + '|' + text[self.cursor_pos:]
 
-        self.image = pygame.Surface((self.size[0] * self.dim, self.size[1] * self.dim))
-        self.rect = pygame.Rect(0, 0, self.size[0] * self.dim, self.size[1] * self.dim)
-        pygame.draw.rect(self.image, self.rect_color, self.rect, self.width)
+        self.image = pygame.Surface((self.rect_size[0] * self.dim, self.rect_size[1] * self.dim))
+        self.rect = pygame.Rect(0, 0, self.rect_size[0] * self.dim, self.rect_size[1] * self.dim)
+        pygame.draw.rect(self.image, self.rect_color, self.rect)
 
-        font = pygame.font.Font(self.font_name, round(.5 * self.font_size * self.dim))
+        font = pygame.font.Font(self.font_path, round(.5 * self.font_size * self.dim))
         text_image = font.render(text, False, self.font_color)
         text_rect = text_image.get_rect(bottomleft=(self.rect.left + .5 * self.dim, self.rect.bottom - .4 * self.dim))
         if text_rect.width > self.rect.width - self.dim and self.cursor_pos > 8:
             text_rect.bottomright = (self.rect.right - .5 * self.dim, self.rect.bottom - .4 * self.dim)
         self.image.blit(text_image, text_rect)
+        if self.bord_width:
+            pygame.draw.rect(self.image, self.bord_color, self.rect, self.bord_width)
 
         self.rect.topleft = (self.origin_offset[0] + self.offset[0] * self.dim, self.origin_offset[1] + self.offset[1] * self.dim)
 
 class Sprite_line():
 
-    def __init__(self, length, offset, origin, color, width, orientation):
-        self.length      = length
+    def __init__(self, offset, origin, length, color, width, orientation):
         self.offset      = [x for x in offset]
         self.origin      = origin
+
+        self.length      = length
         self.color       = color
         self.width       = width
         self.orientation = orientation
@@ -260,13 +276,13 @@ class Sprite_line():
 
 class Sprite_circle():
 
-    def __init__(self, radius, offset, origin, color, width, back_color):
-        self.radius     = radius
-        self.offset     = [x for x in offset]
-        self.origin     = origin
-        self.color      = color
-        self.width      = width
-        self.back_color = back_color
+    def __init__(self, offset, origin, back_color, circ_radius, circ_color):
+        self.offset      = [x for x in offset]
+        self.origin      = origin
+
+        self.back_color  = back_color
+        self.circ_radius = circ_radius
+        self.circ_color  = circ_color        
 
     def resize(self, screen):
         self.dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
@@ -286,9 +302,9 @@ class Sprite_circle():
             if k == 'offset':
                 self.offset = [x for x in v]
 
-        self.image = pygame.Surface((self.radius * 2 * self.dim, self.radius * 2 * self.dim))
-        self.rect = pygame.Rect(0, 0, self.radius * 2 * self.dim, self.radius * 2 * self.dim)
+        self.image = pygame.Surface((self.circ_radius * 2 * self.dim, self.circ_radius * 2 * self.dim))
+        self.rect = pygame.Rect(0, 0, self.circ_radius * 2 * self.dim, self.circ_radius * 2 * self.dim)
         pygame.draw.rect(self.image, self.back_color, self.rect, 0)
-        pygame.draw.circle(self.image, self.color, (self.radius * self.dim, self.radius * self.dim), self.radius * self.dim, self.width)
+        pygame.draw.circle(self.image, self.circ_color, (self.circ_radius * self.dim, self.circ_radius * self.dim), self.circ_radius * self.dim, 0)
 
-        self.rect.topleft = (self.origin_offset[0] + (self.offset[0] - self.radius) * self.dim, self.origin_offset[1] + (self.offset[1] - self.radius) * self.dim)
+        self.rect.topleft = (self.origin_offset[0] + (self.offset[0] - self.circ_radius) * self.dim, self.origin_offset[1] + (self.offset[1] - self.circ_radius) * self.dim)

@@ -3,7 +3,7 @@ from sys import exit
 import time
 from utils import Sprite_group, Sprite_text, Sprite_button
 
-def state_finish(screen, clock, game, db_type, registrar, order_by, font_path, state, bindings, user_info):
+def state_finish(screen, clock, game, colors, db_type, registrar, order_by, font_path, state, bindings, user_info):
 
     ### INIT STATE
     result_str     = ''
@@ -50,12 +50,12 @@ def state_finish(screen, clock, game, db_type, registrar, order_by, font_path, s
                 global_pos_str = f'global {position[1]}th'
 
     finish_group = Sprite_group(
-        title_text      = Sprite_text('FINISH' if not game.lose else 'LOSE', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        result_text     = Sprite_text(result_str, 'midbottom', (0, -2), 'center', (255, 255, 255), 4, font_path),
-        local_pos_text  = Sprite_text(local_pos_str, 'midbottom', (0, 0), 'center', (255, 255, 255), 2, font_path),
-        global_pos_text = Sprite_text(global_pos_str, 'midbottom', (0, 2), 'center', (255, 255, 255), 2, font_path),
-        retry_button    = Sprite_button('retry', (8, 2), 'midleft', (1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        menu_button     = Sprite_button('menu', (8, 2), 'midright', (-1, 10), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+        title_text      = Sprite_text('midbottom', (0, -10), 'center', 'FINISH' if not game.lose else 'LOSE', (255, 255, 255), 4, font_path),
+        result_text     = Sprite_text('midbottom', (0, -2), 'center', result_str, (255, 255, 255), 4, font_path),
+        local_pos_text  = Sprite_text('midbottom', (0, 0), 'center', local_pos_str, (255, 255, 255), 2, font_path),
+        global_pos_text = Sprite_text('midbottom', (0, 2), 'center', global_pos_str, (255, 255, 255), 2, font_path),
+        retry_button    = Sprite_button('midleft', (1, 10), 'center', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'retry', (255, 255, 255), 4, font_path),
+        menu_button     = Sprite_button('midright', (-1, 10), 'center', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'menu', (255, 255, 255), 4, font_path)
     )
 
     finish_group.resize(screen)
@@ -88,7 +88,7 @@ def state_finish(screen, clock, game, db_type, registrar, order_by, font_path, s
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
+        pygame.draw.rect(screen, colors['1'], screen.get_rect())
 
         ### DRAW SPRITES
         finish_group.draw(screen)

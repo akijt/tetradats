@@ -1,5 +1,5 @@
 # tetradats
-block stacking game
+block stacking game in Python 3.7.9 and PyGame 2.4.0
 
 ## tetradats.py
 - The main file of the game

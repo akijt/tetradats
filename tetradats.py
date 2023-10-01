@@ -26,7 +26,8 @@ colors = {'z': (255, 0,   0),
           's': (0,   255, 0),
           'i': (0,   255, 255),
           'j': (0,   0,   255),
-          't': (160, 32,  240)}
+          't': (160, 32,  240),
+          '1': (0,   0,   0)} # background color (16,  32,  48)
 
 ### DATABASE TYPE
 db_type = 'sql'
@@ -75,11 +76,11 @@ while True:
 
     ### LOGIN/SIGNUP STATE
     if state[0] == 'login' or state[0] == 'signup':
-        user_info, bindings, handling = state_login(screen, clock, db_type, directory, font_path, state)
+        user_info, bindings, handling = state_login(screen, clock, colors, db_type, directory, font_path, state)
 
     ### MENU STATE
     elif state[0] == 'menu':
-        state_menu(screen, clock, font_path, state, user_info)
+        state_menu(screen, clock, colors, font_path, state, user_info)
 
     ### COUNTDOWN STATE
     elif state[0] == 'countdown':
@@ -91,16 +92,16 @@ while True:
 
     ### PAUSE STATE
     elif state[0] == 'pause':
-        state_pause(screen, clock, game, font_path, state, user_info, bindings)
+        state_pause(screen, clock, game, colors, font_path, state, user_info, bindings)
 
     ### FINISH STATE
     elif state[0] == 'finish':
-        state_finish(screen, clock, game, db_type, registrar, order_by, font_path, state, bindings, user_info)
+        state_finish(screen, clock, game, colors, db_type, registrar, order_by, font_path, state, bindings, user_info)
 
     ### RECORDS STATE
     elif state[0] == 'records':
-        state_records(screen, clock, db_type, registrar, order_by, font_path, state, user_info, bindings)
+        state_records(screen, clock, colors, db_type, registrar, order_by, font_path, state, user_info, bindings)
 
     ### SETTINGS STATE
     elif state[0] == 'settings':
-        state_settings(screen, clock, db_type, directory, registrar, font_path, state, user_info, bindings, handling)
+        state_settings(screen, clock, colors, db_type, directory, registrar, font_path, state, user_info, bindings, handling)

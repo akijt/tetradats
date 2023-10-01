@@ -3,7 +3,7 @@ from sys import exit
 import datetime
 from utils import Sprite_group, Sprite_text, Sprite_button
 
-def state_records(screen, clock, db_type, registrar, order_by, font_path, state, user_info, bindings):
+def state_records(screen, clock, colors, db_type, registrar, order_by, font_path, state, user_info, bindings):
 
     ### INIT STATE
     if db_type == 'csv':
@@ -45,16 +45,16 @@ def state_records(screen, clock, db_type, registrar, order_by, font_path, state,
             top_n[r][-1] = top_n[r][-1].strftime('%m/%d/%Y, %H:%M:%S')
 
     records_group = Sprite_group(
-        title_text      = Sprite_text('RECORDS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        marathon_button = Sprite_button('marathon', (12, 2), 'bottomright', (-7, -7), 'center', (255, 255, 255), 2 if state[1] != 'marathon' else 0, (255, 255, 255) if state[1] != 'marathon' else (0, 0, 0), 4, font_path),
-        sprint_button   = Sprite_button('sprint', (12, 2), 'midbottom', (0, -7), 'center', (255, 255, 255), 2 if state[1] != 'sprint' else 0, (255, 255, 255) if state[1] != 'sprint' else (0, 0, 0), 4, font_path),
-        blitz_button    = Sprite_button('blitz', (12, 2), 'bottomleft', (7, -7), 'center', (255, 255, 255), 2 if state[1] != 'blitz' else 0, (255, 255, 255) if state[1] != 'blitz' else (0, 0, 0), 4, font_path),
-        back_button     = Sprite_button('back', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        global_button   = Sprite_button('global', (8, 2), 'bottomright', (-1, -1), 'bottomright', (255, 255, 255), 2 if state[2] != 'global' else 0, (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path),
+        title_text      = Sprite_text('midbottom', (0, -10), 'center', 'RECORDS', (255, 255, 255), 4, font_path),
+        marathon_button = Sprite_button('bottomright', (-7, -7), 'center', (12, 2), (0, 0, 0) if state[1] != 'marathon' else (255, 255, 255), (255, 255, 255), 2, 'marathon', (255, 255, 255) if state[1] != 'marathon' else (0, 0, 0), 4, font_path),
+        sprint_button   = Sprite_button('midbottom', (0, -7), 'center', (12, 2), (0, 0, 0) if state[1] != 'sprint' else (255, 255, 255), (255, 255, 255), 2, 'sprint', (255, 255, 255) if state[1] != 'sprint' else (0, 0, 0), 4, font_path),
+        blitz_button    = Sprite_button('bottomleft', (7, -7), 'center', (12, 2), (0, 0, 0) if state[1] != 'blitz' else (255, 255, 255), (255, 255, 255), 2, 'blitz', (255, 255, 255) if state[1] != 'blitz' else (0, 0, 0), 4, font_path),
+        back_button     = Sprite_button('bottomleft', (1, -1), 'bottomleft', (6, 2), (0, 0, 0), (255, 255, 255), 2, 'back', (255, 255, 255), 4, font_path),
+        global_button   = Sprite_button('bottomright', (-1, -1), 'bottomright', (8, 2), (0, 0, 0) if state[2] != 'global' else (255, 255, 255), (255, 255, 255), 2, 'global', (255, 255, 255) if state[2] != 'global' else (0, 0, 0), 4, font_path),
     )
     for r in range(len(top_n)):
-        records_group.add({f'header{r}_text' : Sprite_text(top_n[r][0], 'midbottom', (-13, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path)})
-        records_group.add({f'entry{c}-{r}_text' : Sprite_text(top_n[r][c], 'bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', (255, 255, 255), 2, font_path) for c in range(1, len(top_n[r]))})
+        records_group.add({f'header{r}_text' : Sprite_text('midbottom', (-13, -4.5 + r * 1.5), 'center', top_n[r][0], (255, 255, 255), 2, font_path)})
+        records_group.add({f'entry{c}-{r}_text' : Sprite_text('bottomleft', (-15 + c * 5, -4.5 + r * 1.5), 'center', top_n[r][c], (255, 255, 255), 2, font_path) for c in range(1, len(top_n[r]))})
 
     if db_type == 'csv':
         records_group.get('global_button').text = 'local'
@@ -98,7 +98,7 @@ def state_records(screen, clock, db_type, registrar, order_by, font_path, state,
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
+        pygame.draw.rect(screen, colors['1'], screen.get_rect())
 
         ### DRAW SPRITES
         records_group.draw(screen)

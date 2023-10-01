@@ -4,7 +4,7 @@ import time
 from animation import Animation
 from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button, Sprite_textfield
 
-def state_login(screen, clock, db_type, directory, font_path, state):
+def state_login(screen, clock, colors, db_type, directory, font_path, state):
 
     ### INIT STATE
     animation = Animation(.5, time.time())
@@ -17,16 +17,16 @@ def state_login(screen, clock, db_type, directory, font_path, state):
         state_transition = ['pass', 'user', '']
 
     login_group = Sprite_group(
-        title_text    = Sprite_text('LOGIN', 'midbottom', (0, -6), 'center', (255, 255, 255), 4, font_path),
-        menu_rect     = Sprite_rect((16, 14), 'midbottom', (0, 8), 'center', (255, 255, 255), 2),
-        user_label    = Sprite_text('username', 'bottomleft', (-6, -4), 'center', (255, 255, 255), 2, font_path),
-        pass_label    = Sprite_text('password', 'bottomleft', (-6, 1), 'center', (255, 255, 255), 2, font_path),
-        user_box      = Sprite_textfield((12, 2), 'midbottom', (0, -2), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
-        pass_box      = Sprite_textfield((12, 2), 'midbottom', (0, 3), 'center', (255, 255, 255), 2, (255, 255, 255), 2, font_path),
-        login_button  = Sprite_button('login', (8, 2), 'bottomleft', (-1, 7), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        signup_button = Sprite_button('sign up', (5, 2), 'bottomright', (-2, 7), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path),
-        guest_button  = Sprite_button('play as guest', (8, 2), 'midbottom', (0, 10), 'center', (0, 0, 0), 0, (255, 255, 255), 2, font_path),
-        quit_button   = Sprite_button('quit', (6, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+        title_text    = Sprite_text('midbottom', (0, -6), 'center', 'LOGIN', (255, 255, 255), 4, font_path),
+        menu_rect     = Sprite_rect('midbottom', (0, 8), 'center', (16, 14), (0, 0, 0), (255, 255, 255), 2),
+        user_label    = Sprite_text('bottomleft', (-6, -4), 'center', 'username', (255, 255, 255), 2, font_path),
+        pass_label    = Sprite_text('bottomleft', (-6, 1), 'center', 'password', (255, 255, 255), 2, font_path),
+        user_box      = Sprite_textfield('midbottom', (0, -2), 'center', (12, 2), (0, 0, 0), (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+        pass_box      = Sprite_textfield('midbottom', (0, 3), 'center', (12, 2), (0, 0, 0), (255, 255, 255), 2, (255, 255, 255), 2, font_path),
+        login_button  = Sprite_button('bottomleft', (-1, 7), 'center', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'login', (255, 255, 255), 4, font_path),
+        signup_button = Sprite_button('bottomright', (-2, 7), 'center', (5, 2), (0, 0, 0), (0, 0, 0), 0, 'sign up', (255, 255, 255), 2, font_path),
+        guest_button  = Sprite_button('midbottom', (0, 10), 'center', (8, 2), colors['1'], colors['1'], 0, 'play as guest', (255, 255, 255), 2, font_path),
+        quit_button   = Sprite_button('bottomleft', (1, -1), 'bottomleft', (6, 2), (0, 0, 0), (255, 255, 255), 2, 'quit', (255, 255, 255), 4, font_path)
     )
 
     if db_type == 'csv': # hide password features and reorganize
@@ -39,8 +39,8 @@ def state_login(screen, clock, db_type, directory, font_path, state):
         login_group.get('signup_button').offset[1] -= 1
 
     error_group = Sprite_group(
-        error1_text = Sprite_text('', 'topright', (6, -2), 'center', (255, 255, 255), 2, font_path),
-        error2_text = Sprite_text('', 'topright', (6, 3), 'center', (255, 255, 255), 2, font_path)
+        error1_text = Sprite_text('topright', (6, -2), 'center', '', (255, 255, 255), 2, font_path),
+        error2_text = Sprite_text('topright', (6, 3), 'center', '', (255, 255, 255), 2, font_path)
     )
 
     if db_type == 'csv':
@@ -174,7 +174,7 @@ def state_login(screen, clock, db_type, directory, font_path, state):
                     cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
+        pygame.draw.rect(screen, colors['1'], screen.get_rect())
 
         ### DRAW ANIMATION
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio

@@ -2,23 +2,23 @@ import pygame
 from sys import exit
 from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 
-def state_menu(screen, clock, font_path, state, user_info):
+def state_menu(screen, clock, colors, font_path, state, user_info):
 
     ### INIT STATE
     menu_group = Sprite_group(
-        title_text      = Sprite_text('TETRADATS', 'midbottom', (0, -10), 'center', (255, 255, 255), 4, font_path),
-        marathon_button = Sprite_button('marathon', (14, 2), 'midbottom', (0, -4), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        sprint_button   = Sprite_button('sprint', (14, 2), 'midbottom', (0, -1), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        blitz_button    = Sprite_button('blitz', (14, 2), 'midbottom', (0, 2), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        records_button  = Sprite_button('records', (14, 2), 'midbottom', (0, 5), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        settings_button = Sprite_button('settings', (14, 2), 'midbottom', (0, 8), 'center', (255, 255, 255), 2, (255, 255, 255), 4, font_path),
-        logout_button   = Sprite_button('logout', (8, 2), 'bottomleft', (1, -1), 'bottomleft', (255, 255, 255), 2, (255, 255, 255), 4, font_path)
+        title_text      = Sprite_text('midbottom', (0, -10), 'center', 'TETRADATS', (255, 255, 255), 4, font_path),
+        marathon_button = Sprite_button('midbottom', (0, -4), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'marathon', (255, 255, 255), 4, font_path),
+        sprint_button   = Sprite_button('midbottom', (0, -1), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'sprint', (255, 255, 255), 4, font_path),
+        blitz_button    = Sprite_button('midbottom', (0, 2), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'blitz', (255, 255, 255), 4, font_path),
+        records_button  = Sprite_button('midbottom', (0, 5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'records', (255, 255, 255), 4, font_path),
+        settings_button = Sprite_button('midbottom', (0, 8), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'settings', (255, 255, 255), 4, font_path),
+        logout_button   = Sprite_button('bottomleft', (1, -1), 'bottomleft', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'logout', (255, 255, 255), 4, font_path)
     )
 
     account_group = Sprite_group(
-        tab_rect  = Sprite_rect((8, 2), 'topright', (-1, 1), 'topright', (255, 255, 255), 2),
-        pfp_rect  = Sprite_rect((1.5, 1.5), 'topleft', (-8.75, 1.25), 'topright', (255, 255, 255), 1),
-        user_text = Sprite_text(user_info['username'], 'bottomright', (-1.5, 2.6), 'topright', (255, 255, 255), 2, font_path)
+        tab_rect  = Sprite_rect('topright', (-1, 1), 'topright', (8, 2), (0, 0, 0), (255, 255, 255), 2),
+        pfp_rect  = Sprite_rect('topleft', (-8.75, 1.25), 'topright', (1.5, 1.5), (0, 0, 0), (255, 255, 255), 1),
+        user_text = Sprite_text('bottomright', (-1.5, 2.6), 'topright', user_info['username'], (255, 255, 255), 2, font_path)
     )
 
     menu_group.resize(screen)
@@ -69,7 +69,7 @@ def state_menu(screen, clock, font_path, state, user_info):
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, (0, 0, 0), screen.get_rect())
+        pygame.draw.rect(screen, colors['1'], screen.get_rect())
 
         ### DRAW SPRITES
         menu_group.draw(screen)
