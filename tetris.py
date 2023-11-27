@@ -103,17 +103,13 @@ class Tetris():
                            'perfect clear tetris', 'max B2B', 'max combo', 'finesse']
         self.key_state = {'soft_drop': 0, 'move_left': [0, 0], 'move_right': [0, 0]}
         self.lock = {'time': .5, 'count': 15}
-        # TODO: add classic mode:
-        # disable hold(), hard_drop(), and rotate(2)
-        # in reset() and new_piece() add random bag system (display only one next piece)
-        # in reset() make start level selectable
-        # in reset() turn ghost (new variable) off
-        # in piece_lock() self.lock_count > self.lock['count'] is not checked
-        # in move() and rotate() when self.lock_count += 1, self.lock_time is not reset
 
-    def reset(self, mode, handling):
+    def reset(self, mode, level, handling):
         self.board     = [[None for c in range(10)] for r in range(40)]
-        self.queue     = random.sample(self.bag, k=7)
+        if mode == 'classic':
+            self.queue = random.choices(self.bag, k=1)
+        else:
+            self.queue = random.sample(self.bag, k=7)
         self.held      = None
         self.hold_used = False
         self.b2b       = -1
@@ -126,11 +122,14 @@ class Tetris():
 
         for k, v in handling.items():
             self.stats[k] = v
-        self.stats['mode']  = mode # 'marathon', 'sprint', 'blitz', or 'practice' ('classic' to come)
-        self.stats['level'] = 1 # This needs to be in reset (countdown screen should show correct level)
+        self.stats['mode']  = mode # 'marathon', 'sprint', 'blitz', 'practice' or 'classic'
+        self.stats['level'] = level # This needs to be in reset (countdown screen should show correct level)
         self.gravity        = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
         self.lose           = False
         self.finish         = False
+
+        self.ghost    = mode != 'classic'
+        self.next_num = 1 if mode == 'classic' else 3
 
     def start(self, current_time):
         self.stats['keys'] = 0
@@ -146,8 +145,11 @@ class Tetris():
         if self.collision():
             self.lose = True
             return
-        if len(self.queue) < 4:
-            self.queue.extend(random.sample(self.bag, k=7))
+        if len(self.queue) < self.next_num:
+            if self.stats['mode'] == 'classic':
+                self.queue.extend(random.choices(self.bag, k=1))
+            else:
+                self.queue.extend(random.sample(self.bag, k=7))
         self.set_height()
 
         self.gravity_time = current_time - self.gravity # when the last drop was
@@ -157,18 +159,19 @@ class Tetris():
 
 
     def hold(self, current_time):
-        self.stats['keys'] += 1
-        if not self.hold_used:
-            if self.held == None:
-                self.held = self.piece
-                self.new_piece(self.queue.pop(0), current_time)
-            else:
-                temp = self.piece
-                self.new_piece(self.held, current_time)
-                self.held = temp
-            self.hold_used = True
-            self.stats['holds'] += 1
-            self.last_action = 'hold'
+        if self.stats['mode'] != 'classic':
+            self.stats['keys'] += 1
+            if not self.hold_used:
+                if self.held == None:
+                    self.held = self.piece
+                    self.new_piece(self.queue.pop(0), current_time)
+                else:
+                    temp = self.piece
+                    self.new_piece(self.held, current_time)
+                    self.held = temp
+                self.hold_used = True
+                self.stats['holds'] += 1
+                self.last_action = 'hold'
 
     def move(self, distance, current_time):
         orig_height = self.height
@@ -181,42 +184,46 @@ class Tetris():
                     return False
                 break
         self.set_height() # move that causes height == 0 counts in lock_count
-        if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-            if self.lock_count < self.lock['count']:
-                self.lock_time = current_time
-            self.lock_count += i + 1
+        if self.stats['mode'] != 'classic':
+            if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
+                if self.lock_count < self.lock['count']:
+                    self.lock_time = current_time
+                self.lock_count += i + 1
         self.last_action = 'move'
         return True
 
     def rotate(self, turns, current_time):
-        self.stats['keys'] += 1
-        self.fin_keys += 1 if turns == 1 or turns == 3 else 2
-        orig_height   = self.height
-        orig_position = self.position
-        orig_rotation = self.rotation
-        self.rotation = (self.rotation + turns) % 4
-        if self.collision():
-            for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
-                self.position = [orig_position[0] + y, orig_position[1] + x]
-                if not self.collision():
-                    self.set_height() # rotation that causes height == 0 counts in lock_count
+        if self.stats['mode'] != 'classic' or turns != 2:
+            self.stats['keys'] += 1
+            self.fin_keys += 1 if turns == 1 or turns == 3 else 2
+            orig_height   = self.height
+            orig_position = self.position
+            orig_rotation = self.rotation
+            self.rotation = (self.rotation + turns) % 4
+            if self.collision():
+                if self.stats['mode'] != 'classic':
+                    for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
+                        self.position = [orig_position[0] + y, orig_position[1] + x]
+                        if not self.collision():
+                            self.set_height() # rotation that causes height == 0 counts in lock_count
+                            if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
+                                if self.lock_count < self.lock['count']:
+                                    self.lock_time = current_time
+                                self.lock_count += 1
+                            self.last_action = f'rotate{i}'
+                            return True
+                self.position = orig_position
+                self.rotation = orig_rotation
+                return False
+            else:
+                self.set_height() # rotation that causes height == 0 counts in lock_count
+                if self.stats['mode'] != 'classic':
                     if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
                         if self.lock_count < self.lock['count']:
                             self.lock_time = current_time
                         self.lock_count += 1
-                    self.last_action = f'rotate{i}'
-                    return True
-            self.position = orig_position
-            self.rotation = orig_rotation
-            return False
-        else:
-            self.set_height() # rotation that causes height == 0 counts in lock_count
-            if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                if self.lock_count < self.lock['count']:
-                    self.lock_time = current_time
-                self.lock_count += 1
-            self.last_action = 'rotate'
-            return True
+                self.last_action = 'rotate'
+                return True
 
     def drop(self, distance):
         '''
@@ -287,10 +294,11 @@ class Tetris():
         back to 0. In drop(), the addition to self.stats['score'] will need to multiply distance by
         2 if self.key_state['hard_drop'].
         '''
-        self.stats['keys'] += 1
-        self.stats['score'] += self.height * 2
-        self.position[0] -= self.height
-        self.place(current_time)
+        if self.stats['mode'] != 'classic':
+            self.stats['keys'] += 1
+            self.stats['score'] += self.height * 2
+            self.position[0] -= self.height
+            self.place(current_time)
 
     def place(self, current_time):
         if all([self.position[0] + dr >= 20 for dr, _ in self.minos[self.piece][self.rotation]]):

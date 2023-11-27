@@ -44,28 +44,31 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                     elif menu_group.get('marathon_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'marathon'
+                        state[2] = 1
                         return
                     elif menu_group.get('sprint_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'sprint'
+                        state[2] = 1
                         return
                     elif menu_group.get('blitz_button').rect.collidepoint(pos):
                         state[0] = 'countdown'
                         state[1] = 'blitz'
+                        state[2] = 1
                         return
                     elif menu_group.get('records_button').rect.collidepoint(pos):
                         state[0] = 'records'
                         state[1] = 'marathon'
-                        if user_info['username'] == 'guest':
-                            state[2] = 'global'
+                        state[2] = 'global' if user_info['username'] == 'guest' else ''
                         return
                     elif menu_group.get('settings_button').rect.collidepoint(pos):
                         state[0] = 'settings'
                         state[1] = 'account'
                         return
-                    elif menu_group.get('title_text').rect.collidepoint(pos):
+                    elif menu_group.get('title_text').rect.collidepoint(pos): # TODO: make classic button and menu
                         state[0] = 'countdown'
-                        state[1] = 'practice'
+                        state[1] = 'classic'
+                        state[2] = 1
                         return
 
         ### CLEAR SCREEN

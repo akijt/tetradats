@@ -118,10 +118,11 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
             pygame.draw.rect(screen, colors[game.piece], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW GHOST PIECE
-        for dr, dc in game.minos[game.piece][game.rotation]:
-            left = screen.get_width() / 2 + (-5 + game.position[1] + dc) * dim
-            top = screen.get_height() / 2 + (9 - game.position[0] - dr + game.height) * dim
-            pygame.draw.rect(screen, colors[game.piece], [left, top, dim + border_width, dim + border_width], border_width + 1)
+        if game.ghost:
+            for dr, dc in game.minos[game.piece][game.rotation]:
+                left = screen.get_width() / 2 + (-5 + game.position[1] + dc) * dim
+                top = screen.get_height() / 2 + (9 - game.position[0] - dr + game.height) * dim
+                pygame.draw.rect(screen, colors[game.piece], [left, top, dim + border_width, dim + border_width], border_width + 1)
 
         ### DRAW HELD PIECE
         if game.held != None:
@@ -134,8 +135,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                     pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
 
         ### DRAW NEXT PIECES
-        next_num = 3
-        for p in range(next_num):
+        for p in range(game.next_num):
             for dr, dc in game.minos[game.queue[p]][0]:
                 left = screen.get_width() / 2 + (6 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim

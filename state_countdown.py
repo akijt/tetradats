@@ -6,7 +6,7 @@ from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 def state_countdown(screen, clock, game, colors, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
-    game.reset(state[1], handling)
+    game.reset(state[1], state[2], handling)
     countdown = time.time()
 
     countdown_group = Sprite_group(
@@ -21,7 +21,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
         lines_label  = Sprite_text('bottomright', (-6, 5), 'center', 'lines', (255, 255, 255), 2, font_path),
         lines_value  = Sprite_text('bottomright', (-6, 7), 'center', '0', (255, 255, 255), 4, font_path),
         level_label  = Sprite_text('bottomright', (-6, 8), 'center', 'level', (255, 255, 255), 2, font_path),
-        level_value  = Sprite_text('bottomright', (-6, 10), 'center', '1', (255, 255, 255), 4, font_path),
+        level_value  = Sprite_text('bottomright', (-6, 10), 'center', f'{state[2]}', (255, 255, 255), 4, font_path),
         mode_text    = Sprite_text('midbottom', (0, 12), 'center', f'{game.stats["mode"]}', (255, 255, 255), 4, font_path)
     )
 
@@ -52,7 +52,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                     state[0] = 'menu'
                     return
                 elif event.key == bindings['reset']:
-                    game.reset(state[1], handling)
+                    game.reset(state[1], state[2], handling)
                     countdown = current_time
                 elif event.key == bindings['move_left']:
                     game.move_press(-1, current_time)
@@ -92,8 +92,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW NEXT PIECES
-        next_num = 3
-        for p in range(next_num):
+        for p in range(game.next_num):
             for dr, dc in game.minos[game.queue[p]][0]:
                 left = screen.get_width() / 2 + (6 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
