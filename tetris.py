@@ -32,7 +32,6 @@ class Tetris():
                              ((1, 1), (1, 2), (2, 0), (2, 1)),
                              ((1, 0), (2, 0), (2, 1), (3, 1)))}
         self.bag = list(self.minos.keys())
-        self.start_position = (18, 3)
         self.kicks  = {'t': (((),                                     # 0 >> 0
                               ((-1, 0), (-1, 1), ( 0,-2), (-1,-2)),   # 0 >> 1
                               (( 0, 1), ( 1, 1), (-1, 1)),            # 0 >> 2
@@ -65,7 +64,6 @@ class Tetris():
                               ((-1, 0)),                              # 3 >> 1
                               ((-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),   # 3 >> 2
                               ()))}                                   # 3 >> 3
-        self.corner = ((3, 0), (3, 2), (1, 2), (1, 0))
         self.finesse = {'t': ((1, 2, 1, 0, 1, 2, 2, 1),
                               (2, 2, 3, 2, 1, 2, 3, 3, 2),
                               (3, 4, 3, 2, 3, 4, 4, 3),
@@ -147,7 +145,7 @@ class Tetris():
 
     def new_piece(self, piece, current_time):
         self.piece    = piece
-        self.position = [x for x in self.start_position]
+        self.position = [18, 3]
         self.rotation = 0
         self.fin_keys = 0
 
@@ -384,7 +382,7 @@ class Tetris():
         if self.piece == 't' and self.last_action[0] == 'r':
             front = 0
             back  = 0
-            for i, (dr, dc) in enumerate(self.corner):
+            for i, (dr, dc) in enumerate(((3, 0), (3, 2), (1, 2), (1, 0))):
                 if self.position[0] + dr < 0 or self.position[1] + dc < 0 or self.position[1] + dc > 9:
                     back += 1
                 elif self.board[self.position[0] + dr][self.position[1] + dc] != None:
