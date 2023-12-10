@@ -105,6 +105,15 @@ class Tetris():
         self.lock = {'time': .5, 'count': 15}
 
     def reset(self, mode, level, handling):
+        '''
+        (12/10/23) A possibly better way to implement classic mode and other variations would be to
+        only make changes in the __init__() and reset() functions. In essence, variables like
+        hold_allowed, r180_allowed, hard_drop_allowed can be set to False, and self.kicks can
+        remove disallowed kicks (most). However, things get complicated for the queue extention and
+        piece lock functionality. Queue extention would require storing a function. For piece lock,
+        self.lock['count'] would be set to 0, but that also requires a new condition for its
+        associated lock condition in piece_lock(). The finish condition also requires a fix.
+        '''
         self.board     = [[None for c in range(10)] for r in range(40)]
         if mode == 'classic':
             self.queue = random.choices(self.bag, k=1)
@@ -122,7 +131,7 @@ class Tetris():
 
         for k, v in handling.items():
             self.stats[k] = v
-        self.stats['mode']  = mode # 'marathon', 'sprint', 'blitz', 'practice' or 'classic'
+        self.stats['mode']  = mode # 'marathon', 'sprint', 'blitz', or 'classic'
         self.stats['level'] = level # This needs to be in reset (countdown screen should show correct level)
         self.gravity        = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
         self.lose           = False
@@ -227,7 +236,7 @@ class Tetris():
 
     def drop(self, distance):
         '''
-        (7/17/26) The lowest row reached by a piece can be interpreted in two different ways. The
+        (7/17/23) The lowest row reached by a piece can be interpreted in two different ways. The
         way it is interpreted in this implementation is the lowest row that the 4x4 piece rotation
         area, whose coordinates of its lower left corner are saved in self.position, has been on.
         The other interpretation is the lowest row that any mino of the current piece has been on.
@@ -314,9 +323,6 @@ class Tetris():
             c = min([self.position[1] + dc for _, dc in self.minos[self.piece][self.rotation]])
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
-            elif self.stats['mode'] == 'practice':
-                self.new_piece(self.piece, current_time) # TODO: find a way to reset score too
-                return
 
         self.stats['pieces'] += 1
         for dr, dc in self.minos[self.piece][self.rotation]:
