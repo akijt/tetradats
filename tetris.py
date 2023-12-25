@@ -164,7 +164,6 @@ class Tetris():
         self.lock_count   = 0 # number of moves/rotations since touchdown
         self.lock_lowest  = 18 # the lowest row the piece has been on
 
-
     def hold(self, current_time):
         if self.stats['mode'] != 'classic':
             self.stats['keys'] += 1
@@ -476,8 +475,8 @@ class Tetris():
             or (self.stats['mode'] == 'blitz' and current_time - self.stats['time'] >= 120)
         if self.finish:
             self.stats['time'] = current_time - self.stats['time']
-            if self.stats['mode'] == 'marathon':
-                self.lose = False # in marathon, it's always a finish, not a lose
+            if self.stats['mode'] not in ['sprint', 'blitz']:
+                self.lose = False # in marathon or classic, it's always a finish, not a lose
 
     def frame_update(self, current_time):
         self.move_hold(current_time)

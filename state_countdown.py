@@ -6,7 +6,7 @@ from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 def state_countdown(screen, clock, game, colors, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
-    game.reset(state[1], state[2], handling)
+    game.reset(state[1], state[2], handling) # TODO: include set handling for classic mode. (gravity may need to be reworked)
     countdown = time.time()
 
     countdown_group = Sprite_group(
@@ -60,6 +60,16 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                     game.move_press(1, current_time)
                 elif event.key == bindings['soft_drop']:
                     game.soft_drop()
+                elif event.key == bindings['rotate_cw'] and game.stats['mode'] == 'classic':
+                    state[2] = min(state[2] + 1, 20)
+                    game.reset(state[1], state[2], handling)
+                    countdown = current_time
+                    countdown_group.get('level_value').update(text=f'{game.stats["level"]}')
+                elif event.key == bindings['rotate_ccw'] and game.stats['mode'] == 'classic':
+                    state[2] = max(state[2] - 1, 1)
+                    game.reset(state[1], state[2], handling)
+                    countdown = current_time
+                    countdown_group.get('level_value').update(text=f'{game.stats["level"]}')
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
                     game.soft_drop(down=False)

@@ -7,11 +7,12 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
     ### INIT STATE
     menu_group = Sprite_group(
         title_text      = Sprite_text('midbottom', (0, -10), 'center', 'TETRADATS', (255, 255, 255), 4, font_path),
-        marathon_button = Sprite_button('midbottom', (0, -4), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'marathon', (255, 255, 255), 4, font_path),
-        sprint_button   = Sprite_button('midbottom', (0, -1), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'sprint', (255, 255, 255), 4, font_path),
-        blitz_button    = Sprite_button('midbottom', (0, 2), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'blitz', (255, 255, 255), 4, font_path),
-        records_button  = Sprite_button('midbottom', (0, 5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'records', (255, 255, 255), 4, font_path),
-        settings_button = Sprite_button('midbottom', (0, 8), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'settings', (255, 255, 255), 4, font_path),
+        marathon_button = Sprite_button('midbottom', (0, -6), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'marathon', (255, 255, 255), 4, font_path),
+        sprint_button   = Sprite_button('midbottom', (0, -3), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'sprint', (255, 255, 255), 4, font_path),
+        blitz_button    = Sprite_button('midbottom', (0, 0), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'blitz', (255, 255, 255), 4, font_path),
+        classic_button  = Sprite_button('midbottom', (0, 3), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'classic', (255, 255, 255), 4, font_path),
+        records_button  = Sprite_button('midbottom', (0, 6), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'records', (255, 255, 255), 4, font_path),
+        settings_button = Sprite_button('midbottom', (0, 9), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'settings', (255, 255, 255), 4, font_path),
         logout_button   = Sprite_button('bottomleft', (1, -1), 'bottomleft', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'logout', (255, 255, 255), 4, font_path)
     )
 
@@ -56,6 +57,11 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                         state[1] = 'blitz'
                         state[2] = 1
                         return
+                    elif menu_group.get('classic_button').rect.collidepoint(pos):
+                        state[0] = 'countdown'
+                        state[1] = 'classic'
+                        state[2] = 1
+                        return
                     elif menu_group.get('records_button').rect.collidepoint(pos):
                         state[0] = 'records'
                         state[1] = 'marathon'
@@ -65,11 +71,11 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                         state[0] = 'settings'
                         state[1] = 'account'
                         return
-                    elif menu_group.get('title_text').rect.collidepoint(pos): # TODO: make classic button and menu
-                        state[0] = 'countdown'
-                        state[1] = 'classic'
-                        state[2] = 1
-                        return
+                    # elif menu_group.get('title_text').rect.collidepoint(pos): # TODO: create practice mode
+                    #     state[0] = 'countdown'
+                    #     state[1] = 'practice'
+                    #     state[2] = 1
+                    #     return
 
         ### CLEAR SCREEN
         pygame.draw.rect(screen, colors['1'], screen.get_rect())
