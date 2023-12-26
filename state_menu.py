@@ -71,9 +71,9 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                         state[0] = 'settings'
                         state[1] = 'account'
                         return
-                    # elif menu_group.get('title_text').rect.collidepoint(pos): # TODO: create practice mode
+                    # elif menu_group.get('title_text').rect.collidepoint(pos): # TODO: create finnesse practice mode
                     #     state[0] = 'countdown'
-                    #     state[1] = 'practice'
+                    #     state[1] = 'finnesse'
                     #     state[2] = 1
                     #     return
 
