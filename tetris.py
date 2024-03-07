@@ -317,7 +317,7 @@ class Tetris():
                 self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
                 break
         else:
-            c = min([self.position[1] + dc for _, dc in self.minos[self.piece][self.rotation]])
+            c = self.position[1] + min([dc for _, dc in self.minos[self.piece][self.rotation]])
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
 

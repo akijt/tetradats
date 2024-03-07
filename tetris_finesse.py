@@ -1,3 +1,16 @@
+'''
+tetris.py but with the following changes:
+
+target location is current piece, random rotation, random column.                               1: added set_target() in new_piece()
+scoring system only dependent on finesse or fault. (no clear() and t_check())                   1: removed
+only increase finnesse if finnesse and correct location                                         1: added in place()
+level progression by successful piece (finnesse) instead of line.                               1: added in place()
+in place(), piece is not placed on board.                                                       1: removed in place()
+no hold.                                                                                        1: removed in hold()
+remove lose condition.                                                                          1: removed in new_piece() and place()
+one mode: finish conditions are 2 min or fault.                                                 1: updated finished() and place()
+'''
+
 import random
 
 class Tetris():
@@ -101,6 +114,7 @@ class Tetris():
                            'perfect clear tetris', 'max B2B', 'max combo', 'finesse']
         self.key_state = {'soft_drop': 0, 'move_left': [0, 0], 'move_right': [0, 0]}
         self.lock = {'time': .5, 'count': 15}
+        self.orientations = {'t': 3, 'i': 2, 'o': 1, 'j': 4, 'l': 4, 's': 2, 'z': 2}
 
     def reset(self, mode, level, handling):
         '''
@@ -149,9 +163,9 @@ class Tetris():
         self.rotation = 0
         self.fin_keys = 0
 
-        if self.collision():
-            self.lose = True
-            return
+        # if self.collision():
+        #     self.lose = True
+        #     return
         if len(self.queue) < self.next_num:
             if self.stats['mode'] == 'classic':
                 self.queue.extend(random.choices(self.bag, k=1))
@@ -164,20 +178,29 @@ class Tetris():
         self.lock_count   = 0 # number of moves/rotations since touchdown
         self.lock_lowest  = 18 # the lowest row the piece has been on
 
+        self.set_target(self)
+
+    def set_target(self):
+        self.target = dict()
+        self.target['rotation'] = random.randint(0, 3)
+        self.target['location'] = random.randint(0, len(self.finesse[self.piece][self.rotation]) - 1)
+        self.target['postion']  = [-min(dr for dr, _ in self.minos[self.piece][self.target['rotation']]), self.target['location'] - min(dc for _, dc in self.minos[self.piece][self.target['rotation']])]
+
     def hold(self, current_time):
-        if self.stats['mode'] != 'classic':
-            self.stats['keys'] += 1
-            if not self.hold_used:
-                if self.held == None:
-                    self.held = self.piece
-                    self.new_piece(self.queue.pop(0), current_time)
-                else:
-                    temp = self.piece
-                    self.new_piece(self.held, current_time)
-                    self.held = temp
-                self.hold_used = True
-                self.stats['holds'] += 1
-                self.last_action = 'hold'
+        pass
+        # if self.stats['mode'] != 'classic':
+        #     self.stats['keys'] += 1
+        #     if not self.hold_used:
+        #         if self.held == None:
+        #             self.held = self.piece
+        #             self.new_piece(self.queue.pop(0), current_time)
+        #         else:
+        #             temp = self.piece
+        #             self.new_piece(self.held, current_time)
+        #             self.held = temp
+        #         self.hold_used = True
+        #         self.stats['holds'] += 1
+        #         self.last_action = 'hold'
 
     def move(self, distance, current_time):
         orig_height = self.height
@@ -307,94 +330,102 @@ class Tetris():
             self.place(current_time)
 
     def place(self, current_time):
-        if all([self.position[0] + dr >= 20 for dr, _ in self.minos[self.piece][self.rotation]]):
-            self.lose = True # if entire mino is above 20, game is lost
-            return
+        # if all([self.position[0] + dr >= 20 for dr, _ in self.minos[self.piece][self.rotation]]):
+        #     self.lose = True # if entire mino is above 20, game is lost
+        #     return
 
-        for dr, dc in self.minos[self.piece][self.rotation]:
-            c = self.position[1] + dc
-            if any([self.board[r][c] for r in range(self.position[0] + dr + 1, 22)]):
-                self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
-                break
-        else:
-            c = min([self.position[1] + dc for _, dc in self.minos[self.piece][self.rotation]])
+        # for dr, dc in self.minos[self.piece][self.rotation]:
+        #     c = self.position[1] + dc
+        #     if any([self.board[r][c] for r in range(self.position[0] + dr + 1, 22)]):
+        #         self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
+        #         break
+        # else:
+        c = self.position[1] + min([dc for _, dc in self.minos[self.piece][self.rotation]])
+        if self.rotation % self.orientations[self.piece] == self.target['rotation'] % self.orientations[self.piece] and c == self.target['location']:
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
+                # START PRACTICE ADDITION
+                if self.stats['finnesse'] >= self.stats['level'] * 10:
+                    self.stats['level'] += 1
+                    self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
+                return
+        self.lose = True
+        # END PRACTICE ADDITION
 
         self.stats['pieces'] += 1
-        for dr, dc in self.minos[self.piece][self.rotation]:
-            self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
-        self.clear()
+        # for dr, dc in self.minos[self.piece][self.rotation]:
+        #     self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
+        # self.clear()
         self.new_piece(self.queue.pop(0), current_time)
         self.hold_used = False
         self.last_action = 'place' # must be after clear()
 
-    def clear(self):
-        t_check = self.t_check()
-        rows = 0
-        for r in range(40):
-            if None in self.board[r]:
-                self.board[rows] = self.board[r]
-                rows += 1
-        clear_count = 40 - rows
-        while rows < 40:
-            self.board[rows] = [None for _ in range(10)]
-            rows += 1
-        self.stats['lines'] += clear_count
-        clear_string = {0: 'null', 1: 'single', 2: 'double', 3: 'triple', 4: 'tetris'}[clear_count]
-        if clear_count == 4 or t_check > 0 and clear_count > 0:
-            self.b2b += 1
-            if self.b2b > self.stats['max B2B']:
-                self.stats['max B2B'] = self.b2b
-        elif clear_count > 0:
-            self.b2b = -1
-        if all(all(c == None for c in r) for r in self.board):
-            self.stats['score'] += {1: 800, 2: 1200, 3: 1800, 4: 2000}[clear_count] * (1.6 if self.b2b > 0 else 1) * self.stats['level']
-            self.last_clear = f'perfect clear {clear_string}'
-            self.stats[self.last_clear] += 1
-        elif t_check == 1:
-            self.stats['score'] += {0: 100, 1: 200, 2: 400}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
-            self.last_clear = f'mini t-spin {clear_string}'
-            self.stats[self.last_clear] += 1
-        elif t_check == 2:
-            self.stats['score'] += {0: 400, 1: 800, 2: 1200, 3: 1600}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
-            self.last_clear = f't-spin {clear_string}'
-            self.stats[self.last_clear] += 1
-        else:
-            self.stats['score'] += {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
-            if clear_count > 0:
-                self.last_clear = clear_string
-                self.stats[self.last_clear] += 1
-        if clear_count > 0:
-            self.combo += 1
-            self.stats['score'] += 50 * self.combo * self.stats['level']
-            if self.combo > self.stats['max combo']:
-                self.stats['max combo'] = self.combo
-            if self.stats['lines'] >= self.stats['level'] * 10:
-                self.stats['level'] += 1 # level is incremented after all scoring
-                self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
-        else:
-            self.combo = -1
-        self.stats['score'] = int(self.stats['score']) # just in case
+    # def clear(self):
+    #     t_check = self.t_check()
+    #     rows = 0
+    #     for r in range(40):
+    #         if None in self.board[r]:
+    #             self.board[rows] = self.board[r]
+    #             rows += 1
+    #     clear_count = 40 - rows
+    #     while rows < 40:
+    #         self.board[rows] = [None for _ in range(10)]
+    #         rows += 1
+    #     self.stats['lines'] += clear_count
+    #     clear_string = {0: 'null', 1: 'single', 2: 'double', 3: 'triple', 4: 'tetris'}[clear_count]
+    #     if clear_count == 4 or t_check > 0 and clear_count > 0:
+    #         self.b2b += 1
+    #         if self.b2b > self.stats['max B2B']:
+    #             self.stats['max B2B'] = self.b2b
+    #     elif clear_count > 0:
+    #         self.b2b = -1
+    #     if all(all(c == None for c in r) for r in self.board):
+    #         self.stats['score'] += {1: 800, 2: 1200, 3: 1800, 4: 2000}[clear_count] * (1.6 if self.b2b > 0 else 1) * self.stats['level']
+    #         self.last_clear = f'perfect clear {clear_string}'
+    #         self.stats[self.last_clear] += 1
+    #     elif t_check == 1:
+    #         self.stats['score'] += {0: 100, 1: 200, 2: 400}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
+    #         self.last_clear = f'mini t-spin {clear_string}'
+    #         self.stats[self.last_clear] += 1
+    #     elif t_check == 2:
+    #         self.stats['score'] += {0: 400, 1: 800, 2: 1200, 3: 1600}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
+    #         self.last_clear = f't-spin {clear_string}'
+    #         self.stats[self.last_clear] += 1
+    #     else:
+    #         self.stats['score'] += {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
+    #         if clear_count > 0:
+    #             self.last_clear = clear_string
+    #             self.stats[self.last_clear] += 1
+    #     if clear_count > 0:
+    #         self.combo += 1
+    #         self.stats['score'] += 50 * self.combo * self.stats['level']
+    #         if self.combo > self.stats['max combo']:
+    #             self.stats['max combo'] = self.combo
+    #         if self.stats['lines'] >= self.stats['level'] * 10:
+    #             self.stats['level'] += 1 # level is incremented after all scoring
+    #             self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
+    #     else:
+    #         self.combo = -1
+    #     self.stats['score'] = int(self.stats['score']) # just in case
 
-    def t_check(self):
-        if self.piece == 't' and self.last_action[0] == 'r':
-            front = 0
-            back  = 0
-            for i, (dr, dc) in enumerate(((3, 0), (3, 2), (1, 2), (1, 0))):
-                if self.position[0] + dr < 0 or self.position[1] + dc < 0 or self.position[1] + dc > 9:
-                    back += 1
-                elif self.board[self.position[0] + dr][self.position[1] + dc] != None:
-                    if i == self.rotation or i == (self.rotation + 1) % 4:
-                        front += 1
-                    else:
-                        back += 1
-            if front + back >= 3:
-                if front == 2 or self.last_action[-1] == '3':
-                    return 2 # t-spin
-                else:
-                    return 1 # t-spin mini
-        return 0
+    # def t_check(self):
+    #     if self.piece == 't' and self.last_action[0] == 'r':
+    #         front = 0
+    #         back  = 0
+    #         for i, (dr, dc) in enumerate(((3, 0), (3, 2), (1, 2), (1, 0))):
+    #             if self.position[0] + dr < 0 or self.position[1] + dc < 0 or self.position[1] + dc > 9:
+    #                 back += 1
+    #             elif self.board[self.position[0] + dr][self.position[1] + dc] != None:
+    #                 if i == self.rotation or i == (self.rotation + 1) % 4:
+    #                     front += 1
+    #                 else:
+    #                     back += 1
+    #         if front + back >= 3:
+    #             if front == 2 or self.last_action[-1] == '3':
+    #                 return 2 # t-spin
+    #             else:
+    #                 return 1 # t-spin mini
+    #     return 0
 
     def set_height(self):
         self.height = 0
@@ -470,13 +501,8 @@ class Tetris():
             self.lock_time = 0
 
     def finished(self, current_time):
-        self.finish = self.lose \
-            or (self.stats['mode'] == 'sprint' and self.stats['lines'] >= 40) \
-            or (self.stats['mode'] == 'blitz' and current_time - self.stats['time'] >= 120)
-        if self.finish:
-            self.stats['time'] = current_time - self.stats['time']
-            if self.stats['mode'] not in ['sprint', 'blitz']:
-                self.lose = False # in marathon or classic, it's always a finish, not a lose
+        self.finish = self.lose or current_time - self.stats['time'] >= 120
+        self.lose = False # it's always a finish, not a lose
 
     def frame_update(self, current_time):
         self.move_hold(current_time)

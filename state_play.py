@@ -141,6 +141,8 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
 
+        ### DRAW TARGET (ONLY FOR FINESSE PRACTICE) # TODO
+
         ### DRAW SPRITES
         time_elapsed = current_time - game.stats['time']
         minutes      = int(time_elapsed // 60)
