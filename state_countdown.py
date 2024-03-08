@@ -99,7 +99,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
             for c in range(10):
                 left = screen.get_width() / 2 + (-5 + c) * dim
                 top = screen.get_height() / 2 + (9 - r) * dim
-                pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width], border_width)
+                pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW NEXT PIECES
         for p in range(game.next_num):

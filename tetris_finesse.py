@@ -3,8 +3,8 @@ tetris.py but with the following changes:
 
 target location is current piece, random rotation, random column.                               1: added set_target() in new_piece()
 scoring system only dependent on finesse or fault. (no clear() and t_check())                   1: removed
-only increase finnesse if finnesse and correct location                                         1: added in place()
-level progression by successful piece (finnesse) instead of line.                               1: added in place()
+only increase finesse if finesse and correct location                                           1: added in place()
+level progression by successful piece (finesse) instead of line.                                1: added in place()
 in place(), piece is not placed on board.                                                       1: removed in place()
 no hold.                                                                                        1: removed in hold()
 remove lose condition.                                                                          1: removed in new_piece() and place()
@@ -178,13 +178,13 @@ class Tetris():
         self.lock_count   = 0 # number of moves/rotations since touchdown
         self.lock_lowest  = 18 # the lowest row the piece has been on
 
-        self.set_target(self)
+        self.set_target()
 
     def set_target(self):
         self.target = dict()
         self.target['rotation'] = random.randint(0, 3)
         self.target['location'] = random.randint(0, len(self.finesse[self.piece][self.rotation]) - 1)
-        self.target['postion']  = [-min(dr for dr, _ in self.minos[self.piece][self.target['rotation']]), self.target['location'] - min(dc for _, dc in self.minos[self.piece][self.target['rotation']])]
+        self.target['position']  = [-min(dr for dr, _ in self.minos[self.piece][self.target['rotation']]), self.target['location'] - min(dc for _, dc in self.minos[self.piece][self.target['rotation']])]
 
     def hold(self, current_time):
         pass
@@ -344,18 +344,20 @@ class Tetris():
         if self.rotation % self.orientations[self.piece] == self.target['rotation'] % self.orientations[self.piece] and c == self.target['location']:
             if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
                 self.stats['finesse'] += 1
-                # START PRACTICE ADDITION
-                if self.stats['finnesse'] >= self.stats['level'] * 10:
-                    self.stats['level'] += 1
-                    self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
+            else:
+                self.lose = True
                 return
-        self.lose = True
-        # END PRACTICE ADDITION
+        else:
+            self.lose = True
+            return
 
         self.stats['pieces'] += 1
         # for dr, dc in self.minos[self.piece][self.rotation]:
         #     self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
         # self.clear()
+        if self.stats['pieces'] >= self.stats['level'] * 10:
+            self.stats['level'] += 1
+            self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
         self.new_piece(self.queue.pop(0), current_time)
         self.hold_used = False
         self.last_action = 'place' # must be after clear()

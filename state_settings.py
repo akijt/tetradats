@@ -138,7 +138,7 @@ def state_settings(screen, clock, colors, db_type, directory, registrar, font_pa
                                 cursor_pos += 1
                                 input_edit(directory, state, user_info, input_fields, error_group)
             elif event.type == pygame.KEYUP:
-                if state[1] == 'accounts':
+                if state[1] == 'account':
                     if event.key == pygame.K_BACKSPACE:
                         key_state['Backspace'] = 0
                     elif event.key == pygame.K_DELETE:

@@ -1,5 +1,6 @@
 import pygame
 from tetris import Tetris
+from tetris_finesse import Tetris as TetrisF
 from accounts import Accounts_csv, Accounts_sql, Accounts_msa
 from records import Records_csv, Records_sql, Records_msa
 
@@ -50,8 +51,8 @@ elif db_type == 'msa':
 ### INIT REGISTRAR
 if db_type == 'csv':
     header = ['username', 'datetime', 'timezone'] + game.stat_names
-    registrar = Records_csv('records', ['marathon', 'sprint', 'blitz', 'classic'], header)
-    order_by = {'marathon': (5, 'desc'), 'sprint': (4, 'asc'), 'blitz': (5, 'desc'), 'classic': (5, 'desc')}
+    registrar = Records_csv('records', ['marathon', 'sprint', 'blitz', 'classic', 'finesse'], header)
+    order_by = {'marathon': (5, 'desc'), 'sprint': (4, 'asc'), 'blitz': (5, 'desc'), 'classic': (5, 'desc'), 'finesse': (6, 'desc')}
 elif db_type == 'sql':
     header = ['username', 'datetime', 'timezone'] + game.stat_names
     datatype = ['VARCHAR(16)' if h in ['username', 'mode'] else
@@ -60,10 +61,10 @@ elif db_type == 'sql':
                 'DOUBLE'      if h in ['time'] else
                 'INT'         for h in header]
     registrar = Records_sql('tetradats', 'records', header, datatype)
-    order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC', 'classic': 'score DESC'}
+    order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC', 'classic': 'score DESC', 'finesse': 'pieces DESC'}
 elif db_type == 'msa':
     registrar = Records_msa('tetradats', 'records')
-    order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC', 'classic': 'score DESC'}
+    order_by = {'marathon': 'score DESC', 'sprint': 'time ASC', 'blitz': 'score DESC', 'classic': 'score DESC', 'finesse': 'pieces DESC'}
 
 ### INIT STATE
 font_path = 'font/FreeSansBold.ttf'
@@ -81,6 +82,10 @@ while True:
     ### MENU STATE
     elif state[0] == 'menu':
         state_menu(screen, clock, colors, font_path, state, user_info)
+        if state[1] == 'finesse':
+            game = TetrisF()
+        else:
+            game = Tetris()
 
     ### COUNTDOWN STATE
     elif state[0] == 'countdown':

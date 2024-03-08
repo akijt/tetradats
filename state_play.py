@@ -109,7 +109,14 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 if game.board[r][c] != None:
                     pygame.draw.rect(screen, colors[game.board[r][c]], [left, top, dim + border_width, dim + border_width])
                 else:
-                    pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width], border_width)
+                    pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width], border_width)
+
+        ### DRAW TARGET (FOR FINESSE PRACTICE ONLY)
+        if state[1] == 'finesse':
+            for dr, dc in game.minos[game.piece][game.target['rotation']]:
+                left = screen.get_width() / 2 + (-5 + game.target['position'][1] + dc) * dim
+                top = screen.get_height() / 2 + (9 - game.target['position'][0] - dr) * dim
+                pygame.draw.rect(screen, (255, 255, 255), [left, top, dim + border_width, dim + border_width])
 
         ### DRAW CURRENT PIECE
         for dr, dc in game.minos[game.piece][game.rotation]:
@@ -130,7 +137,7 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 left = screen.get_width() / 2 + (-10 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr) * dim
                 if game.hold_used:
-                    pygame.draw.rect(screen, (128, 128, 128), [left, top, dim + border_width, dim + border_width])
+                    pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width])
                 else:
                     pygame.draw.rect(screen, colors[game.held], [left, top, dim + border_width, dim + border_width])
 
@@ -140,8 +147,6 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                 left = screen.get_width() / 2 + (6 + dc) * dim
                 top = screen.get_height() / 2 + (-7 - dr + p * 4) * dim
                 pygame.draw.rect(screen, colors[game.queue[p]], [left, top, dim + border_width, dim + border_width])
-
-        ### DRAW TARGET (ONLY FOR FINESSE PRACTICE) # TODO
 
         ### DRAW SPRITES
         time_elapsed = current_time - game.stats['time']

@@ -19,6 +19,10 @@ def state_finish(screen, clock, game, colors, db_type, registrar, order_by, font
             result_str = f'time: {minutes}:{seconds:02}.{milliseconds:03}'
         elif state[1] == 'blitz':
             result_str = f'score: {game.stats["score"]}'
+        elif state[1] == 'classic':
+            result_str = f'score: {game.stats["score"]}'
+        elif state[1] == 'finesse':
+            result_str = f'pieces: {game.stats["pieces"]}'
 
         if user_info['username'] != 'guest':
             row = [user_info['username'], time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime()), time.strftime('%z', time.localtime())] + [game.stats[stat] for stat in game.stat_names]
