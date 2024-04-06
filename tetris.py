@@ -207,29 +207,25 @@ class Tetris():
             orig_rotation = self.rotation
             self.rotation = (self.rotation + turns) % 4
             if self.collision():
+                collide = True
                 if self.stats['mode'] != 'classic':
                     for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
                         self.position = [orig_position[0] + y, orig_position[1] + x]
                         if not self.collision():
-                            self.set_height() # rotation that causes height == 0 counts in lock_count
-                            if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                                if self.lock_count < self.lock['count']:
-                                    self.lock_time = current_time
-                                self.lock_count += 1
-                            self.last_action = f'rotate{i}'
-                            return True
-                self.position = orig_position
-                self.rotation = orig_rotation
-                return False
-            else:
-                self.set_height() # rotation that causes height == 0 counts in lock_count
-                if self.stats['mode'] != 'classic':
-                    if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                        if self.lock_count < self.lock['count']:
-                            self.lock_time = current_time
-                        self.lock_count += 1
-                self.last_action = 'rotate'
-                return True
+                            collide = False
+                            break
+                if collide:
+                    self.position = orig_position
+                    self.rotation = orig_rotation
+                    return False
+            self.set_height() # rotation that causes height == 0 counts in lock_count
+            if self.stats['mode'] != 'classic':
+                if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
+                    if self.lock_count < self.lock['count']:
+                        self.lock_time = current_time
+                    self.lock_count += 1
+            self.last_action = 'rotate'
+            return True
 
     def drop(self, distance):
         '''
