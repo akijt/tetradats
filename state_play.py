@@ -76,11 +76,11 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
                     game.hard_drop(current_time)
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
-                    game.soft_drop(current_time, down=False)
+                    game.unsoft_drop()
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, current_time, down=False)
+                    game.move_unpress(-1, current_time)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, current_time, down=False)
+                    game.move_unpress(1, current_time)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -102,13 +102,13 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
         border_width = 1
         pygame.draw.rect(screen, (0, 0, 0), [screen.get_width() / 2 - 5 * dim, screen.get_height() / 2 - 10 * dim, 10 * dim + border_width, 20 * dim + border_width])
-        for r in range(20):
+        for r in range(40):
             for c in range(10):
                 left = screen.get_width() / 2 + (-5 + c) * dim
                 top = screen.get_height() / 2 + (9 - r) * dim
                 if game.board[r][c] != None:
                     pygame.draw.rect(screen, colors[game.board[r][c]], [left, top, dim + border_width, dim + border_width])
-                else:
+                elif r < 20:
                     pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW TARGET (FOR FINESSE PRACTICE ONLY)

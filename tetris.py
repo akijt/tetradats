@@ -99,7 +99,8 @@ class Tetris():
                            't-spin null', 't-spin single', 't-spin double', 't-spin triple',
                            'perfect clear single', 'perfect clear double', 'perfect clear triple',
                            'perfect clear tetris', 'max B2B', 'max combo', 'finesse']
-        self.key_state = {'soft_drop': 0, 'move_left': [0, 0], 'move_right': [0, 0]}
+        self.key_state = {'soft_drop': 0, 'move_left': 0, 'move_right': 0}
+        self.move_time = 0
         self.lock = {'time': .5, 'count': 15}
 
     def reset(self, mode, level, handling):
@@ -213,6 +214,7 @@ class Tetris():
                         self.position = [orig_position[0] + y, orig_position[1] + x]
                         if not self.collision():
                             collide = False
+                            self.last_action = f'rotate{i}'
                             break
                 if collide:
                     self.position = orig_position
@@ -224,7 +226,8 @@ class Tetris():
                     if self.lock_count < self.lock['count']:
                         self.lock_time = current_time
                     self.lock_count += 1
-            self.last_action = 'rotate'
+            if self.last_action[0] != 'r':
+                self.last_action = 'rotate'
             return True
 
     def drop(self, distance):
@@ -252,7 +255,7 @@ class Tetris():
         else:
             return False
 
-    def soft_drop(self, current_time, down=True):
+    def soft_drop(self, current_time):
         '''
         (9/2/23) When self.stats['SDF'] > 1, both self.gravity and self.gravity_time must be
         updated. Though unintuitive, self.gravity_time is updated because otherwise, the piece will
@@ -274,18 +277,19 @@ class Tetris():
         Though the first doesn't make sense when SDF is not infinity, the players at this level
         probably don't care too much about finesse.
         '''
-        if down:
-            self.stats['keys'] += 1
-            self.fin_keys += 1
-            self.key_state['soft_drop'] = 1
-            if self.stats['SDF'] <= 1:
-                self.gravity = 0
-            else:
-                self.gravity /= self.stats['SDF']
-                self.gravity_time = current_time - self.gravity
+        self.stats['keys'] += 1
+        self.fin_keys += 1
+        self.key_state['soft_drop'] = 1
+        if self.stats['SDF'] <= 1:
+            self.gravity = 0
         else:
-            self.key_state['soft_drop'] = 0
-            self.gravity = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
+            self.gravity /= self.stats['SDF']
+            self.gravity_time = current_time - self.gravity
+            
+
+    def unsoft_drop(self):
+        self.key_state['soft_drop'] = 0
+        self.gravity = self.gravity = (0.8 - (self.stats['level'] - 1) * 0.007) ** (self.stats['level'] - 1)
 
     def hard_drop(self, current_time):
         '''
@@ -406,55 +410,58 @@ class Tetris():
                 return True
         return False
 
-    def move_press(self, direction, current_time, down=True):
+    def move_press(self, direction, current_time):
+        direction_string     = {-1: 'move_left', 1: 'move_right'}[direction]
+        direction_string_opp = {-1: 'move_left', 1: 'move_right'}[-direction]
+        self.stats['keys'] += 1
+        self.fin_keys += 1
+        # self.move(direction, current_time) # Removed because self.position is not initialized before start()
+        self.key_state[direction_string] = self.key_state[direction_string_opp] + 1
+        self.move_time = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000
+
+    def move_unpress(self, direction, current_time):
         '''
-        (7/16/23) move_press() in intentionally implemented incorrectly. When both directions are
+        (7/16/23) move_unpress() in intentionally implemented incorrectly. When both directions are
         pressed and the one pressed second is released, the first must wait its DAS period again.
         (On the other hand, when both directions are pressed and the first is released, the second
         continues its movement as it normally would.) In this implementation, when the second is
         released, the first returns to its ARR without waiting for DAS. This change is made to
-        reward holding on to the first direction and to raise the skill ceiling. To impliment the
+        reward holding on to the first direction and to raise the skill ceiling. To implement the
         correct way, in the else block, uncomment the line marked "Correct implementation" and
         comment the line above.
         '''
         direction_string     = {-1: 'move_left', 1: 'move_right'}[direction]
         direction_string_opp = {-1: 'move_left', 1: 'move_right'}[-direction]
-        if down:
-            self.stats['keys'] += 1
-            self.fin_keys += 1
-            # self.move(direction, current_time) # Removed because self.position is not initialized before start()
-            self.key_state[direction_string][0] = current_time
-            self.key_state[direction_string][1] = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000
+        if self.key_state[direction_string_opp] > 0:
+            self.move_time = current_time - self.stats['ARR'] / 1000
+            # self.move_time = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000 # Correct implementation
         else:
-            if self.key_state[direction_string_opp][0] < self.key_state[direction_string][0]:
-                self.key_state[direction_string_opp][1] = current_time - self.stats['ARR'] / 1000
-                # self.key_state[direction_string_opp][1] = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000 # Correct implementation
-            self.key_state[direction_string] = [0, 0]
+            self.move_time = 0
+        self.key_state[direction_string] = 0
 
     def move_hold(self, current_time):
-        if self.key_state['move_left'][0] or self.key_state['move_right'][0]:
-            direction = 'move_left' if self.key_state['move_left'][0] > self.key_state['move_right'][0] else 'move_right'
-            step = {'move_left': -1, 'move_right': 1}[direction]
-            DAS_timer = current_time - self.key_state[direction][0] # time since pressed
-            ARR_timer = current_time - self.key_state[direction][1] # time since last repeat
-            if ARR_timer > self.stats['ARR'] / 1000:
+        if self.move_time:
+            step = 1 if self.key_state['move_right'] - self.key_state['move_left'] > 0 else -1
+            move_timer = current_time - self.move_time
+            if move_timer > (self.stats['ARR'] / 1000):
                 if self.stats['ARR'] <= 0:
+                    self.move_time = current_time
                     self.move(8 * step, current_time)
                 else:
-                    distance = int(ARR_timer // (self.stats['ARR'] / 1000))
+                    distance = int(move_timer // (self.stats['ARR'] / 1000))
+                    self.move_time += distance * (self.stats['ARR'] / 1000)
                     self.move(distance * step, current_time)
-                    self.key_state[direction][1] += distance * self.stats['ARR'] / 1000
 
     def gravity_drop(self, current_time):
         gravity_timer = current_time - self.gravity_time
         if gravity_timer > self.gravity:
             if self.gravity <= 0:
-                self.drop(40)
                 self.gravity_time = current_time
+                self.drop(40)
             else:
                 distance = int(gravity_timer // self.gravity)
-                self.drop(distance)
                 self.gravity_time += distance * self.gravity
+                self.drop(distance)
 
     def piece_lock(self, current_time):
         if self.height == 0:

@@ -72,11 +72,11 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                     countdown_group.get('level_value').update(text=f'{game.stats["level"]}')
             elif event.type == pygame.KEYUP:
                 if event.key == bindings['soft_drop']:
-                    game.soft_drop(down=False)
+                    game.unsoft_drop()
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, current_time, down=False)
+                    game.move_unpress(-1, current_time)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, current_time, down=False)
+                    game.move_unpress(1, current_time)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
