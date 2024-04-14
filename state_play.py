@@ -33,8 +33,6 @@ def state_play(screen, clock, game, colors, font_path, state, user_info, binding
     play_group.resize(screen)
     account_group.resize(screen)
 
-    game.start(time.time())
-
     while True:
 
         current_time = time.time()

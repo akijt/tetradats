@@ -484,5 +484,7 @@ class Tetris():
     def pause(self, current_time):
         self.stats['time'] = current_time - self.stats['time']
         self.gravity_time = current_time - self.gravity_time
+        if self.move_time:
+            self.move_time = current_time - self.move_time
         if self.lock_time:
             self.lock_time = current_time - self.lock_time

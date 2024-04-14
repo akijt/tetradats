@@ -85,6 +85,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                         return
 
         if current_time - countdown > 3:
+            game.start(time.time())
             state[0] = 'play'
             return
 
