@@ -45,38 +45,38 @@ class Tetris():
                              ((1, 1), (1, 2), (2, 0), (2, 1)),
                              ((1, 0), (2, 0), (2, 1), (3, 1)))}
         self.bag = list(self.minos.keys())
-        self.kicks  = {'t': (((),                                     # 0 >> 0
-                              ((-1, 0), (-1, 1), ( 0,-2), (-1,-2)),   # 0 >> 1
-                              (( 0, 1), ( 1, 1), (-1, 1)),            # 0 >> 2
-                              (( 1, 0), ( 1, 1), ( 0,-2), ( 1,-2))),  # 0 >> 3
-                             ((( 1, 0), ( 1,-1), ( 0, 2), ( 1, 2)),   # 1 >> 0
-                              (),                                     # 1 >> 1
-                              (( 1, 0), ( 1,-1), ( 0, 2), ( 1, 2)),   # 1 >> 2
-                              (( 1, 0), ( 1, 1))),                    # 1 >> 3
-                             ((( 0,-1), (-1,-1), ( 1,-1)),            # 2 >> 0
-                              ((-1, 0), (-1, 1), ( 0,-2), (-1,-2)),   # 2 >> 1
-                              (),                                     # 2 >> 2
-                              (( 1, 0), ( 1, 1), ( 0,-2), ( 1,-2))),  # 2 >> 3
-                             (((-1, 0), (-1,-1), ( 0, 2), (-1, 2)),   # 3 >> 0
-                              ((-1, 0), (-1, 1)),                     # 3 >> 1
-                              ((-1, 0), (-1,-1), ( 0, 2), (-1, 2)),   # 3 >> 2
-                              ())),                                   # 3 >> 3
-                       'i': (((),                                     # 0 >> 0
-                              ((-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),   # 0 >> 1
-                              (( 0, 1)),                              # 0 >> 2
-                              ((-1, 0), ( 2, 0), (-1, 2), ( 2,-1))),  # 0 >> 3
-                             ((( 2, 0), (-1, 0), ( 2, 1), (-1,-2)),   # 1 >> 0
-                              (),                                     # 1 >> 1
-                              ((-1, 0), ( 2, 0), (-1, 2), ( 2,-1)),   # 1 >> 2
-                              (( 1, 0))),                             # 1 >> 3
-                             ((( 0,-1)),                              # 2 >> 0
-                              (( 1, 0), (-2, 0), ( 1,-2), (-2, 1)),   # 2 >> 1
-                              (),                                     # 2 >> 2
-                              (( 2, 0), (-1, 0), ( 2, 1), (-1,-2))),  # 2 >> 3
-                             ((( 1, 0), (-2, 0), ( 1,-2), (-2, 1)),   # 3 >> 0
-                              ((-1, 0)),                              # 3 >> 1
-                              ((-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),   # 3 >> 2
-                              ()))}                                   # 3 >> 3
+        self.kicks  = {'t': (((( 0, 0)),                                        # 0 >> 0
+                              (( 0, 0), (-1, 0), (-1, 1), ( 0,-2), (-1,-2)),    # 0 >> 1
+                              (( 0, 0), ( 0, 1), ( 1, 1), (-1, 1)),             # 0 >> 2
+                              (( 0, 0), ( 1, 0), ( 1, 1), ( 0,-2), ( 1,-2))),   # 0 >> 3
+                             ((( 0, 0), ( 1, 0), ( 1,-1), ( 0, 2), ( 1, 2)),    # 1 >> 0
+                              (( 0, 0)),                                        # 1 >> 1
+                              (( 0, 0), ( 1, 0), ( 1,-1), ( 0, 2), ( 1, 2)),    # 1 >> 2
+                              (( 0, 0), ( 1, 0), ( 1, 1))),                     # 1 >> 3
+                             ((( 0, 0), ( 0,-1), (-1,-1), ( 1,-1)),             # 2 >> 0
+                              (( 0, 0), (-1, 0), (-1, 1), ( 0,-2), (-1,-2)),    # 2 >> 1
+                              (( 0, 0)),                                        # 2 >> 2
+                              (( 0, 0), ( 1, 0), ( 1, 1), ( 0,-2), ( 1,-2))),   # 2 >> 3
+                             ((( 0, 0), (-1, 0), (-1,-1), ( 0, 2), (-1, 2)),    # 3 >> 0
+                              (( 0, 0), (-1, 0), (-1, 1)),                      # 3 >> 1
+                              (( 0, 0), (-1, 0), (-1,-1), ( 0, 2), (-1, 2)),    # 3 >> 2
+                              (( 0, 0)))),                                      # 3 >> 3
+                       'i': (((( 0, 0)),                                        # 0 >> 0
+                              (( 0, 0), (-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),    # 0 >> 1
+                              (( 0, 0), ( 0, 1)),                               # 0 >> 2
+                              (( 0, 0), (-1, 0), ( 2, 0), (-1, 2), ( 2,-1))),   # 0 >> 3
+                             ((( 0, 0), ( 2, 0), (-1, 0), ( 2, 1), (-1,-2)),    # 1 >> 0
+                              (( 0, 0)),                                        # 1 >> 1
+                              (( 0, 0), (-1, 0), ( 2, 0), (-1, 2), ( 2,-1)),    # 1 >> 2
+                              (( 0, 0), ( 1, 0))),                              # 1 >> 3
+                             ((( 0, 0), ( 0,-1)),                               # 2 >> 0
+                              (( 0, 0), ( 1, 0), (-2, 0), ( 1,-2), (-2, 1)),    # 2 >> 1
+                              (( 0, 0)),                                        # 2 >> 2
+                              (( 0, 0), ( 2, 0), (-1, 0), ( 2, 1), (-1,-2))),   # 2 >> 3
+                             ((( 0, 0), ( 1, 0), (-2, 0), ( 1,-2), (-2, 1)),    # 3 >> 0
+                              (( 0, 0), (-1, 0)),                               # 3 >> 1
+                              (( 0, 0), (-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),    # 3 >> 2
+                              (( 0, 0))))}                                      # 3 >> 3
         self.finesse = {'t': ((1, 2, 1, 0, 1, 2, 2, 1),
                               (2, 2, 3, 2, 1, 2, 3, 3, 2),
                               (3, 4, 3, 2, 3, 4, 4, 3),
@@ -230,28 +230,22 @@ class Tetris():
             orig_position = self.position
             orig_rotation = self.rotation
             self.rotation = (self.rotation + turns) % 4
-            if self.collision():
-                collide = True
-                if self.stats['mode'] != 'classic':
-                    for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
-                        self.position = [orig_position[0] + y, orig_position[1] + x]
-                        if not self.collision():
-                            collide = False
-                            self.last_action = f'rotate{i}'
-                            break
-                if collide:
-                    self.position = orig_position
-                    self.rotation = orig_rotation
-                    return False
-            self.set_height() # rotation that causes height == 0 counts in lock_count
-            if self.stats['mode'] != 'classic':
-                if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                    if self.lock_count < self.lock['count']:
-                        self.lock_time = current_time
-                    self.lock_count += 1
-            if self.last_action[0] != 'r':
-                self.last_action = 'rotate'
-            return True
+            for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
+                self.position = [orig_position[0] + y, orig_position[1] + x]
+                if not self.collision():
+                    self.set_height() # rotation that causes height == 0 counts in lock_count
+                    if self.stats['mode'] != 'classic':
+                        if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
+                            if self.lock_count < self.lock['count']:
+                                self.lock_time = current_time
+                            self.lock_count += 1
+                    self.last_action = f'rotate{i}'
+                    return True
+                if self.stats['mode'] == 'classic':
+                    break
+            self.position = orig_position
+            self.rotation = orig_rotation
+            return False
 
     def drop(self, distance):
         '''
@@ -422,7 +416,7 @@ class Tetris():
     #                 else:
     #                     back += 1
     #         if front + back >= 3:
-    #             if front == 2 or self.last_action[-1] == '3':
+    #             if front == 2 or self.last_action[-1] == '4':
     #                 return 2 # t-spin
     #             else:
     #                 return 1 # t-spin mini
