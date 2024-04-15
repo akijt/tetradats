@@ -158,12 +158,13 @@ class Tetris():
                 self.queue.extend(random.choices(self.bag, k=1))
             else:
                 self.queue.extend(random.sample(self.bag, k=7))
-        self.set_height()
 
         self.gravity_time = current_time - self.gravity # when the last drop was
         self.lock_time    = 0 # when lock_time started/reset
         self.lock_count   = 0 # number of moves/rotations since touchdown
         self.lock_lowest  = 18 # the lowest row the piece has been on
+
+        self.set_height(current_time)
 
     def hold(self, current_time):
         if self.stats['mode'] != 'classic':
@@ -189,12 +190,13 @@ class Tetris():
                 self.position[1] -= step
                 if i == 0:
                     return False
+                i -= 1
                 break
-        self.set_height() # move that causes height == 0 counts in lock_count
+        self.set_height(current_time) # move that causes height == 0 counts in lock_count
         if self.stats['mode'] != 'classic':
+            if self.lock_time > 0 and self.lock_count < self.lock['count']:
+                self.lock_time = current_time
             if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                if self.lock_count < self.lock['count']:
-                    self.lock_time = current_time
                 self.lock_count += i + 1
         self.last_action = 'move'
         return True
@@ -202,7 +204,7 @@ class Tetris():
     def rotate(self, turns, current_time):
         if self.stats['mode'] != 'classic' or turns != 2:
             self.stats['keys'] += 1
-            self.fin_keys += 1 if turns == 1 or turns == 3 else 2
+            self.fin_keys += 1 if turns % 2 == 1 else 2
             orig_height   = self.height
             orig_position = self.position
             orig_rotation = self.rotation
@@ -210,12 +212,12 @@ class Tetris():
             for i, (x, y) in enumerate(self.kicks['i' if self.piece == 'i' else 't'][orig_rotation][self.rotation]):
                 self.position = [orig_position[0] + y, orig_position[1] + x]
                 if not self.collision():
-                    self.set_height() # rotation that causes height == 0 counts in lock_count
+                    self.set_height(current_time) # rotation that causes height == 0 counts in lock_count
                     if self.stats['mode'] != 'classic':
+                        if self.lock_time > 0 and self.lock_count < self.lock['count']:
+                            self.lock_time = current_time
                         if orig_height == 0 or self.height == 0 or self.lock_count > 0: # if height == 0 or lock_count has already started
-                            if self.lock_count < self.lock['count']:
-                                self.lock_time = current_time
-                            self.lock_count += 1
+                            self.lock_count += 1 if turns % 2 == 1 else 2
                     self.last_action = f'rotate{i}'
                     return True
                 if self.stats['mode'] == 'classic':
@@ -224,7 +226,7 @@ class Tetris():
             self.rotation = orig_rotation
             return False
 
-    def drop(self, distance):
+    def drop(self, distance, current_time):
         '''
         (7/17/23) The lowest row reached by a piece can be interpreted in two different ways. The
         way it is interpreted in this implementation is the lowest row that the 4x4 piece rotation
@@ -239,7 +241,7 @@ class Tetris():
         distance = min(distance, self.height)
         if distance > 0:
             self.position[0] -= distance
-            self.height -= distance
+            self.set_height(current_time)
             if self.position[0] < self.lock_lowest:
                 self.lock_lowest = self.position[0]
                 self.lock_count  = 0
@@ -390,11 +392,15 @@ class Tetris():
                     return 1 # t-spin mini
         return 0
 
-    def set_height(self):
+    def set_height(self, current_time):
         self.height = 0
         while not self.collision(self.height):
             self.height += 1
         self.height -= 1
+        if self.height == 0 and self.lock_time == 0:
+            self.lock_time = current_time
+        elif self.height > 0:
+            self.lock_time = 0
 
     def collision(self, lower=0):
         for dr, dc in self.minos[self.piece][self.rotation]:
@@ -451,20 +457,17 @@ class Tetris():
         if gravity_timer > self.gravity:
             if self.gravity <= 0:
                 self.gravity_time = current_time
-                self.drop(40)
+                self.drop(40, current_time)
             else:
                 distance = int(gravity_timer // self.gravity)
                 self.gravity_time += distance * self.gravity
-                self.drop(distance)
+                self.drop(distance, current_time)
 
     def piece_lock(self, current_time):
-        if self.height == 0:
-            if self.lock_time == 0:
-                self.lock_time = current_time
-            if current_time - self.lock_time > self.lock['time'] or self.lock_count >= self.lock['count']:
+        if self.lock_time:
+            lock_timer = current_time - self.lock_time
+            if lock_timer > self.lock['time'] or self.lock_count >= self.lock['count']:
                 self.place(current_time)
-        else:
-            self.lock_time = 0
 
     def finished(self, current_time):
         self.finish = self.lose \
