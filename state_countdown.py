@@ -55,9 +55,9 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                     game.reset(state[1], state[2], handling)
                     countdown = current_time
                 elif event.key == bindings['move_left']:
-                    game.move_press(-1, current_time)
+                    game.move_press('move_left', 'move_right', current_time)
                 elif event.key == bindings['move_right']:
-                    game.move_press(1, current_time)
+                    game.move_press('move_right', 'move_left', current_time)
                 elif event.key == bindings['soft_drop']:
                     game.soft_drop()
                 elif event.key == bindings['rotate_cw'] and game.stats['mode'] == 'classic':
@@ -74,9 +74,9 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 if event.key == bindings['soft_drop']:
                     game.unsoft_drop()
                 elif event.key == bindings['move_left']:
-                    game.move_unpress(-1, current_time)
+                    game.move_unpress('move_left', 'move_right', current_time)
                 elif event.key == bindings['move_right']:
-                    game.move_unpress(1, current_time)
+                    game.move_unpress('move_right', 'move_left', current_time)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pos = pygame.mouse.get_pos()
