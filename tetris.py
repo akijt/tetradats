@@ -380,7 +380,7 @@ class Tetris():
         return t_score
 
     def set_height(self):
-        self.height = 0
+        self.height = 1
         while not self.collision(self.height):
             self.height += 1
         self.height -= 1
@@ -412,11 +412,13 @@ class Tetris():
         comment the line above.
         '''
         self.key_state[direction1] = 0
-        if self.key_state[direction2] > 0:
+        if self.key_state[direction2] == 0:
+            self.move_time = 0
+        elif self.key_state[direction2] == 1:
             self.move_time = current_time - self.stats['ARR'] / 1000
             # self.move_time = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000 # Correct implementation
         else:
-            self.move_time = 0
+            self.key_state[direction2] = 1
 
     def move_hold(self, current_time):
         if self.move_time:
