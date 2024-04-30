@@ -453,7 +453,7 @@ class Tetris():
 
     def move_hold(self, current_time):
         if self.move_time:
-            step = 1 if self.key_state['move_right'] - self.key_state['move_left'] > 0 else -1
+            step = self.key_state['move_right'] - self.key_state['move_left']
             move_timer = current_time - self.move_time
             if move_timer > (self.stats['ARR'] / 1000):
                 if self.stats['ARR'] <= 0:
