@@ -92,7 +92,7 @@ def state_finish(screen, clock, game, colors, db_type, registrar, order_by, font
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW SPRITES
         finish_group.draw(screen)

@@ -1,6 +1,5 @@
 import pygame
 from tetris import Tetris
-from tetris_finesse import Tetris as TetrisF
 from accounts import Accounts_csv, Accounts_sql, Accounts_msa
 from records import Records_csv, Records_sql, Records_msa
 
@@ -28,7 +27,8 @@ colors = {'z': (255, 0,   0),
           'i': (0,   255, 255),
           'j': (0,   0,   255),
           't': (160, 32,  240),
-          '1': (0,   0,   0)} # background color (16,  32,  48)
+          'b': (0,   0,   0),
+          'g': (127, 127, 127)} # background color (16,  32,  48)
 
 ### DATABASE TYPE
 db_type = 'sql'
@@ -82,10 +82,6 @@ while True:
     ### MENU STATE
     elif state[0] == 'menu':
         state_menu(screen, clock, colors, font_path, state, user_info)
-        if state[1] == 'finesse':
-            game = TetrisF()
-        else:
-            game = Tetris()
 
     ### COUNTDOWN STATE
     elif state[0] == 'countdown':

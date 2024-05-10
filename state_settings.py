@@ -67,7 +67,7 @@ def state_settings(screen, clock, colors, db_type, directory, registrar, font_pa
                 f'{control}_label' : Sprite_text('bottomleft', (-13, -3 + i * 4), 'center', control, (255, 255, 255), 2, font_path),
                 f'{control}_value' : Sprite_text('bottomleft', (11, -3 + i * 4), 'center', value_text, (255, 255, 255), 2, font_path),
                 f'{control}_line'   : Sprite_line((-10, -3.5 + i * 4), 'center', 20, (255, 255, 255), 3, 'horizontal'),
-                f'{control}_circle' : Sprite_circle((-10, -3.5 + i * 4), 'center', colors['1'], 0.4, (255, 255, 255))
+                f'{control}_circle' : Sprite_circle((-10, -3.5 + i * 4), 'center', colors['b'], 0.4, (255, 255, 255))
             })
 
     settings_group.resize(screen)
@@ -279,7 +279,7 @@ def state_settings(screen, clock, colors, db_type, directory, registrar, font_pa
                 settings_group.get(input_to_sprite[state[2]][1]).update(text=str(input_fields[state[2]]))
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW SPRITES
         if state[1] == 'account':

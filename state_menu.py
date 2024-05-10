@@ -10,8 +10,9 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
         marathon_button = Sprite_button('bottomright', (-1, -5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'marathon', (255, 255, 255), 4, font_path),
         sprint_button   = Sprite_button('bottomright', (-1, -2), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'sprint', (255, 255, 255), 4, font_path),
         blitz_button    = Sprite_button('bottomright', (-1,  1), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'blitz', (255, 255, 255), 4, font_path),
-        classic_button  = Sprite_button('bottomleft', (1, -3.5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'classic', (255, 255, 255), 4, font_path),
-        finesse_button  = Sprite_button('bottomleft', (1, -0.5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'finesse', (255, 255, 255), 4, font_path),
+        classic_button  = Sprite_button('bottomleft', (1, -5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'classic', (255, 255, 255), 4, font_path),
+        finesse_button  = Sprite_button('bottomleft', (1, -2), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'finesse', (255, 255, 255), 4, font_path),
+        cheese_button   = Sprite_button('bottomleft', (1, 1), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'cheese', (255, 255, 255), 4, font_path),
         records_button  = Sprite_button('midbottom', (0, 5), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'records', (255, 255, 255), 4, font_path),
         settings_button = Sprite_button('midbottom', (0, 8), 'center', (14, 2), (0, 0, 0), (255, 255, 255), 2, 'settings', (255, 255, 255), 4, font_path),
         logout_button   = Sprite_button('bottomleft', (1, -1), 'bottomleft', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'logout', (255, 255, 255), 4, font_path)
@@ -68,6 +69,11 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                         state[1] = 'finesse'
                         state[2] = 1
                         return
+                    elif menu_group.get('cheese_button').rect.collidepoint(pos):
+                        state[0] = 'countdown'
+                        state[1] = 'cheese'
+                        state[2] = 1
+                        return
                     elif menu_group.get('records_button').rect.collidepoint(pos):
                         state[0] = 'records'
                         state[1] = 'marathon'
@@ -84,7 +90,7 @@ def state_menu(screen, clock, colors, font_path, state, user_info):
                     #     return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW SPRITES
         menu_group.draw(screen)

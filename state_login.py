@@ -25,7 +25,7 @@ def state_login(screen, clock, colors, db_type, directory, font_path, state):
         pass_box      = Sprite_textfield('midbottom', (0, 3), 'center', (12, 2), (0, 0, 0), (255, 255, 255), 2, (255, 255, 255), 2, font_path),
         login_button  = Sprite_button('bottomleft', (-1, 7), 'center', (8, 2), (0, 0, 0), (255, 255, 255), 2, 'login', (255, 255, 255), 4, font_path),
         signup_button = Sprite_button('bottomright', (-2, 7), 'center', (5, 2), (0, 0, 0), (0, 0, 0), 0, 'sign up', (255, 255, 255), 2, font_path),
-        guest_button  = Sprite_button('midbottom', (0, 10), 'center', (8, 2), colors['1'], colors['1'], 0, 'play as guest', (255, 255, 255), 2, font_path),
+        guest_button  = Sprite_button('midbottom', (0, 10), 'center', (8, 2), colors['b'], colors['b'], 0, 'play as guest', (255, 255, 255), 2, font_path),
         quit_button   = Sprite_button('bottomleft', (1, -1), 'bottomleft', (6, 2), (0, 0, 0), (255, 255, 255), 2, 'quit', (255, 255, 255), 4, font_path)
     )
 
@@ -174,7 +174,7 @@ def state_login(screen, clock, colors, db_type, directory, font_path, state):
                     cursor_pos = min(cursor_pos + distance, len(input_fields[state[1]]))
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW ANIMATION
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio

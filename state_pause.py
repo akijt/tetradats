@@ -73,7 +73,7 @@ def state_pause(screen, clock, game, colors, font_path, state, user_info, bindin
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW BLANK BOARD
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio

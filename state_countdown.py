@@ -6,7 +6,7 @@ from utils import Sprite_group, Sprite_rect, Sprite_text, Sprite_button
 def state_countdown(screen, clock, game, colors, font_path, state, user_info, bindings, handling):
 
     ### INIT STATE
-    game.reset(state[1], state[2], handling) # TODO: include set handling for classic mode. (gravity may need to be reworked)
+    game.reset(state[1], state[2], handling)
     countdown = time.time()
 
     countdown_group = Sprite_group(
@@ -59,7 +59,7 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
                 elif event.key == bindings['move_right']:
                     game.move_press('move_right', 'move_left', current_time)
                 elif event.key == bindings['soft_drop']:
-                    game.soft_drop()
+                    game.soft_drop(current_time)
                 elif event.key == bindings['rotate_cw'] and game.stats['mode'] == 'classic':
                     state[2] = min(state[2] + 1, 20)
                     game.reset(state[1], state[2], handling)
@@ -90,17 +90,20 @@ def state_countdown(screen, clock, game, colors, font_path, state, user_info, bi
             return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
-        ### DRAW EMPTY BOARD
+        ### DRAW BOARD
         dim = min(screen.get_width() / 40, screen.get_height() / 30) # To fit in a 4:3 aspect ratio
         border_width = 1
         pygame.draw.rect(screen, (0, 0, 0), [screen.get_width() / 2 - 5 * dim, screen.get_height() / 2 - 10 * dim, 10 * dim + border_width, 20 * dim + border_width])
-        for r in range(20):
+        for r in range(40):
             for c in range(10):
                 left = screen.get_width() / 2 + (-5 + c) * dim
                 top = screen.get_height() / 2 + (9 - r) * dim
-                pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width], border_width)
+                if game.board[r][c] != None:
+                    pygame.draw.rect(screen, colors[game.board[r][c]], [left, top, dim + border_width, dim + border_width])
+                elif r < 20:
+                    pygame.draw.rect(screen, (127, 127, 127), [left, top, dim + border_width, dim + border_width], border_width)
 
         ### DRAW NEXT PIECES
         for p in range(game.next_num):

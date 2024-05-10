@@ -98,7 +98,7 @@ def state_records(screen, clock, colors, db_type, registrar, order_by, font_path
                         return
 
         ### CLEAR SCREEN
-        pygame.draw.rect(screen, colors['1'], screen.get_rect())
+        pygame.draw.rect(screen, colors['b'], screen.get_rect())
 
         ### DRAW SPRITES
         records_group.draw(screen)

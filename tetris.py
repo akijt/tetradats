@@ -3,18 +3,10 @@ import random
 class Tetris():
 
     def __init__(self):
-        self.minos  = {'t': (((2, 1), (2, 0), (3, 1), (2, 2)),
-                             ((2, 1), (3, 1), (2, 2), (1, 1)),
-                             ((2, 1), (2, 2), (1, 1), (2, 0)),
-                             ((2, 1), (1, 1), (2, 0), (3, 1))),
-                       'i': (((2, 0), (2, 1), (2, 2), (2, 3)),
+        self.minos  = {'i': (((2, 0), (2, 1), (2, 2), (2, 3)),
                              ((0, 2), (1, 2), (2, 2), (3, 2)),
                              ((1, 0), (1, 1), (1, 2), (1, 3)),
                              ((0, 1), (1, 1), (2, 1), (3, 1))),
-                       'o': (((2, 1), (2, 2), (3, 1), (3, 2)),
-                             ((2, 1), (2, 2), (3, 1), (3, 2)),
-                             ((2, 1), (2, 2), (3, 1), (3, 2)),
-                             ((2, 1), (2, 2), (3, 1), (3, 2))),
                        'j': (((2, 0), (2, 1), (2, 2), (3, 0)),
                              ((1, 1), (2, 1), (3, 1), (3, 2)),
                              ((2, 0), (2, 1), (2, 2), (1, 2)),
@@ -23,10 +15,18 @@ class Tetris():
                              ((1, 1), (2, 1), (3, 1), (1, 2)),
                              ((2, 0), (2, 1), (2, 2), (1, 0)),
                              ((1, 1), (2, 1), (3, 1), (3, 0))),
+                       'o': (((2, 1), (2, 2), (3, 1), (3, 2)),
+                             ((2, 1), (2, 2), (3, 1), (3, 2)),
+                             ((2, 1), (2, 2), (3, 1), (3, 2)),
+                             ((2, 1), (2, 2), (3, 1), (3, 2))),
                        's': (((2, 0), (2, 1), (3, 1), (3, 2)),
                              ((1, 2), (2, 1), (2, 2), (3, 1)),
                              ((1, 0), (1, 1), (2, 1), (2, 2)),
                              ((1, 1), (2, 0), (2, 1), (3, 0))),
+                       't': (((2, 1), (2, 0), (3, 1), (2, 2)),
+                             ((2, 1), (3, 1), (2, 2), (1, 1)),
+                             ((2, 1), (2, 2), (1, 1), (2, 0)),
+                             ((2, 1), (1, 1), (2, 0), (3, 1))),
                        'z': (((2, 1), (2, 2), (3, 0), (3, 1)),
                              ((1, 1), (2, 1), (2, 2), (3, 2)),
                              ((1, 1), (1, 2), (2, 0), (2, 1)),
@@ -64,26 +64,14 @@ class Tetris():
                               (( 0, 0), (-1, 0)),                               # 3 >> 1
                               (( 0, 0), (-2, 0), ( 1, 0), (-2,-1), ( 1, 2)),    # 3 >> 2
                               (( 0, 0))))}                                      # 3 >> 3
-        self.finesse = {'t': ((1, 2, 1, 0, 1, 2, 2, 1),
-                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
-                              (3, 4, 3, 2, 3, 4, 4, 3),
-                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+        self.finesse = {'o': ((1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
+                              (1, 2, 2, 1, 0, 1, 2, 2, 1)),
                         'i': ((1, 2, 1, 0, 1, 2, 1),
                               (2, 2, 2, 2, 1, 1, 2, 2, 2, 2),
                               (1, 2, 1, 0, 1, 2, 1),
                               (2, 2, 2, 2, 1, 1, 2, 2, 2, 2)),
-                        'o': ((1, 2, 2, 1, 0, 1, 2, 2, 1),
-                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
-                              (1, 2, 2, 1, 0, 1, 2, 2, 1),
-                              (1, 2, 2, 1, 0, 1, 2, 2, 1)),
-                        'j': ((1, 2, 1, 0, 1, 2, 2, 1),
-                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
-                              (3, 4, 3, 2, 3, 4, 4, 3),
-                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
-                        'l': ((1, 2, 1, 0, 1, 2, 2, 1),
-                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
-                              (3, 4, 3, 2, 3, 4, 4, 3),
-                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
                         's': ((1, 2, 1, 0, 1, 2, 2, 1),
                               (2, 2, 2, 1, 1, 2, 3, 2, 2),
                               (1, 2, 1, 0, 1, 2, 2, 1),
@@ -91,7 +79,22 @@ class Tetris():
                         'z': ((1, 2, 1, 0, 1, 2, 2, 1),
                               (2, 2, 2, 1, 1, 2, 3, 2, 2),
                               (1, 2, 1, 0, 1, 2, 2, 1),
-                              (2, 2, 2, 1, 1, 2, 3, 2, 2))}
+                              (2, 2, 2, 1, 1, 2, 3, 2, 2)),
+                        't': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+                        'j': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2)),
+                        'l': ((1, 2, 1, 0, 1, 2, 2, 1),
+                              (2, 2, 3, 2, 1, 2, 3, 3, 2),
+                              (3, 4, 3, 2, 3, 4, 4, 3),
+                              (2, 3, 2, 1, 2, 3, 3, 2, 2))}
+        self.orientations = {'t': 4, 'i': 2, 'o': 1, 'j': 4, 'l': 4, 's': 2, 'z': 2}
+        self.key_state = {'soft_drop': 0, 'move_left': 0, 'move_right': 0}
+        self.lock = {'time': .5, 'count': 15}
         self.stat_names = ['mode', 'time', 'score', 'pieces', 'lines', 'level', # Top row is REQUIRED
                            'DAS', 'ARR', 'SDF', 'keys', 'holds', # 'DAS', 'ARR', 'SDF' are REQUIRED
                            'single', 'double', 'triple', 'tetris',
@@ -99,11 +102,8 @@ class Tetris():
                            't-spin null', 't-spin single', 't-spin double', 't-spin triple',
                            'perfect clear single', 'perfect clear double', 'perfect clear triple',
                            'perfect clear tetris', 'max B2B', 'max combo', 'finesse']
-        self.key_state = {'soft_drop': 0, 'move_left': 0, 'move_right': 0}
-        self.move_time = 0
-        self.lock = {'time': .5, 'count': 15}
 
-    def reset(self, mode, level, handling):
+    def reset(self, mode, level, handling): # TODO: clean and add key state check
         '''
         (12/10/23) A possibly better way to implement classic mode and other variations would be to
         only make changes in the __init__() and reset() functions. In essence, variables like
@@ -136,11 +136,18 @@ class Tetris():
         self.finish         = False
 
         self.ghost    = mode != 'classic'
-        self.next_num = 1 if mode == 'classic' else 3
+        self.next_num = 1 if mode == 'classic' or mode == 'finesse' else 3
+
+        if mode == 'classic':
+            self.stats['DAS'] = 300
+            self.stats['ARR'] = 100
+            self.stats['SDF'] = 33
+        elif mode == 'cheese':
+            self.add_cheese(5)
+
+        self.move_time = 0
 
     def start(self, current_time):
-        if self.key_state['soft_drop'] > 0:
-            self.soft_drop(current_time)
         self.stats['keys'] = 0
         self.stats['time'] = current_time
         self.new_piece(self.queue.pop(0), current_time)
@@ -149,7 +156,6 @@ class Tetris():
         self.piece    = piece
         self.position = [18, 3]
         self.rotation = 0
-        self.fin_keys = 0
 
         if self.collision():
             self.lose = True
@@ -167,20 +173,29 @@ class Tetris():
         self.set_height()
         self.set_lock(current_time)
         self.last_action  = ''
+        self.fin_keys = 0
+        if self.stats['mode'] == 'finesse':
+            self.set_target()
+    
+    def set_target(self):
+        self.target = dict()
+        self.target['rotation'] = random.randint(0, 3)
+        self.target['location'] = random.randint(0, len(self.finesse[self.piece][self.rotation]) - 1)
+        self.target['position'] = [-min(dr for dr, _ in self.minos[self.piece][self.target['rotation']]), self.target['location'] - min(dc for _, dc in self.minos[self.piece][self.target['rotation']])]
 
     def hold(self, current_time):
-        if self.stats['mode'] != 'classic':
+        if self.stats['mode'] not in ['classic', 'finesse']:
             self.stats['keys'] += 1
             if not self.hold_used:
+                self.stats['holds'] += 1
+                self.hold_used = True
                 if self.held == None:
                     self.held = self.piece
                     self.new_piece(self.queue.pop(0), current_time)
                 else:
-                    temp = self.piece
-                    self.new_piece(self.held, current_time)
-                    self.held = temp
-                self.hold_used = True
-                self.stats['holds'] += 1
+                    temp = self.held
+                    self.held = self.piece
+                    self.new_piece(temp, current_time)
 
     def move(self, distance, current_time):
         step = 1 if distance > 0 else -1
@@ -189,13 +204,12 @@ class Tetris():
             if self.collision():
                 self.position[1] -= step
                 if i == 0:
-                    return False
+                    return
                 i -= 1
                 break
         self.set_height()
         self.set_lock(current_time, i + 1)
         self.last_action = 'move'
-        return True
 
     def rotate(self, turns, current_time):
         if self.stats['mode'] != 'classic' or turns != 2:
@@ -210,12 +224,11 @@ class Tetris():
                     self.set_height()
                     self.set_lock(current_time, 1 if turns % 2 == 1 else 2)
                     self.last_action = f'rotate{i}'
-                    return True
+                    return
                 if self.stats['mode'] == 'classic':
-                    break
+                    break # If classic mode, don't check other kicks
             self.position = orig_position
             self.rotation = orig_rotation
-            return False
 
     def drop(self, distance, current_time):
         '''
@@ -239,9 +252,6 @@ class Tetris():
                 self.lock_count  = 0
             self.stats['score'] += distance * self.key_state['soft_drop']
             self.last_action = 'drop'
-            return True
-        else:
-            return False
 
     def soft_drop(self, current_time):
         '''
@@ -271,7 +281,10 @@ class Tetris():
         if self.stats['SDF'] <= 1:
             self.gravity = 0
         else:
-            self.gravity /= self.stats['SDF']
+            if self.stats['mode'] != 'classic':
+                self.gravity /= self.stats['SDF']
+            elif self.gravity > self.stats['SDF'] / 1000:
+                self.gravity = self.stats['SDF'] / 1000
             self.gravity_time = current_time - self.gravity
 
 
@@ -291,8 +304,8 @@ class Tetris():
         if self.stats['mode'] != 'classic':
             self.stats['keys'] += 1
             if self.height:
-                self.stats['score'] += self.height * 2
                 self.position[0] -= self.height
+                self.stats['score'] += self.height * 2
                 self.last_action = 'drop'
             self.place(current_time)
 
@@ -301,34 +314,30 @@ class Tetris():
             self.lose = True # if entire mino is above 20, game is lost
             return
 
-        for dr, dc in self.minos[self.piece][self.rotation]:
-            c = self.position[1] + dc
-            if any([self.board[r][c] for r in range(self.position[0] + dr + 1, 22)]):
-                self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
-                break
-        else:
-            c = self.position[1] + min([dc for _, dc in self.minos[self.piece][self.rotation]])
-            if self.fin_keys <= self.finesse[self.piece][self.rotation][c]:
-                self.stats['finesse'] += 1
-
         self.stats['pieces'] += 1
-        for dr, dc in self.minos[self.piece][self.rotation]:
-            self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
-        self.clear()
+        self.f_check()
+        if self.stats['mode'] != 'finesse':
+            for dr, dc in self.minos[self.piece][self.rotation]:
+                self.board[self.position[0] + dr][self.position[1] + dc] = self.piece
+            self.clear()
         self.new_piece(self.queue.pop(0), current_time)
         self.hold_used = False
 
     def clear(self):
         t_score = self.t_check()
         rows = 0
+        cheese_cleared = 0
         for r in range(40):
             if None in self.board[r]:
                 self.board[rows] = self.board[r]
                 rows += 1
+            elif r < 5 and self.stats['mode'] == 'cheese':
+                cheese_cleared += 1
         clear_count = 40 - rows
         while rows < 40:
             self.board[rows] = [None for _ in range(10)]
             rows += 1
+        self.add_cheese(cheese_cleared)
         clear_string = {0: 'null', 1: 'single', 2: 'double', 3: 'triple', 4: 'tetris'}[clear_count]
         if clear_count == 4 or t_score >= 10 and clear_count > 0:
             self.b2b += 1
@@ -339,18 +348,16 @@ class Tetris():
         if all(all(c == None for c in r) for r in self.board):
             self.stats['score'] += {1: 800, 2: 1200, 3: 1800, 4: 2000}[clear_count] * (1.6 if self.b2b > 0 else 1) * self.stats['level']
             self.last_clear = f'perfect clear {clear_string}'
-            self.stats[self.last_clear] += 1
         elif t_score > 10:
             self.stats['score'] += {0: 400, 1: 800, 2: 1200, 3: 1600}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
             self.last_clear = f't-spin {clear_string}'
-            self.stats[self.last_clear] += 1
         elif t_score == 10:
             self.stats['score'] += {0: 100, 1: 200, 2: 400}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
             self.last_clear = f'mini t-spin {clear_string}'
-            self.stats[self.last_clear] += 1
         elif clear_count > 0:
             self.stats['score'] += {1: 100, 2: 300, 3: 500, 4: 800}[clear_count] * (1.5 if self.b2b > 0 else 1) * self.stats['level']
             self.last_clear = clear_string
+        if clear_count > 0 or t_score >= 10:
             self.stats[self.last_clear] += 1
         if clear_count > 0:
             self.combo += 1
@@ -378,6 +385,36 @@ class Tetris():
                         t_score += 3
             t_score += self.last_action[-1] == '4'
         return t_score
+    
+    def f_check(self):
+        col = self.position[1] + min([dc for _, dc in self.minos[self.piece][self.rotation]])
+        if self.stats['mode'] == 'finesse':
+            if self.rotation % self.orientations[self.piece] != self.target['rotation'] % self.orientations[self.piece] or col != self.target['location']:
+                self.stats['pieces'] -= 1
+                self.lose = True
+                return
+        for dr, dc in self.minos[self.piece][self.rotation]:
+            c = self.position[1] + dc
+            if any([self.board[r][c] for r in range(self.position[0] + dr + 1, 22)]):
+                self.stats['finesse'] += 1 # automatic finesse pass if there are any minos above the piece
+                return
+        if self.fin_keys <= self.finesse[self.piece][self.rotation][col]:
+            self.stats['finesse'] += 1
+        elif self.stats['mode'] == 'finesse':
+            self.stats['pieces'] -= 1
+            self.lose = True
+
+    def add_cheese(self, n):
+        for r in range(n):
+            if any([x != None for x in self.board[r]]):
+                self.lose = True
+                return
+        for r in range(39, n - 1, -1):
+            self.board[r] = self.board[r - n]
+        for r in range(n - 1, -1, -1):
+            row = ['g' for _ in range(10)]
+            row[random.randint(0, 9)] = None
+            self.board[r] = row
 
     def set_height(self):
         self.height = 1
@@ -410,13 +447,19 @@ class Tetris():
         reward holding on to the first direction and to raise the skill ceiling. To implement the
         correct way, in the else block, uncomment the line marked "Correct implementation" and
         comment the line above.
+        (5/10/24) Though the implementation presented above is interesting and still possible, it
+        would require more complex code to get it right. With the way it was implemented, it was
+        possible to perform a "DAS skip". When pressing and holding a direction key, the DAS period
+        could be skipped by quickly pressing and releasing the other direction key. This only
+        affected gameplay with high DAS, but is incorrect implementation nonetheless. Thus, the
+        correct implementation is now uncommented.
         '''
         self.key_state[direction1] = 0
         if self.key_state[direction2] == 0:
             self.move_time = 0
         elif self.key_state[direction2] == 1:
-            self.move_time = current_time - self.stats['ARR'] / 1000
-            # self.move_time = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000 # Correct implementation
+            # self.move_time = current_time - self.stats['ARR'] / 1000 # Incorrect implementation
+            self.move_time = current_time - (self.stats['ARR'] - self.stats['DAS']) / 1000 # Correct implementation
         else:
             self.key_state[direction2] = 1
 
@@ -468,7 +511,7 @@ class Tetris():
         if self.finish:
             self.stats['time'] = current_time - self.stats['time']
             if self.stats['mode'] not in ['sprint', 'blitz']:
-                self.lose = False # in marathon or classic, it's always a finish, not a lose
+                self.lose = False
 
     def frame_update(self, current_time):
         self.move_hold(current_time)
@@ -476,10 +519,13 @@ class Tetris():
         self.piece_lock(current_time)
         self.finished(current_time)
 
-    def pause(self, current_time):
+    def pause(self, current_time): # TODO: add key state check
         self.stats['time'] = current_time - self.stats['time']
         self.gravity_time = current_time - self.gravity_time
-        if self.move_time:
-            self.move_time = current_time - self.move_time
+        # if self.move_time:
+        #     self.move_time = current_time - self.move_time
         if self.lock_time:
             self.lock_time = current_time - self.lock_time
+        self.unsoft_drop()
+        self.move_unpress('move_left', 'move_right', current_time)
+        self.move_unpress('move_right', 'move_left', current_time)
